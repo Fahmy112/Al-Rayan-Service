@@ -1,5 +1,5 @@
 import Link from "next/link";
-import "../public/globals.css";
+import "./globals.css";
 
 export const metadata = {
   title: "نظام إدارة مركز الصيانة",
