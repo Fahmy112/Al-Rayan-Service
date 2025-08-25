@@ -2,8 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import clientPromise from '../../../../lib/mongodb';
 import { ObjectId } from 'mongodb';
 
-export async function PATCH(request: NextRequest, context: { params: { id: string } }) {
-  const { id } = context.params;
+export async function PATCH(request: NextRequest, context: { params: { id: string } } | { params: Promise<{ id: string }> }) {
+  const params = await Promise.resolve(context.params) as { id: string };
+  const { id } = params;
   const body = await request.json();
   const client = await clientPromise;
   const db = client.db();
@@ -14,8 +15,9 @@ export async function PATCH(request: NextRequest, context: { params: { id: strin
   return NextResponse.json({ success: true });
 }
 
-export async function DELETE(request: NextRequest, context: { params: { id: string } }) {
-  const { id } = context.params;
+export async function DELETE(request: NextRequest, context: { params: { id: string } } | { params: Promise<{ id: string }> }) {
+  const params = await Promise.resolve(context.params) as { id: string };
+  const { id } = params;
   const client = await clientPromise;
   const db = client.db();
   await db.collection('requests').deleteOne({ _id: new ObjectId(id) });
