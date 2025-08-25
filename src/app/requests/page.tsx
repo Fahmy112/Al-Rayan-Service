@@ -60,7 +60,7 @@ export default function RequestsPage() {
   }
 
   return (
-    <div style={{direction:"rtl", fomtFamily:'Cairo, Arial', maxWidth:880, margin:'40px auto', background:'#fff', padding:24, borderRadius:12}}>
+    <div style={{direction:"rtl", fontFamily:'Cairo, Arial', maxWidth:880, margin:'40px auto', background:'#fff', padding:24, borderRadius:12}}>
       <h1 style={{color:'#286090'}}>متابعة الطلبات</h1>
       {loading ? <div>...يتم التحميل</div> : (
       <table style={{width:'100%', borderCollapse:'collapse', background:'#f7fafd'}}>
