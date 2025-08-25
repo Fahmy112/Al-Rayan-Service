@@ -17,6 +17,7 @@ type Request = {
 export default function RequestsPage() {
   const [requests, setRequests] = useState<Request[]>([]);
   const [loading, setLoading] = useState(true);
+  const [query, setQuery] = useState("");
 
   async function fetchRequests() {
     setLoading(true);
@@ -28,8 +29,19 @@ export default function RequestsPage() {
 
   useEffect(() => { fetchRequests(); }, []);
 
+  function filterRequests() {
+    if (!query.trim()) return requests;
+    const q = query.trim().toLowerCase();
+    return requests.filter(r =>
+      r.customerName?.toLowerCase().includes(q) ||
+      r.phone?.toLowerCase().includes(q) ||
+      r.deviceType?.toLowerCase().includes(q) ||
+      r.problem?.toLowerCase().includes(q)
+    );
+  }
+
   async function updateStatus(idx: number, newStatus: string) {
-    const req = requests[idx];
+    const req = filterRequests()[idx];
     await fetch("/api/requests/" + req._id, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
@@ -39,7 +51,7 @@ export default function RequestsPage() {
   }
 
   async function updateNote(idx: number) {
-    const req = requests[idx];
+    const req = filterRequests()[idx];
     const note = prompt("أدخل ملاحظة:", req.notes||'');
     if (note !== null) {
       await fetch("/api/requests/" + req._id, {
@@ -52,16 +64,25 @@ export default function RequestsPage() {
   }
 
   async function deleteRequest(idx: number) {
-    const req = requests[idx];
+    const req = filterRequests()[idx];
     if(window.confirm("تأكيد حذف الطلب؟")) {
       await fetch("/api/requests/" + req._id, { method: "DELETE" });
       fetchRequests();
     }
   }
 
+  const filtered = filterRequests();
+
   return (
     <div style={{direction:"rtl", fontFamily:'Cairo, Arial', maxWidth:880, margin:'40px auto', background:'#fff', padding:24, borderRadius:12}}>
       <h1 style={{color:'#286090'}}>متابعة الطلبات</h1>
+      <input
+        type="text"
+        placeholder="بحث بالاسم أو الهاتف أو الجهاز أو المشكلة..."
+        value={query}
+        onChange={e=>setQuery(e.target.value)}
+        style={{padding:8, width:'100%', marginBottom:18, borderRadius:7, border:'1px solid #d5dbe6', fontSize:15}}
+      />
       {loading ? <div>...يتم التحميل</div> : (
       <table style={{width:'100%', borderCollapse:'collapse', background:'#f7fafd'}}>
         <thead>
@@ -76,7 +97,7 @@ export default function RequestsPage() {
           </tr>
         </thead>
         <tbody>
-        {requests.map((r, i) => (
+        {filtered.map((r, i) => (
             <tr key={r._id}>
               <td>{r.customerName}</td>
               <td>{r.phone}</td>
@@ -91,6 +112,9 @@ export default function RequestsPage() {
               <td><button style={{background:'#e34a4a',color:'#fff'}} onClick={()=>deleteRequest(i)}>حذف</button></td>
             </tr>
           ))}
+        {filtered.length === 0 && !loading && (
+          <tr><td colSpan={7} style={{textAlign:'center',padding:22}}>لا يوجد نتائج مطابقة</td></tr>
+        )}
         </tbody>
       </table>
       )}
