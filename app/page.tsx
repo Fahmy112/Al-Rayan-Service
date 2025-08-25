@@ -1,7 +1,10 @@
 import Link from "next/link";
 
 async function getSummary() {
-  const res = await fetch("http://localhost:3000/api/requests", { cache: "no-store" });
+  const baseUrl = process.env.VERCEL_URL
+    ? `https://${process.env.VERCEL_URL}`
+    : "http://localhost:3000";
+  const res = await fetch(`${baseUrl}/api/requests`, { cache: "no-store" });
   const requests = await res.json();
   return {
     new: requests.filter((r: any) => r.status === "جديد").length,
