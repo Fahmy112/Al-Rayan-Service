@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import styles from "./requests.module.css";
 
 const statuses = ["جديد", "تحت الإصلاح", "تم التسليم"];
 
@@ -86,19 +87,19 @@ export default function RequestsPage() {
   const filtered = filterRequests();
 
   return (
-    <div style={{direction:"rtl", fontFamily:'Cairo, Arial', maxWidth:1200, margin:'40px auto', background:'#fff', padding:20, borderRadius:12}}>
-      <h1 style={{color:'#286090'}}>متابعة الطلبات</h1>
+    <div className={styles.wrapper}>
+      <h1 className={styles["page-title"]}>متابعة الطلبات</h1>
       <input
         type="text"
-        placeholder="بحث: العميل، الهاتف، السيارة، النموذج، النمرة، المشكلة، الملاحظات، الخ..."
+        placeholder="بحث: العميل، الهاتف، السيارة، النموذج، النمرة، المشكلة، الملاحظات..."
         value={query}
         onChange={e=>setQuery(e.target.value)}
-        style={{padding:8, width:'100%', marginBottom:18, borderRadius:7, border:'1px solid #d5dbe6', fontSize:15}}
+        className={styles.searchbar}
       />
       {loading ? <div>...يتم التحميل</div> : (
-      <table style={{width:'100%', borderCollapse:'collapse', background:'#f7fafd', fontSize:15}}>
+      <table className={styles.table}>
         <thead>
-          <tr style={{background:'#e7ecfa'}}>
+          <tr>
             <th>اسم العميل</th>
             <th>رقم الهاتف</th>
             <th>نوع السيارة</th>
@@ -106,7 +107,7 @@ export default function RequestsPage() {
             <th>نمرة السيارة</th>
             <th>الكيلومتر</th>
             <th>المشكلة</th>
-            <th>الملاح��ات</th>
+            <th>الملاحظات</th>
             <th>الصيانة (جنيه)</th>
             <th>قطعة الغيار</th>
             <th>سعر القطعة</th>
@@ -119,25 +120,25 @@ export default function RequestsPage() {
         <tbody>
         {filtered.map((r, i) => (
             <tr key={r._id}>
-              <td>{r.customerName}</td>
-              <td>{r.phone}</td>
-              <td>{r.carType||"-"}</td>
-              <td>{r.carModel||"-"}</td>
-              <td>{r.carNumber||"-"}</td>
-              <td>{r.kilometers||"-"}</td>
-              <td>{r.problem}</td>
-              <td>{r.notes||"-"}</td>
-              <td>{r.repairCost||"-"}</td>
-              <td>{r.sparePartName||"-"}</td>
-              <td>{r.sparePartPrice||"-"}</td>
-              <td>{r.total||"-"}</td>
-              <td>
-                <select value={r.status} onChange={e=>updateStatus(i, e.target.value)}>
+              <td data-label="اسم العميل">{r.customerName}</td>
+              <td data-label="رقم الهاتف">{r.phone}</td>
+              <td data-label="نوع السيارة">{r.carType||"-"}</td>
+              <td data-label="موديل السيارة">{r.carModel||"-"}</td>
+              <td data-label="نمرة السيارة">{r.carNumber||"-"}</td>
+              <td data-label="الكيلومتر">{r.kilometers||"-"}</td>
+              <td data-label="المشكلة">{r.problem}</td>
+              <td data-label="الملاحظات">{r.notes||"-"}</td>
+              <td data-label="تكلفة الصيانة">{r.repairCost||"-"}</td>
+              <td data-label="قطعة الغيار">{r.sparePartName||"-"}</td>
+              <td data-label="سعر القطعة">{r.sparePartPrice||"-"}</td>
+              <td data-label="الإجمالي"><span className={styles.total}>{r.total||"-"}</span></td>
+              <td data-label="الحالة">
+                <select value={r.status} onChange={e=>updateStatus(i, e.target.value)} className={styles["status-select"]}>
                   {statuses.map(st => <option key={st}>{st}</option>)}
                 </select>
               </td>
-              <td><button onClick={()=>updateNote(i)}>ملاحظات</button> {r.notes||"-"}</td>
-              <td><button style={{background:'#e34a4a',color:'#fff'}} onClick={()=>deleteRequest(i)}>حذف</button></td>
+              <td data-label="ملاحظات إضافية"><button className={styles["note-btn"]} onClick={()=>updateNote(i)}>ملاحظا��</button> {r.notes||"-"}</td>
+              <td data-label="إجراءات"><button className={styles["action-btn"]} onClick={()=>deleteRequest(i)}>حذف</button></td>
             </tr>
           ))}
         {filtered.length === 0 && !loading && (

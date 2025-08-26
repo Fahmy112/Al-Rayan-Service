@@ -1,0 +1,154 @@
+/* تحسين واجهة الطلبات */
+.wrapper {
+  direction: rtl;
+  font-family: 'Cairo', Arial, sans-serif;
+  max-width: 1200px;
+  margin: 40px auto;
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px #e9eefa66;
+}
+
+.page-title {
+  color: #286090;
+  font-size: 1.7em;
+  margin-bottom: 0.7em;
+  text-align: center;
+  font-weight: bold;
+}
+
+.searchbar {
+  padding: 9px;
+  width: 100%;
+  margin-bottom: 18px;
+  border-radius: 8px;
+  border: 1px solid #d5dbe6;
+  font-size: 15px;
+  background: #f8f9fd;
+  font-family: inherit;
+}
+
+.table {
+  width: 100%;
+  background: #f7fafd;
+  border-collapse: collapse;
+  font-size: 15px;
+  border-radius: 7px;
+  overflow: hidden;
+}
+.table thead tr {
+  background: #e7ecfa;
+}
+.table th,
+.table td {
+  padding: 7px 5px;
+  border-bottom: 1px solid #eee;
+  text-align: center;
+  vertical-align: middle;
+}
+.table th {
+  color: #286090;
+  font-weight: bold;
+}
+
+.table tr td button,
+.table tr td select {
+  font-family: inherit;
+  font-size: 14px;
+}
+.table tr:last-child td {
+  border-bottom: none;
+}
+
+.status-select {
+  border-radius: 6px;
+  border: 1px solid #bbc6d3;
+  padding: 4px 9px;
+  background: #f9f9fa;
+}
+.action-btn {
+  background: #e34a4a;
+  color: #fff;
+  padding: 7px 12px;
+  border-radius: 6px;
+  border: none;
+  font-size: 14px;
+  font-family: inherit;
+  cursor: pointer;
+  margin: 0 2px;
+  transition: background .2s;
+}
+.action-btn:hover {
+  background: #d83535;
+}
+.note-btn {
+  background: #2784be;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 7px 12px;
+  font-size: 14px;
+  margin-left: 3px;
+  cursor: pointer;
+  transition: background .2s;
+}
+.note-btn:hover {
+  background: #206a97;
+}
+
+.total {
+  font-weight: bold;
+  color: #286090;
+  background: #f0f4ff;
+  border-radius: 6px;
+  padding: 4px 10px;
+  display: inline-block;
+}
+
+/* Responsive كارت للعرض على الموبايل */
+@media (max-width: 850px) {
+  .wrapper {
+    padding: 7px 3px;
+    max-width: 100vw;
+  }
+  .table {
+    display: block;
+    overflow-x: auto;
+    width: 100vw;
+    min-width: 650px;
+  }
+}
+@media (max-width:600px){
+  .table, .table thead, .table tbody, .table th, .table td, .table tr {
+    display: block;
+  }
+  .table thead {
+    display:none;
+  }
+  .table tr {
+    margin-bottom: 17px;
+    border-radius: 9px;
+    background: #f7fafd;
+    box-shadow: 0 0 6px #eee;
+    padding: 8px 3px;
+  }
+  .table td {
+    border: none;
+    padding: 7px 10px;
+    position: relative;
+    text-align: right;
+  }
+  .table td:before {
+    content: attr(data-label);
+    display: block;
+    font-weight: bold;
+    color: #286090;
+    margin-bottom: 2px;
+    font-size: 13px;
+  }
+  .action-btn, .note-btn {
+    width: 100%;
+    margin: 6px 0 0;
+  }
+}
