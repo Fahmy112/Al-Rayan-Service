@@ -17,6 +17,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <Link href="/" style={{ color: '#fff', textDecoration: 'none', padding: '10px 0', borderRadius: 6, display:'block' }}>الرئيسية</Link>
               <Link href="/add" style={{ color: '#fff', textDecoration: 'none', padding: '10px 0', borderRadius: 6, display:'block' }}>إضافة طلب جديد</Link>
               <Link href="/requests" style={{ color: '#fff', textDecoration: 'none', padding: '10px 0', borderRadius: 6, display:'block' }}>متابعة الطلبات</Link>
+              <Link href="/spares" style={{ color: '#36ebff', textDecoration: 'none', padding: '10px 0', borderRadius: 6, display:'block', fontWeight:'bold' }}>إدارة قطع الغيار / المخزون</Link>
             </nav>
             <div style={{flex:1}}></div>
             <div style={{ fontSize: 12, textAlign: 'center', padding: 10, borderTop:'1px solid #29354b', opacity:.8}}>© {new Date().getFullYear()} AlRayan Service</div>
