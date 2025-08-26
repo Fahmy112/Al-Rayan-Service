@@ -153,8 +153,16 @@ export default function RequestsPage() {
               <td data-label="المشكلة">{r.problem}</td>
               <td data-label="الملاحظات">{r.notes||"-"}</td>
               <td data-label="تكلفة الصيانة">{r.repairCost||"-"}</td>
-              <td data-label="قطعة الغيار">{r.sparePartName||"-"}</td>
-              <td data-label="سعر القطعة">{r.sparePartPrice||"-"}</td>
+              <td data-label="قطعة الغيار">{
+                Array.isArray((r as any).usedSpares) && (r as any).usedSpares.length
+                  ? (r as any).usedSpares.map((x:any)=>`${x.name}${x.qty>1?`×${x.qty}`:''}`).join(', ') 
+                  : r.sparePartName || "-"
+              }</td>
+              <td data-label="سعر القطعة">{
+                Array.isArray((r as any).usedSpares) && (r as any).usedSpares.length
+                  ? (r as any).usedSpares.reduce((sum:number,x:any)=>sum+(parseFloat(x.price||0)*parseFloat(x.qty||1)),0)
+                  : r.sparePartPrice || "-"
+              }</td>
               <td data-label="الإجمالي"><span className={styles.total}>{r.total||"-"}</span></td>
               <td data-label="الحالة">
                 <select value={r.status} onChange={e=>updateStatus(i, e.target.value)} className={styles["status-select"]}>

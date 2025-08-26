@@ -1,12 +1,10 @@
 import Link from "next/link";
+export const dynamic = "force-dynamic";
 
 async function getSummary() {
-  const baseUrl = process.env.VERCEL_URL
-    ? `https://${process.env.VERCEL_URL}`
-    : "http://localhost:3000";
   let requests: any[] = [];
   try {
-    const res = await fetch(`${baseUrl}/api/requests`, { cache: "no-store" });
+    const res = await fetch(`/api/requests`, { cache: "no-store" });
     if (res.ok) {
       requests = await res.json();
     } else {
