@@ -6,6 +6,7 @@ interface Spare {
   name: string;
   price: number;
   quantity: number;
+  category?: string;
 }
 
 type EditState = null | { id:string, name:string, price:number };
@@ -15,10 +16,24 @@ export default function SparesPage() {
   const [name, setName] = useState("");
   const [price, setPrice] = useState("");
   const [quantity, setQuantity] = useState("");
+  const [category, setCategory] = useState("");
+  const categories = [
+    'زيت الماتور',
+    'زيت الفتيس',
+    'فلتر الهواء',
+    'قلب طلمبة البنزين',
+    'فلتر زيت',
+    'فلتر تكييف',
+    'فلتر زيت فتيس',
+    'ماء تبريد',
+    'بوجيهات',
+    'فلتر بنزين',
+    'حشو فلتر زيت'
+  ];
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState<string | undefined>(undefined);
   const [edit, setEdit] = useState<EditState>(null);
-  const [editValue, setEditValue] = useState<{name:string, price:string}>({name:"", price:""});
+  const [editValue, setEditValue] = useState<{name:string, price:string, category:string}>({name:"", price:"", category:""});
 
   async function fetchSpares() {
     setLoading(true);
@@ -36,14 +51,14 @@ export default function SparesPage() {
     const res = await fetch("/api/spares", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, price, quantity })
+      body: JSON.stringify({ name, price, quantity, category })
     });
     const data = await res.json();
     if (data.error) setMessage(data.error);
     else {
-      fetchSpares();
-      setName(""); setPrice(""); setQuantity("");
-      setMessage("تمت الإضافة بنجاح!");
+  fetchSpares();
+  setName(""); setPrice(""); setQuantity(""); setCategory("");
+  setMessage("تمت الإضافة بنجاح!");
     }
   }
 
@@ -68,15 +83,16 @@ export default function SparesPage() {
   }
 
   function startEdit(sp: Spare) {
-    setEdit({ id: sp._id, name: sp.name, price: sp.price });
-    setEditValue({ name: sp.name, price: sp.price+"" });
+  setEdit({ id: sp._id, name: sp.name, price: sp.price });
+  setEditValue({ name: sp.name, price: sp.price+"", category: sp.category || "" });
   }
 
   async function saveEdit() {
     if (!edit) return;
     await handleUpdate(edit.id, {
       name: editValue.name,
-      price: parseFloat(editValue.price)
+      price: parseFloat(editValue.price),
+      category: editValue.category
     });
     setEdit(null);
   }
@@ -87,6 +103,10 @@ export default function SparesPage() {
       <form onSubmit={handleAdd} style={{ display: "flex", flexDirection: "column", gap: 11, margin: "15px 0 22px 0" }}>
         <div style={{ display: 'flex', gap: 11 }}>
           <input style={inputStyle} required value={name} onChange={e=>setName(e.target.value)} placeholder="اسم القطعة" />
+          <select style={{...inputStyle, width:120}} required value={category} onChange={e=>setCategory(e.target.value)}>
+            <option value="">اختر القسم...</option>
+            {categories.map(cat => <option key={cat} value={cat}>{cat}</option>)}
+          </select>
           <input style={{...inputStyle,width:90}} required type="number" min={0} value={price} onChange={e=>setPrice(e.target.value)} placeholder="السعر" />
           <input style={{...inputStyle,width:90}} required type="number" min={1} value={quantity} onChange={e=>setQuantity(e.target.value)} placeholder="الكمية" />
           <button style={btnStyle} type="submit">إضافة</button>
@@ -98,6 +118,7 @@ export default function SparesPage() {
           <thead>
             <tr style={{background:'#e7ecfa'}}>
               <th>اسم القطعة</th>
+              <th>القسم</th>
               <th>السعر</th>
               <th>الكمية</th>
               <th>إجراءات</th>
@@ -110,6 +131,14 @@ export default function SparesPage() {
                   {edit?.id === sp._id
                     ? <input style={{...inputStyle, width:120, fontWeight:'bold'}} value={editValue.name} onChange={e=>setEditValue(v=>({...v,name:e.target.value}))} />
                     : <span>{sp.name}</span> }
+                </td>
+                <td>
+                  {edit?.id === sp._id
+                    ? <select style={{...inputStyle, width:100}} value={editValue.category} onChange={e=>setEditValue(v=>({...v,category:e.target.value}))}>
+                        <option value="">اختر القسم...</option>
+                        {categories.map(cat => <option key={cat} value={cat}>{cat}</option>)}
+                      </select>
+                    : <span>{sp.category || '-'}</span> }
                 </td>
                 <td>
                   {edit?.id === sp._id

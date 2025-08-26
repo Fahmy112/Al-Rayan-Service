@@ -7,6 +7,7 @@ interface Spare {
   name: string;
   price: number;
   quantity: number;
+  category?: string;
 }
 interface UsedSpare {
   id: string;
@@ -16,6 +17,20 @@ interface UsedSpare {
 }
 
 export default function AddRequest() {
+  const categories = [
+    'زيت الماتور',
+    'زيت الفتيس',
+    'فلتر الهواء',
+    'قلب طلمبة البنزين',
+    'فلتر زيت',
+    'فلتر تكييف',
+    'فلتر زيت فتيس',
+    'ماء تبريد',
+    'بوجيهات',
+    'فلتر بنزين',
+    'حشو فلتر زيت'
+  ];
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [customerName, setCustomerName] = useState("");
   const [phone, setPhone] = useState("");
   const [carType, setCarType] = useState("");
@@ -46,18 +61,24 @@ export default function AddRequest() {
   }, []);
 
   function addSpareRow() {
-    setUsedSpares(old => ([...old, { id: "", name: "", price: 0, qty: 1 }]));
+  setUsedSpares(old => ([...old, { id: "", name: "", price: 0, qty: 1, category: "" }]));
   }
 
   function updateSpareRow(idx: number, field: keyof UsedSpare, val: any) {
     setUsedSpares(old => {
       const copy = [...old];
-      if (field === "id") {
+      if (field === "category") {
+        copy[idx].category = val;
+        copy[idx].id = "";
+        copy[idx].name = "";
+        copy[idx].price = 0;
+        copy[idx].qty = 1;
+      } else if (field === "id") {
         const found = spares.find(sp=>sp._id === val);
         if (found) {
-          copy[idx] = { id: found._id, name: found.name, price: found.price, qty: copy[idx].qty };
+          copy[idx] = { ...copy[idx], id: found._id, name: found.name, price: found.price };
         } else {
-          copy[idx] = { id: val, name: "", price: 0, qty: copy[idx].qty };
+          copy[idx] = { ...copy[idx], id: val, name: "", price: 0 };
         }
       } else if (field === "qty") {
         copy[idx].qty = Math.max(1, parseInt(val)||1);
@@ -149,9 +170,13 @@ export default function AddRequest() {
           <div style={{fontWeight:600, fontSize:16, marginBottom:5}}>قطع الغيار المطلوبة:</div>
           {usedSpares.map((row, idx) => (
             <div key={idx} style={{display:'flex',gap:9,marginBottom:7, alignItems:'center'}}>
-              <select value={row.id} onChange={e=>updateSpareRow(idx,"id",e.target.value)} style={inputStyle}>
+              <select value={row.category || ""} onChange={e=>updateSpareRow(idx,"category",e.target.value)} style={{...inputStyle, width:140}}>
+                <option value="">اختر القسم...</option>
+                {categories.map(cat => <option key={cat} value={cat}>{cat}</option>)}
+              </select>
+              <select value={row.id} onChange={e=>updateSpareRow(idx,"id",e.target.value)} style={inputStyle} disabled={!row.category}>
                 <option value="">اختر القطعة...</option>
-                {spares.map(sp=> <option value={sp._id} key={sp._id} disabled={sp.quantity === 0}>
+                {spares.filter(sp=>sp.category===row.category).map(sp=> <option value={sp._id} key={sp._id} disabled={sp.quantity === 0}>
                   {sp.name} (سعر: {sp.price}ج - متوفر: {sp.quantity})
                 </option> )}
               </select>
