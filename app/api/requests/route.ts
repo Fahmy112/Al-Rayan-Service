@@ -15,7 +15,10 @@ export async function POST(req: NextRequest) {
   const ins = await db.collection('requests').insertOne({
     customerName: body.customerName,
     phone: body.phone,
-    deviceType: body.deviceType,
+    carType: body.carType,
+    carModel: body.carModel,
+    carNumber: body.carNumber,
+    kilometers: body.kilometers,
     problem: body.problem,
     status: 'جديد',
     createdAt: Date.now(),

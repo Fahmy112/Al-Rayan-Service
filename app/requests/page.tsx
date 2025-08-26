@@ -7,7 +7,10 @@ type Request = {
   _id: string;
   customerName: string;
   phone: string;
-  deviceType: string;
+  carType?: string;
+  carModel?: string;
+  carNumber?: string;
+  kilometers?: string;
   problem: string;
   notes?: string;
   status: string;
@@ -35,7 +38,10 @@ export default function RequestsPage() {
     return requests.filter(r =>
       r.customerName?.toLowerCase().includes(q) ||
       r.phone?.toLowerCase().includes(q) ||
-      r.deviceType?.toLowerCase().includes(q) ||
+      r.carType?.toLowerCase().includes(q) ||
+      r.carModel?.toLowerCase().includes(q) ||
+      r.carNumber?.toLowerCase().includes(q) ||
+      (r.kilometers?.toString() ?? '').includes(q) ||
       r.problem?.toLowerCase().includes(q)
     );
   }
@@ -65,7 +71,7 @@ export default function RequestsPage() {
 
   async function deleteRequest(idx: number) {
     const req = filterRequests()[idx];
-    if(window.confirm("تأكيد حذف الطلب؟")) {
+    if(window.confirm("ت��كيد حذف الطلب؟")) {
       await fetch("/api/requests/" + req._id, { method: "DELETE" });
       fetchRequests();
     }
@@ -74,22 +80,25 @@ export default function RequestsPage() {
   const filtered = filterRequests();
 
   return (
-    <div style={{direction:"rtl", fontFamily:'Cairo, Arial', maxWidth:880, margin:'40px auto', background:'#fff', padding:24, borderRadius:12}}>
+    <div style={{direction:"rtl", fontFamily:'Cairo, Arial', maxWidth:1100, margin:'40px auto', background:'#fff', padding:24, borderRadius:12}}>
       <h1 style={{color:'#286090'}}>متابعة الطلبات</h1>
       <input
         type="text"
-        placeholder="بحث بالاسم أو الهاتف أو الجهاز أو المشكلة..."
+        placeholder="بحث: العميل، الهاتف، السيارة، النموذج، النمرة، الكيلومتر، المشكلة..."
         value={query}
         onChange={e=>setQuery(e.target.value)}
         style={{padding:8, width:'100%', marginBottom:18, borderRadius:7, border:'1px solid #d5dbe6', fontSize:15}}
       />
       {loading ? <div>...يتم التحميل</div> : (
-      <table style={{width:'100%', borderCollapse:'collapse', background:'#f7fafd'}}>
+      <table style={{width:'100%', borderCollapse:'collapse', background:'#f7fafd', fontSize:15}}>
         <thead>
           <tr style={{background:'#e7ecfa'}}>
             <th>اسم العميل</th>
             <th>رقم الهاتف</th>
-            <th>نوع الجهاز</th>
+            <th>نوع السيارة</th>
+            <th>موديل</th>
+            <th>نمرة السيارة</th>
+            <th>الكيلومتر</th>
             <th>المشكلة</th>
             <th>الحالة</th>
             <th>ملاحظات</th>
@@ -101,7 +110,10 @@ export default function RequestsPage() {
             <tr key={r._id}>
               <td>{r.customerName}</td>
               <td>{r.phone}</td>
-              <td>{r.deviceType}</td>
+              <td>{r.carType||"-"}</td>
+              <td>{r.carModel||"-"}</td>
+              <td>{r.carNumber||"-"}</td>
+              <td>{r.kilometers||"-"}</td>
               <td>{r.problem}</td>
               <td>
                 <select value={r.status} onChange={e=>updateStatus(i, e.target.value)}>
@@ -113,7 +125,7 @@ export default function RequestsPage() {
             </tr>
           ))}
         {filtered.length === 0 && !loading && (
-          <tr><td colSpan={7} style={{textAlign:'center',padding:22}}>لا يوجد نتائج مطابقة</td></tr>
+          <tr><td colSpan={10} style={{textAlign:'center',padding:22}}>لا يوجد نتائج مطابقة</td></tr>
         )}
         </tbody>
       </table>
