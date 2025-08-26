@@ -161,6 +161,14 @@ export default function AddRequest() {
                 placeholder="الكمية"
                 max={spares.find(sp=>sp._id===row.id)?.quantity||''}
               />
+              <input
+                type="number"
+                min={0}
+                style={{...inputStyle, width:90}}
+                value={row.price}
+                onChange={e=>updateSpareRow(idx,'price',e.target.value)}
+                placeholder="سعر القطعة"
+              />
               <span style={{color:'#888',fontWeight:'bold',fontSize:16}}>
                 {row.price?(row.price*row.qty)+' ج': ''}
               </span>
