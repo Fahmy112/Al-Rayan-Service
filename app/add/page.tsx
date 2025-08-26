@@ -61,6 +61,8 @@ export default function AddRequest() {
         }
       } else if (field === "qty") {
         copy[idx].qty = Math.max(1, parseInt(val)||1);
+      } else if (field === "price") {
+        copy[idx].price = parseFloat(val) || 0;
       }
       return copy;
     });
