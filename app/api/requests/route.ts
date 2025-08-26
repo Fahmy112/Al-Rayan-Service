@@ -50,16 +50,29 @@ export async function DELETE(req: NextRequest) {
   const db = client.db();
   // استرجاع الطلب أولاً
   const reqDoc = await db.collection('requests').findOne({ _id: new ObjectId(id) });
-  if (reqDoc && Array.isArray(reqDoc.usedSpares)) {
-    for (const us of reqDoc.usedSpares) {
-      if (us.id && us.qty) {
-        const spare = await db.collection('spares').findOne({ _id: new ObjectId(us.id) });
-        if (spare) {
-          await db.collection('spares').updateOne(
-            { _id: new ObjectId(us.id) },
-            { $inc: { quantity: us.qty } }
-          );
+  // دعم كل الأنواع (الجديدة: usedSpares - القديمة: sparePartId/sparePartName)
+  if (reqDoc) {
+    // حالة الطلبات الحديثة (usedSpares)
+    if (Array.isArray(reqDoc.usedSpares)) {
+      for (const us of reqDoc.usedSpares) {
+        if (us.id && us.qty) {
+          const spare = await db.collection('spares').findOne({ _id: new ObjectId(us.id) });
+          if (spare) {
+            await db.collection('spares').updateOne(
+              { _id: new ObjectId(us.id) },
+              { $inc: { quantity: us.qty } }
+            );
+          }
         }
+      }
+    } else if (reqDoc.sparePartId && reqDoc.sparePartName) {
+      // حالة الطلبات القديمة: استرجاع 1 qty فقط لو كان الطلب له قطع غيار مرتبطة
+      const spare = await db.collection('spares').findOne({ _id: new ObjectId(reqDoc.sparePartId) });
+      if (spare) {
+        await db.collection('spares').updateOne(
+          { _id: new ObjectId(reqDoc.sparePartId) },
+          { $inc: { quantity: 1 } }
+        );
       }
     }
   }

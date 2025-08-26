@@ -12,7 +12,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body style={{ margin: 0, fontFamily: "Cairo, Arial, sans-serif", background: "#f4f6fb" }}>
         <div style={{ display: "flex", minHeight: "100vh" }}>
           <aside style={{ width: 220, background: '#242c3a', color: '#fff', padding: 0, display:'flex', flexDirection: 'column', boxShadow:'0 0 12px #0002' }}>
-            <div style={{ textAlign: 'center', padding: '32px 0 22px', fontWeight: 900, fontSize: 22, letterSpacing: 1, borderBottom: '1px solid #29354b' }}>مركز الصيانة</div>
+            <div style={{ textAlign: 'center', padding: '32px 0 22px', fontWeight: 900, fontSize: 22, letterSpacing: 1, borderBottom: '1px solid #db4e0cff' }}>AlRayanAutoService</div>
             <nav style={{ display:'flex', flexDirection:'column', gap: 8, marginTop:20, padding:24, fontSize:18 }}>
               <Link href="/" style={{ color: '#fff', textDecoration: 'none', padding: '10px 0', borderRadius: 6, display:'block' }}>الرئيسية</Link>
               <Link href="/add" style={{ color: '#fff', textDecoration: 'none', padding: '10px 0', borderRadius: 6, display:'block' }}>إضافة طلب جديد</Link>
