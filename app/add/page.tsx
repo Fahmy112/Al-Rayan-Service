@@ -33,6 +33,15 @@ export default function AddRequest() {
   ];
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [customerName, setCustomerName] = useState("");
+      const inputStyle: React.CSSProperties = {
+        padding: '7px 8px',
+        borderRadius: 7,
+        border: '1px solid #bbc6d3',
+        fontFamily: 'inherit',
+        fontSize: 15,
+        marginBottom: 4
+      };
+      const lbl: React.CSSProperties = { fontWeight:600, marginBottom:2 };
   const [phone, setPhone] = useState("");
   const [carType, setCarType] = useState("");
   const [carModel, setCarModel] = useState("");
@@ -138,44 +147,52 @@ export default function AddRequest() {
 
   return (
     <div style={{
-      direction: "rtl", fontFamily: 'Cairo, Arial', maxWidth: 700, margin: '40px auto', background: '#fff', padding: 32, borderRadius: 16, boxShadow: '0 2px 16px 0 #bbc6dd44',
+      direction: "rtl",
+      fontFamily: 'Cairo, Arial',
+      maxWidth: 420,
+      margin: '20px auto',
+      background: '#fff',
+      padding: '16px 7px',
+      borderRadius: 12,
+      boxShadow: '0 2px 12px 0 #bbc6dd44',
+      minHeight: '100vh',
     }}>
       <h1 style={{ color: '#286090', marginBottom: 25, textAlign: 'center', fontSize: 28 }}>إضافة طلب جديد</h1>
       {spareWarning && <div style={{color:'#e34a4a',padding:10,background:'#fff3f2',border:'1px solid #ffb0b0',borderRadius:6,marginBottom:10, textAlign:'center',fontWeight:'bold'}}>{spareWarning}</div>}
-      <form onSubmit={handleSubmit} style={{display: 'flex', flexDirection: 'column', gap: 16, fontSize: 16}}>
+  <form onSubmit={handleSubmit} style={{display: 'flex', flexDirection: 'column', gap: 10, fontSize: 15, width:'100%'}}>
         <label style={lbl}>اسم العميل:
-          <input required value={customerName} onChange={e=>setCustomerName(e.target.value)} style={inputStyle} autoFocus />
+          <input required value={customerName} onChange={e=>setCustomerName(e.target.value)} style={{...inputStyle, width:'100%', fontSize:15}} autoFocus />
         </label>
         <label style={lbl}>رقم الهاتف:
-          <input required value={phone} onChange={e=>setPhone(e.target.value)} style={inputStyle} />
+          <input required value={phone} onChange={e=>setPhone(e.target.value)} style={{...inputStyle, width:'100%', fontSize:15}} />
         </label>
         <label style={lbl}>نوع السيارة:
-          <input required value={carType} onChange={e=>setCarType(e.target.value)} style={inputStyle} />
+          <input required value={carType} onChange={e=>setCarType(e.target.value)} style={{...inputStyle, width:'100%', fontSize:15}} />
         </label>
         <label style={lbl}>موديل السيارة:
-          <input required value={carModel} onChange={e=>setCarModel(e.target.value)} style={inputStyle} />
+          <input required value={carModel} onChange={e=>setCarModel(e.target.value)} style={{...inputStyle, width:'100%', fontSize:15}} />
         </label>
         <label style={lbl}>نمرة السيارة:
-          <input required value={carNumber} onChange={e=>setCarNumber(e.target.value)} style={inputStyle} />
+          <input required value={carNumber} onChange={e=>setCarNumber(e.target.value)} style={{...inputStyle, width:'100%', fontSize:15}} />
         </label>
         <label style={lbl}>الكيلومتر الحالي:
-          <input required type="number" min={0} value={kilometers} onChange={e=>setKilometers(e.target.value)} style={inputStyle} />
+          <input required type="number" min={0} value={kilometers} onChange={e=>setKilometers(e.target.value)} style={{...inputStyle, width:'100%', fontSize:15}} />
         </label>
         <label style={lbl}>المشكلة:
-          <textarea required value={problem} onChange={e=>setProblem(e.target.value)} style={{...inputStyle, resize:'vertical'}} rows={3} />
+          <textarea required value={problem} onChange={e=>setProblem(e.target.value)} style={{...inputStyle, resize:'vertical', width:'100%', fontSize:15}} rows={3} />
         </label>
         <label style={lbl}>الملاحظات:
-          <textarea value={notes} onChange={e=>setNotes(e.target.value)} style={{...inputStyle, resize:'vertical'}} rows={2} placeholder="اختياري" />
+          <textarea value={notes} onChange={e=>setNotes(e.target.value)} style={{...inputStyle, resize:'vertical', width:'100%', fontSize:15}} rows={2} placeholder="اختياري" />
         </label>
-        <div style={{ margin: '10px 0', background:'#f4f8fd', borderRadius: 7, padding: 8 }}>
+  <div style={{ margin: '10px 0', background:'#f4f8fd', borderRadius: 7, padding: 8, overflowX:'auto' }}>
           <div style={{fontWeight:600, fontSize:16, marginBottom:5}}>قطع الغيار المطلوبة:</div>
           {usedSpares.map((row, idx) => (
-            <div key={idx} style={{display:'flex',gap:9,marginBottom:7, alignItems:'center'}}>
-              <select value={row.category || ""} onChange={e=>updateSpareRow(idx,"category",e.target.value)} style={{...inputStyle, width:140}}>
+            <div key={idx} style={{display:'flex',gap:7,marginBottom:7, alignItems:'center', flexWrap:'wrap'}}>
+              <select value={row.category || ""} onChange={e=>updateSpareRow(idx,"category",e.target.value)} style={{...inputStyle, width:'100%', minWidth:120, fontSize:15}}>
                 <option value="">اختر القسم...</option>
                 {categories.map(cat => <option key={cat} value={cat}>{cat}</option>)}
               </select>
-              <select value={row.id} onChange={e=>updateSpareRow(idx,"id",e.target.value)} style={inputStyle} disabled={!row.category}>
+              <select value={row.id} onChange={e=>updateSpareRow(idx,"id",e.target.value)} style={{...inputStyle, width:'100%', minWidth:120, fontSize:15}} disabled={!row.category}>
                 <option value="">اختر القطعة...</option>
                 {spares.filter(sp=>sp.category===row.category).map(sp=> <option value={sp._id} key={sp._id} disabled={sp.quantity === 0}>
                   {sp.name} (سعر: {sp.price}ج - متوفر: {sp.quantity})
@@ -183,7 +200,7 @@ export default function AddRequest() {
               </select>
               <input
                 type="number" min={1}
-                style={{...inputStyle, width:75}}
+                style={{...inputStyle, width:65, fontSize:15}}
                 value={row.qty}
                 onChange={e=>updateSpareRow(idx,'qty',e.target.value)}
                 placeholder="الكمية"
@@ -192,7 +209,7 @@ export default function AddRequest() {
               <input
                 type="number"
                 min={0}
-                style={{...inputStyle, width:90}}
+                style={{...inputStyle, width:80, fontSize:15}}
                 value={row.price}
                 onChange={e=>updateSpareRow(idx,'price',e.target.value)}
                 placeholder="سعر القطعة"
@@ -200,31 +217,25 @@ export default function AddRequest() {
               <span style={{color:'#888',fontWeight:'bold',fontSize:16}}>
                 {row.price?(row.price*row.qty)+' ج': ''}
               </span>
-              <button type="button" style={{background:'#e34a4a',color:'#fff', border:'none', borderRadius:7, padding:'5px 13px', fontWeight:700, marginRight:8, cursor:'pointer'}} onClick={()=>removeSpareRow(idx)}>حذف</button>
+              <button type="button" style={{background:'#e34a4a',color:'#fff', border:'none', borderRadius:7, padding:'7px 18px', fontWeight:700, marginRight:0, marginTop:5, cursor:'pointer', fontSize:15}} onClick={()=>removeSpareRow(idx)}>حذف</button>
             </div>
           ))}
-          <button type="button" onClick={addSpareRow} style={{background:'#286090', color:'#fff', padding:'7px 25px', fontWeight:'bold', borderRadius:7, marginTop:5, border:'none', fontFamily:'inherit', fontSize:15, cursor:'pointer'}}>+ إضافة قطعة جديدة</button>
+          <button type="button" onClick={addSpareRow} style={{background:'#286090', color:'#fff', padding:'10px 0', fontWeight:'bold', borderRadius:7, marginTop:5, border:'none', fontFamily:'inherit', fontSize:16, cursor:'pointer', width:'100%'}}>+ إضافة قطعة جديدة</button>
         </div>
         <label style={lbl}>تكلفة الصيانة:
-          <input type="number" min={0} value={repairCost} onChange={e=>setRepairCost(e.target.value)} style={inputStyle} placeholder="اختياري" />
+          <input type="number" min={0} value={repairCost} onChange={e=>setRepairCost(e.target.value)} style={{...inputStyle, width:'100%', fontSize:15}} placeholder="اختياري" />
         </label>
-        <div style={{fontWeight:600, margin:'14px 0 0', fontSize:17}}>
+  <div style={{fontWeight:600, margin:'14px 0 0', fontSize:16}}>
           الإجمالي:&nbsp;
           <span style={{fontWeight:'bold', color:'#286090', background:'#f0f4ff',borderRadius:6,padding:'4px 16px'}}>{ total || 0 }</span> جنيه
         </div>
         <button
           type="submit"
           disabled={loading}
-          style={{background:'#286090', color:'#fff', fontWeight:700, padding: '12px', borderRadius:8, marginTop:8, fontSize:18, border:'none', cursor:'pointer', transition:'.2s'}}
+          style={{background:'#286090', color:'#fff', fontWeight:700, padding: '12px', borderRadius:8, marginTop:8, fontSize:18, border:'none', cursor:'pointer', transition:'.2s', width:'100%'}}
         >
           {loading ? "...يتم الحفظ" : "إضافة الطلب"}
         </button>
-        {success && <div style={{color:'#27853d',margin:'12px 0',fontWeight:'bold'}}>تم الحفظ بنجاح</div>}
-      </form>
-    </div>
-  );
-}
-
 const lbl: React.CSSProperties = { fontWeight:600 };
 const inputStyle: React.CSSProperties = {
   border: '1px solid #bbc6d3',
