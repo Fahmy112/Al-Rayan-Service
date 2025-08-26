@@ -1,6 +1,6 @@
+"use client";
 import Link from "next/link";
-import dynamic from "next/dynamic";
-const DashboardSummary = dynamic(() => import("./DashboardSummary"), { ssr: false });
+import DashboardSummary from "./DashboardSummary";
 
 export default function Home() {
   return (
