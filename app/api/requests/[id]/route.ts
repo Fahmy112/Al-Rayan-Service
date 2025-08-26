@@ -6,6 +6,10 @@ export async function PATCH(request: NextRequest, context: { params: { id: strin
   const params = await Promise.resolve(context.params) as { id: string };
   const { id } = params;
   const body = await request.json();
+  // حذف _id من الجسم قبل التحديث
+  if ('_id' in body) {
+    delete body._id;
+  }
   const client = await clientPromise;
   const db = client.db();
   await db.collection('requests').updateOne(
