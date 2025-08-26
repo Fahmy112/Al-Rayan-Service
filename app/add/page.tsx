@@ -8,6 +8,12 @@ interface Spare {
   price: number;
   quantity: number;
 }
+interface UsedSpare {
+  id: string;
+  name: string;
+  price: number;
+  qty: number;
+}
 
 export default function AddRequest() {
   const [customerName, setCustomerName] = useState("");
@@ -19,10 +25,7 @@ export default function AddRequest() {
   const [problem, setProblem] = useState("");
   const [notes, setNotes] = useState("");
   const [repairCost, setRepairCost] = useState("");
-  const [sparePartId, setSparePartId] = useState("");
-  const [sparePartName, setSparePartName] = useState("");
-  const [sparePartPrice, setSparePartPrice] = useState("");
-  const [total, setTotal] = useState("");
+  const [usedSpares, setUsedSpares] = useState<UsedSpare[]>([]);
   const [spares, setSpares] = useState<Spare[]>([]);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -42,36 +45,55 @@ export default function AddRequest() {
     });
   }, []);
 
-  // حفظ قطع الغيار والسعر عند الاختيار
-  function handleSpareChange(e: any) {
-    const val = e.target.value;
-    setSparePartId(val);
-    const spare = spares.find(sp=>sp._id === val);
-    if (spare) {
-      setSparePartName(spare.name);
-      setSparePartPrice(spare.price+"");
-      setTotal(calculateTotal(repairCost, spare.price+""));
-    } else {
-      setSparePartName("");
-      setSparePartPrice("");
-      setTotal(calculateTotal(repairCost, "0"));
-    }
+  function addSpareRow() {
+    setUsedSpares(old => ([...old, { id: "", name: "", price: 0, qty: 1 }]));
   }
-  function calculateTotal(cost: string, price: string) {
-    const n1 = parseFloat(cost) || 0;
-    const n2 = parseFloat(price) || 0;
-    return (n1 + n2).toString();
+
+  function updateSpareRow(idx: number, field: keyof UsedSpare, val: any) {
+    setUsedSpares(old => {
+      const copy = [...old];
+      if (field === "id") {
+        const found = spares.find(sp=>sp._id === val);
+        if (found) {
+          copy[idx] = { id: found._id, name: found.name, price: found.price, qty: copy[idx].qty };
+        } else {
+          copy[idx] = { id: val, name: "", price: 0, qty: copy[idx].qty };
+        }
+      } else if (field === "qty") {
+        copy[idx].qty = Math.max(1, parseInt(val)||1);
+      }
+      return copy;
+    });
   }
-  function handleRepairCost(e: any) {
-    setRepairCost(e.target.value);
-    setTotal(calculateTotal(e.target.value, sparePartPrice));
+  function removeSpareRow(idx: number) {
+    setUsedSpares(old => old.filter((_,i)=>i!==idx));
   }
+
+  function calcTotal() {
+    const parts = usedSpares.map(row => {
+      const price = isNaN(Number(row.price))?0:Number(row.price);
+      return price * row.qty;
+    }).reduce((a,b)=>a+b,0);
+    const main = parseFloat(repairCost)||0;
+    return (parts+main).toString();
+  }
+  const total = calcTotal();
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
     setSuccess(false);
-    // إرسال الطلب وحجز قطعة الغيار من المخزن
+    // خصم الكميات للمخزون
+    for (const row of usedSpares) {
+      const spare = spares.find(s => s._id === row.id);
+      if (spare && spare.quantity >= row.qty) {
+        await fetch("/api/spares", {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ id: spare._id, quantity: spare.quantity - row.qty })
+        });
+      }
+    }
     await fetch("/api/requests", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -79,33 +101,20 @@ export default function AddRequest() {
         customerName, phone, carType, carModel, carNumber, kilometers, problem,
         notes: notes || undefined,
         repairCost: repairCost || undefined,
-        sparePartName: sparePartName || undefined,
-        sparePartPrice: sparePartPrice || undefined,
-        sparePartId: sparePartId || undefined,
-        total: total || undefined
+        usedSpares: usedSpares.map(x=>({id:x.id, name:x.name, price:x.price, qty:x.qty})),
+        total
       })
     });
-    // تقليل الكمية فوراً في المخزن لو تم اختيار قطعة غيار
-    if (sparePartId) {
-      const spare = spares.find(s=>s._id === sparePartId);
-      if (spare && spare.quantity > 0) {
-        await fetch("/api/spares", {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ id: sparePartId, quantity: spare.quantity - 1 })
-        });
-      }
-    }
     setLoading(false);
     setSuccess(true);
     setCustomerName(""); setPhone(""); setCarType(""); setCarModel(""); setCarNumber(""); setKilometers(""); setProblem("");
-    setNotes(""); setRepairCost(""); setSparePartId(""); setSparePartName(""); setSparePartPrice(""); setTotal("");
+    setNotes(""); setRepairCost(""); setUsedSpares([]);
     setTimeout(() => { setSuccess(false); router.push("/"); }, 1200);
   }
 
   return (
     <div style={{
-      direction: "rtl", fontFamily: 'Cairo, Arial', maxWidth: 620, margin: '40px auto', background: '#fff', padding: 32, borderRadius: 16, boxShadow: '0 2px 16px 0 #bbc6dd44',
+      direction: "rtl", fontFamily: 'Cairo, Arial', maxWidth: 700, margin: '40px auto', background: '#fff', padding: 32, borderRadius: 16, boxShadow: '0 2px 16px 0 #bbc6dd44',
     }}>
       <h1 style={{ color: '#286090', marginBottom: 25, textAlign: 'center', fontSize: 28 }}>إضافة طلب جديد</h1>
       {spareWarning && <div style={{color:'#e34a4a',padding:10,background:'#fff3f2',border:'1px solid #ffb0b0',borderRadius:6,marginBottom:10, textAlign:'center',fontWeight:'bold'}}>{spareWarning}</div>}
@@ -134,23 +143,35 @@ export default function AddRequest() {
         <label style={lbl}>الملاحظات:
           <textarea value={notes} onChange={e=>setNotes(e.target.value)} style={{...inputStyle, resize:'vertical'}} rows={2} placeholder="اختياري" />
         </label>
-        <div style={{ display:'flex', gap:14, flexWrap:'wrap' }}>
-          <div style={{flex:1,minWidth:130}}>
-            <label style={lbl}>تكلفة الصيانة:
-              <input type="number" min={0} value={repairCost} onChange={handleRepairCost} style={inputStyle} placeholder="اختياري" />
-            </label>
-          </div>
-          <div style={{flex:1,minWidth:170, display:'flex', flexDirection:'column', gap:2}}>
-            <label style={lbl}>قطعة الغيار:
-              <select value={sparePartId} onChange={handleSpareChange} style={inputStyle}>
+        <div style={{ margin: '10px 0', background:'#f4f8fd', borderRadius: 7, padding: 8 }}>
+          <div style={{fontWeight:600, fontSize:16, marginBottom:5}}>قطع الغيار المطلوبة:</div>
+          {usedSpares.map((row, idx) => (
+            <div key={idx} style={{display:'flex',gap:9,marginBottom:7, alignItems:'center'}}>
+              <select value={row.id} onChange={e=>updateSpareRow(idx,"id",e.target.value)} style={inputStyle}>
                 <option value="">اختر القطعة...</option>
                 {spares.map(sp=> <option value={sp._id} key={sp._id} disabled={sp.quantity === 0}>
-                  {sp.name} (سعر: {sp.price} جنيه - متوفر: {sp.quantity})
+                  {sp.name} (سعر: {sp.price}ج - متوفر: {sp.quantity})
                 </option> )}
               </select>
-            </label>
-          </div>
+              <input
+                type="number" min={1}
+                style={{...inputStyle, width:75}}
+                value={row.qty}
+                onChange={e=>updateSpareRow(idx,'qty',e.target.value)}
+                placeholder="الكمية"
+                max={spares.find(sp=>sp._id===row.id)?.quantity||''}
+              />
+              <span style={{color:'#888',fontWeight:'bold',fontSize:16}}>
+                {row.price?(row.price*row.qty)+' ج': ''}
+              </span>
+              <button type="button" style={{background:'#e34a4a',color:'#fff', border:'none', borderRadius:7, padding:'5px 13px', fontWeight:700, marginRight:8, cursor:'pointer'}} onClick={()=>removeSpareRow(idx)}>حذف</button>
+            </div>
+          ))}
+          <button type="button" onClick={addSpareRow} style={{background:'#286090', color:'#fff', padding:'7px 25px', fontWeight:'bold', borderRadius:7, marginTop:5, border:'none', fontFamily:'inherit', fontSize:15, cursor:'pointer'}}>+ إضافة قطعة جديدة</button>
         </div>
+        <label style={lbl}>تكلفة الصيانة:
+          <input type="number" min={0} value={repairCost} onChange={e=>setRepairCost(e.target.value)} style={inputStyle} placeholder="اختياري" />
+        </label>
         <div style={{fontWeight:600, margin:'14px 0 0', fontSize:17}}>
           الإجمالي:&nbsp;
           <span style={{fontWeight:'bold', color:'#286090', background:'#f0f4ff',borderRadius:6,padding:'4px 16px'}}>{ total || 0 }</span> جنيه
