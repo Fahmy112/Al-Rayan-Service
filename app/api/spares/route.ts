@@ -22,6 +22,7 @@ export async function POST(req: NextRequest) {
     name: body.name,
     price: parseFloat(body.price) || 0,
     quantity: parseInt(body.quantity) || 0,
+    category: body.category || "",
     createdAt: Date.now()
   });
   return NextResponse.json({ success: true, id: ins.insertedId });
