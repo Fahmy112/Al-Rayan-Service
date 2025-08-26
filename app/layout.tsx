@@ -3,7 +3,7 @@ import "./globals.css";
 import styles from "./sidebar.module.css";
 
 export const metadata = {
-  title: "نظام إدارة مركز الصيانة",
+  title: "AlRayan Auto Service",
   description: "لوحة تحكم مركز صيانة وخدمة العملاء"
 };
 
@@ -24,7 +24,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <aside className={styles.sidebar}>
             <div className={styles['sidebar-header']}>
               <span role="img" aria-label="gear">⚙️&nbsp;</span>
-              <span style={{verticalAlign:'middle'}}>نظام إدارة مركز الصيانة</span>
+              <span style={{verticalAlign:'middle'}}>   AlRayan Auto Service</span>
             </div>
             <nav className={styles['sidebar-nav']}>
               {navLinks.map(link => (
