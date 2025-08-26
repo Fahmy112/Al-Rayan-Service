@@ -12,6 +12,7 @@ interface Spare {
 type EditState = null | { id:string, name:string, price:number };
 
 export default function SparesPage() {
+  const [search, setSearch] = useState("");
   const [spares, setSpares] = useState<Spare[]>([]);
   const [name, setName] = useState("");
   const [price, setPrice] = useState("");
@@ -101,6 +102,13 @@ export default function SparesPage() {
     <div style={{ direction: "rtl", fontFamily: "Cairo, Arial", maxWidth: 650, margin: "40px auto", background: "#fff", padding: 26, borderRadius: 12, boxShadow: '0 2px 8px #e9eefa66' }}>
       <h1 style={{ color: "#286090", fontWeight: 900, textAlign: "center", fontSize: 26 }}>مخزون قطع الغيار</h1>
       <form onSubmit={handleAdd} style={{ display: "flex", flexDirection: "column", gap: 11, margin: "15px 0 22px 0" }}>
+        <input
+          type="text"
+          value={search}
+          onChange={e => setSearch(e.target.value)}
+          placeholder="بحث عن قطعة أو قسم..."
+          style={{marginBottom:12, padding:8, borderRadius:7, border:'1px solid #bbc6d3', fontSize:16, width:'100%'}}
+        />
         <div style={{ display: 'flex', gap: 11 }}>
           <input style={inputStyle} required value={name} onChange={e=>setName(e.target.value)} placeholder="اسم القطعة" />
           <select style={{...inputStyle, width:120}} required value={category} onChange={e=>setCategory(e.target.value)}>
@@ -125,7 +133,11 @@ export default function SparesPage() {
             </tr>
           </thead>
           <tbody>
-            {spares.map(sp => (
+            {spares.filter(sp => {
+              const q = search.trim().toLowerCase();
+              if (!q) return true;
+              return sp.name.toLowerCase().includes(q) || (sp.category?.toLowerCase().includes(q));
+            }).map(sp => (
               <tr key={sp._id} style={sp.quantity <= 5 ? {background:'#ffeaea', color:'#cc1818', fontWeight:'bold'}:{}}>
                 <td>
                   {edit?.id === sp._id
