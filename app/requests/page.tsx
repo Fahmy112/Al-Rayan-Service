@@ -13,6 +13,10 @@ type Request = {
   kilometers?: string;
   problem: string;
   notes?: string;
+  repairCost?: string;
+  sparePartName?: string;
+  sparePartPrice?: string;
+  total?: string;
   status: string;
   createdAt: number;
 };
@@ -42,7 +46,9 @@ export default function RequestsPage() {
       r.carModel?.toLowerCase().includes(q) ||
       r.carNumber?.toLowerCase().includes(q) ||
       (r.kilometers?.toString() ?? '').includes(q) ||
-      r.problem?.toLowerCase().includes(q)
+      r.problem?.toLowerCase().includes(q) ||
+      r.notes?.toLowerCase().includes(q) ||
+      r.sparePartName?.toLowerCase().includes(q)
     );
   }
 
@@ -71,7 +77,7 @@ export default function RequestsPage() {
 
   async function deleteRequest(idx: number) {
     const req = filterRequests()[idx];
-    if(window.confirm("ت��كيد حذف الطلب؟")) {
+    if(window.confirm("تأكيد حذف الطلب؟")) {
       await fetch("/api/requests/" + req._id, { method: "DELETE" });
       fetchRequests();
     }
@@ -80,11 +86,11 @@ export default function RequestsPage() {
   const filtered = filterRequests();
 
   return (
-    <div style={{direction:"rtl", fontFamily:'Cairo, Arial', maxWidth:1100, margin:'40px auto', background:'#fff', padding:24, borderRadius:12}}>
+    <div style={{direction:"rtl", fontFamily:'Cairo, Arial', maxWidth:1200, margin:'40px auto', background:'#fff', padding:20, borderRadius:12}}>
       <h1 style={{color:'#286090'}}>متابعة الطلبات</h1>
       <input
         type="text"
-        placeholder="بحث: العميل، الهاتف، السيارة، النموذج، النمرة، الكيلومتر، المشكلة..."
+        placeholder="بحث: العميل، الهاتف، السيارة، النموذج، النمرة، المشكلة، الملاحظات، الخ..."
         value={query}
         onChange={e=>setQuery(e.target.value)}
         style={{padding:8, width:'100%', marginBottom:18, borderRadius:7, border:'1px solid #d5dbe6', fontSize:15}}
@@ -100,8 +106,13 @@ export default function RequestsPage() {
             <th>نمرة السيارة</th>
             <th>الكيلومتر</th>
             <th>المشكلة</th>
+            <th>الملاح��ات</th>
+            <th>الصيانة (جنيه)</th>
+            <th>قطعة الغيار</th>
+            <th>سعر القطعة</th>
+            <th>الإجمالي</th>
             <th>الحالة</th>
-            <th>ملاحظات</th>
+            <th>ملاحظات إضافية</th>
             <th>إجراءات</th>
           </tr>
         </thead>
@@ -115,6 +126,11 @@ export default function RequestsPage() {
               <td>{r.carNumber||"-"}</td>
               <td>{r.kilometers||"-"}</td>
               <td>{r.problem}</td>
+              <td>{r.notes||"-"}</td>
+              <td>{r.repairCost||"-"}</td>
+              <td>{r.sparePartName||"-"}</td>
+              <td>{r.sparePartPrice||"-"}</td>
+              <td>{r.total||"-"}</td>
               <td>
                 <select value={r.status} onChange={e=>updateStatus(i, e.target.value)}>
                   {statuses.map(st => <option key={st}>{st}</option>)}
@@ -125,7 +141,7 @@ export default function RequestsPage() {
             </tr>
           ))}
         {filtered.length === 0 && !loading && (
-          <tr><td colSpan={10} style={{textAlign:'center',padding:22}}>لا يوجد نتائج مطابقة</td></tr>
+          <tr><td colSpan={15} style={{textAlign:'center',padding:22}}>لا يوجد نتائج مطابقة</td></tr>
         )}
         </tbody>
       </table>

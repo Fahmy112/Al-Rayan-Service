@@ -20,9 +20,14 @@ export async function POST(req: NextRequest) {
     carNumber: body.carNumber,
     kilometers: body.kilometers,
     problem: body.problem,
+    // الحقول الاختيارية:
+    notes: body.notes || '',
+    repairCost: body.repairCost || '',
+    sparePartName: body.sparePartName || '',
+    sparePartPrice: body.sparePartPrice || '',
+    total: body.total || '',
     status: 'جديد',
-    createdAt: Date.now(),
-    notes: ''
+    createdAt: Date.now()
   });
   return NextResponse.json({ success: true, id: ins.insertedId });
 }
