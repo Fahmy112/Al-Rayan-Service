@@ -1,0 +1,139 @@
+"use client";
+import { useEffect, useState } from "react";
+
+interface Spare {
+  _id: string;
+  name: string;
+  price: number;
+  quantity: number;
+}
+
+export default function SparesPage() {
+  const [spares, setSpares] = useState<Spare[]>([]);
+  const [name, setName] = useState("");
+  const [price, setPrice] = useState("");
+  const [quantity, setQuantity] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [message, setMessage] = useState<string | undefined>(undefined);
+
+  async function fetchSpares() {
+    setLoading(true);
+    const res = await fetch("/api/spares");
+    const data = await res.json();
+    setSpares(data);
+    setLoading(false);
+  }
+
+  useEffect(() => { fetchSpares(); }, []);
+
+  async function handleAdd(e: React.FormEvent) {
+    e.preventDefault();
+    setMessage(undefined);
+    const res = await fetch("/api/spares", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name, price, quantity })
+    });
+    const data = await res.json();
+    if (data.error) setMessage(data.error);
+    else {
+      fetchSpares();
+      setName(""); setPrice(""); setQuantity("");
+      setMessage("تمت الإضافة بنجاح!");
+    }
+  }
+
+  async function handleUpdate(id: string, quantity: number) {
+    await fetch("/api/spares", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id, quantity })
+    });
+    fetchSpares();
+  }
+
+  async function handleDelete(id: string) {
+    if (window.confirm("تأكيد حذف القطعة؟")) {
+      await fetch("/api/spares", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id })
+      });
+      fetchSpares();
+    }
+  }
+
+  return (
+    <div style={{ direction: "rtl", fontFamily: "Cairo, Arial", maxWidth: 650, margin: "40px auto", background: "#fff", padding: 26, borderRadius: 12, boxShadow: '0 2px 8px #e9eefa66' }}>
+      <h1 style={{ color: "#286090", fontWeight: 900, textAlign: "center", fontSize: 26 }}>مخزون قطع الغيار</h1>
+      <form onSubmit={handleAdd} style={{ display: "flex", flexDirection: "column", gap: 11, margin: "15px 0 22px 0" }}>
+        <div style={{ display: 'flex', gap: 11 }}>
+          <input style={inputStyle} required value={name} onChange={e=>setName(e.target.value)} placeholder="اسم القطعة" />
+          <input style={{...inputStyle,width:90}} required type="number" min={0} value={price} onChange={e=>setPrice(e.target.value)} placeholder="السعر" />
+          <input style={{...inputStyle,width:90}} required type="number" min={1} value={quantity} onChange={e=>setQuantity(e.target.value)} placeholder="الكمية" />
+          <button style={btnStyle} type="submit">إضافة</button>
+        </div>
+        {message && <div style={{color: message.includes('نجاح')?'#27853d':'#e34a4a', fontWeight:'bold'}}>{message}</div>}
+      </form>
+      {loading ? <div>...يتم التحميل</div> : (
+        <table style={{width:'100%', borderCollapse:'collapse',background:'#f7fafd', fontSize:15, borderRadius:8, overflow:'hidden'}}>
+          <thead>
+            <tr style={{background:'#e7ecfa'}}>
+              <th>اسم القطعة</th>
+              <th>السعر</th>
+              <th>الكمية</th>
+              <th>إجراءات</th>
+            </tr>
+          </thead>
+          <tbody>
+            {spares.map(sp => (
+              <tr key={sp._id} style={sp.quantity <= 5 ? {background:'#ffeaea', color:'#cc1818', fontWeight:'bold'}:{}}>
+                <td>{sp.name}</td>
+                <td>{sp.price}</td>
+                <td>
+                  <input
+                    style={{width:55, border:'1px solid #bbc6d3',textAlign:'center', borderRadius:6, fontWeight:'bold',fontFamily:'inherit'}} value={sp.quantity}
+                    onChange={e=>{
+                      let num = parseInt(e.target.value)||0;
+                      num = num < 0 ? 0 : num;
+                      handleUpdate(sp._id, num);
+                    }}
+                    type="number" min={0}
+                  />
+                  {sp.quantity <= 5 && <span style={{marginRight:5,color:'#e34a4a',fontWeight:'bold'}}>(منخفض!)</span>}
+                </td>
+                <td>
+                  <button style={btnStyle} onClick={()=>handleDelete(sp._id)}>حذف</button>
+                </td>
+              </tr>
+            ))}
+            {spares.length === 0 && (
+              <tr><td colSpan={4} style={{textAlign:'center', padding:16}}>لا يوجد قطع غيار بالمخزن</td></tr>
+            )}
+          </tbody>
+        </table>
+      )}
+    </div>
+  );
+}
+
+const inputStyle: React.CSSProperties = {
+  border: '1px solid #bbc6d3',
+  borderRadius: 6,
+  padding: '8px 11px',
+  fontSize: 16,
+  fontFamily: 'inherit',
+  outline: 'none',
+};
+const btnStyle: React.CSSProperties = {
+  background: '#2784be',
+  color: '#fff',
+  fontWeight: 700,
+  padding: '8px 16px',
+  borderRadius: 8,
+  fontSize: 16,
+  border: 'none',
+  cursor: 'pointer',
+  transition: '.2s',
+  fontFamily: 'inherit',
+};

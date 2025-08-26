@@ -2,6 +2,13 @@
 import { useEffect, useState } from "react";
 import styles from "./requests.module.css";
 
+interface Spare {
+  _id: string;
+  name: string;
+  price: number;
+  quantity: number;
+}
+
 const statuses = ["جديد", "تحت الإصلاح", "تم التسليم"];
 
 type Request = {
@@ -27,6 +34,9 @@ export default function RequestsPage() {
   const [loading, setLoading] = useState(true);
   const [query, setQuery] = useState("");
 
+  const [spares, setSpares] = useState<Spare[]>([]);
+  const [spareWarning, setSpareWarning] = useState<string|undefined>(undefined);
+
   async function fetchRequests() {
     setLoading(true);
     const res = await fetch("/api/requests");
@@ -35,7 +45,20 @@ export default function RequestsPage() {
     setLoading(false);
   }
 
-  useEffect(() => { fetchRequests(); }, []);
+  async function fetchSpares() {
+    const res = await fetch("/api/spares");
+    const data = await res.json();
+    setSpares(data);
+    if (data.some((s: Spare) => s.quantity <= 5)) {
+      setSpareWarning(
+        "تنبيه: بعض قطع الغيار منخفضة الكمية: " +
+        data.filter((s: Spare) => s.quantity<=5).map((s: Spare)=>`${s.name} (${s.quantity})`).join('، ')
+      );
+    }
+    else setSpareWarning(undefined);
+  }
+
+  useEffect(() => { fetchRequests(); fetchSpares(); }, []);
 
   function filterRequests() {
     if (!query.trim()) return requests;
@@ -89,6 +112,7 @@ export default function RequestsPage() {
   return (
     <div className={styles.wrapper}>
       <h1 className={styles["page-title"]}>متابعة الطلبات</h1>
+      {spareWarning && <div style={{color:'#e34a4a',margin:'12px 0 14px', background:'#fff3f2',border:'1px solid #ffb0b0',borderRadius:6,padding:10, textAlign:'center',fontWeight:'bold'}}>{spareWarning}</div>}
       <input
         type="text"
         placeholder="بحث: العميل، الهاتف، السيارة، النموذج، النمرة، المشكلة، الملاحظات..."
