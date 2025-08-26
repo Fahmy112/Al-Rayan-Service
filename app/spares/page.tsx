@@ -8,6 +8,8 @@ interface Spare {
   quantity: number;
 }
 
+type EditState = null | { id:string, name:string, price:number };
+
 export default function SparesPage() {
   const [spares, setSpares] = useState<Spare[]>([]);
   const [name, setName] = useState("");
@@ -15,6 +17,8 @@ export default function SparesPage() {
   const [quantity, setQuantity] = useState("");
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState<string | undefined>(undefined);
+  const [edit, setEdit] = useState<EditState>(null);
+  const [editValue, setEditValue] = useState<{name:string, price:string}>({name:"", price:""});
 
   async function fetchSpares() {
     setLoading(true);
@@ -43,11 +47,11 @@ export default function SparesPage() {
     }
   }
 
-  async function handleUpdate(id: string, quantity: number) {
+  async function handleUpdate(id: string, value: Partial<Spare>) {
     await fetch("/api/spares", {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id, quantity })
+      body: JSON.stringify({ id, ...value })
     });
     fetchSpares();
   }
@@ -61,6 +65,20 @@ export default function SparesPage() {
       });
       fetchSpares();
     }
+  }
+
+  function startEdit(sp: Spare) {
+    setEdit({ id: sp._id, name: sp.name, price: sp.price });
+    setEditValue({ name: sp.name, price: sp.price+"" });
+  }
+
+  async function saveEdit() {
+    if (!edit) return;
+    await handleUpdate(edit.id, {
+      name: editValue.name,
+      price: parseFloat(editValue.price)
+    });
+    setEdit(null);
   }
 
   return (
@@ -88,22 +106,40 @@ export default function SparesPage() {
           <tbody>
             {spares.map(sp => (
               <tr key={sp._id} style={sp.quantity <= 5 ? {background:'#ffeaea', color:'#cc1818', fontWeight:'bold'}:{}}>
-                <td>{sp.name}</td>
-                <td>{sp.price}</td>
+                <td>
+                  {edit?.id === sp._id
+                    ? <input style={{...inputStyle, width:120, fontWeight:'bold'}} value={editValue.name} onChange={e=>setEditValue(v=>({...v,name:e.target.value}))} />
+                    : <span>{sp.name}</span> }
+                </td>
+                <td>
+                  {edit?.id === sp._id
+                    ? <input style={{...inputStyle, width:80, fontWeight:'bold'}} type="number" min={0} value={editValue.price} onChange={e=>setEditValue(v=>({...v,price:e.target.value}))} />
+                    : <span>{sp.price}</span> }
+                </td>
                 <td>
                   <input
                     style={{width:55, border:'1px solid #bbc6d3',textAlign:'center', borderRadius:6, fontWeight:'bold',fontFamily:'inherit'}} value={sp.quantity}
                     onChange={e=>{
                       let num = parseInt(e.target.value)||0;
                       num = num < 0 ? 0 : num;
-                      handleUpdate(sp._id, num);
+                      handleUpdate(sp._id, { quantity: num });
                     }}
                     type="number" min={0}
                   />
                   {sp.quantity <= 5 && <span style={{marginRight:5,color:'#e34a4a',fontWeight:'bold'}}>(منخفض!)</span>}
                 </td>
                 <td>
-                  <button style={btnStyle} onClick={()=>handleDelete(sp._id)}>حذف</button>
+                  {edit?.id === sp._id ? (
+                    <>
+                      <button style={{...btnStyle,background:'#27853d',marginLeft:6}} onClick={saveEdit} type="button">حفظ</button>
+                      <button style={{...btnStyle,background:'#888'}} onClick={()=>setEdit(null)} type="button">إلغاء</button>
+                    </>
+                  ) : (
+                    <>
+                      <button style={{...btnStyle,padding:'6px 12px', fontSize:15,marginLeft:5}} onClick={()=>startEdit(sp)} type="button">تعديل</button>
+                      <button style={btnStyle} onClick={()=>handleDelete(sp._id)} type="button">حذف</button>
+                    </>
+                  )}
                 </td>
               </tr>
             ))}
