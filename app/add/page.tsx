@@ -14,6 +14,7 @@ interface UsedSpare {
   name: string;
   price: number;
   qty: number;
+  category?: string;
 }
 
 export default function AddRequest() {
