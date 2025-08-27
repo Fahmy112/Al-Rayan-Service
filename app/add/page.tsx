@@ -57,6 +57,7 @@ export default function AddRequest() {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [spareWarning, setSpareWarning] = useState<string | undefined>(undefined);
+  const [showWarning, setShowWarning] = useState(true);
   const router = useRouter();
 
   // جلب قطع الغيار من المخزن
@@ -160,7 +161,24 @@ export default function AddRequest() {
       minHeight: '100vh',
     }}>
       <h1 style={{ color: '#286090', marginBottom: 25, textAlign: 'center', fontSize: 28 }}>إضافة طلب جديد</h1>
-      {spareWarning && <div style={{ color: '#e34a4a', padding: 10, background: '#fff3f2', border: '1px solid #ffb0b0', borderRadius: 6, marginBottom: 10, textAlign: 'center', fontWeight: 'bold' }}>{spareWarning}</div>}
+      {spareWarning && showWarning && (
+        <div style={{ color: '#e34a4a', padding: 10, background: '#fff3f2', border: '1px solid #ffb0b0', borderRadius: 6, marginBottom: 10, textAlign: 'center', fontWeight: 'bold', position: 'relative' }}>
+          {spareWarning}
+          <button
+            type="button"
+            onClick={() => setShowWarning(false)}
+            style={{ position: 'absolute', left: 10, top: 10, background: 'transparent', border: 'none', color: '#e34a4a', fontWeight: 'bold', fontSize: 18, cursor: 'pointer' }}
+            title="إخفاء التنبيه"
+          >×</button>
+        </div>
+      )}
+      {spareWarning && !showWarning && (
+        <button
+          type="button"
+          onClick={() => setShowWarning(true)}
+          style={{ marginBottom: 10, background: '#e34a4a', color: '#fff', border: 'none', borderRadius: 6, padding: '6px 18px', fontWeight: 'bold', cursor: 'pointer', fontSize: 15 }}
+        >إظهار تنبيه النواقص</button>
+      )}
       <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 10, fontSize: 15, width: '100%' }}>
         <label style={lbl}>اسم العميل:
           <input required value={customerName} onChange={e => setCustomerName(e.target.value)} style={{ ...inputStyle, width: '100%', fontSize: 15 }} autoFocus />
