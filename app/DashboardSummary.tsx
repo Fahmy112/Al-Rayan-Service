@@ -3,8 +3,10 @@ import { useEffect, useState } from "react";
 import React from "react";
 
 export default function DashboardSummary() {
-  const [summary, setSummary] = useState({ new: 0, inprogress: 0, done: 0 });
+  const [summary, setSummary] = useState({ new: 0, inprogress: 0, done: 0, unpaid: 0 });
   const [error, setError] = useState("");
+  const [showUnpaid, setShowUnpaid] = useState(false);
+  const [unpaidRequests, setUnpaidRequests] = useState<any[]>([]);
 
   async function fetchSummary() {
     try {
@@ -15,11 +17,13 @@ export default function DashboardSummary() {
         new: requests.filter((r: any) => r.status === "جديد").length,
         inprogress: requests.filter((r: any) => r.status === "تحت الإصلاح").length,
         done: requests.filter((r: any) => r.status === "تم التسليم").length,
+        unpaid: requests.filter((r: any) => !r.paymentStatus || r.paymentStatus === "لم يتم").length,
       });
+      setUnpaidRequests(requests.filter((r: any) => !r.paymentStatus || r.paymentStatus === "لم يتم"));
       setError("");
     } catch (err) {
-      setError("API connection error");
-      setSummary({ new: 0, inprogress: 0, done: 0 });
+  setError("API connection error");
+  setSummary({ new: 0, inprogress: 0, done: 0, unpaid: 0 });
     }
   }
 
@@ -46,7 +50,40 @@ export default function DashboardSummary() {
           <div style={{fontWeight: 700}}>تم التسليم</div>
           <div style={{color: '#286090', fontSize: 32}}>{summary.done}</div>
         </div>
+        <div style={{background: '#ffeaea', borderRadius: 8, padding: 18, width: 140, textAlign: 'center', cursor: 'pointer', border: '2px solid #e34a4a'}} onClick={() => setShowUnpaid(u => !u)}>
+          <div style={{fontWeight: 700, color: '#e34a4a'}}>طلبات غير مدفوعة</div>
+          <div style={{color: '#e34a4a', fontSize: 32}}>{summary.unpaid} <span style={{fontSize:22}}>⏳</span></div>
+        </div>
       </div>
+      {showUnpaid && (
+        <div style={{background:'#fff3f2', border:'1px solid #e34a4a', borderRadius:8, padding:16, marginTop:10}}>
+          <h3 style={{color:'#e34a4a', marginBottom:10}}>الطلبات غير المدفوعة</h3>
+          {unpaidRequests.length === 0 ? <div>لا يوجد طلبات غير مدفوعة</div> : (
+            <table style={{width:'100%', fontSize:15}}>
+              <thead>
+                <tr>
+                  <th>اسم العميل</th>
+                  <th>الهاتف</th>
+                  <th>السيارة</th>
+                  <th>الإجمالي</th>
+                  <th>الحالة</th>
+                </tr>
+              </thead>
+              <tbody>
+                {unpaidRequests.map((r, i) => (
+                  <tr key={r._id} style={{background:i%2?'#fff':'#ffeaea'}}>
+                    <td>{r.customerName}</td>
+                    <td>{r.phone}</td>
+                    <td>{r.carType} {r.carModel}</td>
+                    <td>{r.total || '-'}</td>
+                    <td>{r.status}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </div>
+      )}
     </section>
   );
 }

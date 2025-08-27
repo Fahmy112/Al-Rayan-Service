@@ -29,6 +29,7 @@ type Request = {
   status: string;
   createdAt: number;
   usedSpares?: any[];
+  paymentStatus?: "نقدي" | "تحويل" | "لم يتم";
 };
 
 type EditState = null | { id: string; values: Partial<Request> };
@@ -216,6 +217,7 @@ export default function RequestsPage() {
               <th>قطعة الغيار</th>
               <th>سعر القطعة</th>
               <th>الإجمالي</th>
+              <th>الدفع</th>
               <th>الحالة</th>
               <th>ملاحظات إضافية</th>
               <th>إجراءات</th>
@@ -265,7 +267,21 @@ export default function RequestsPage() {
                               {spares.filter(sp => sp.category === row.category).map(sp => <option value={sp._id} key={sp._id} disabled={sp.quantity === 0}>
                                 {sp.name} (سعر: {sp.price}ج - متوفر: {sp.quantity})
                               </option>)}
+                              <option value="custom">اسم مخصص (غير مسجل في المخزون)</option>
                             </select>
+                            {row.id === "custom" && (
+                              <input
+                                type="text"
+                                style={{ width: 120, fontSize: 15 }}
+                                value={row.name}
+                                onChange={e => {
+                                  const updated = [...editValue.usedSpares!];
+                                  updated[idx].name = e.target.value;
+                                  setEditValue(ev => ({ ...ev, usedSpares: updated }));
+                                }}
+                                placeholder="اسم القطعة (خاص)"
+                              />
+                            )}
                             <input
                               type="number"
                               min={1}
@@ -277,7 +293,7 @@ export default function RequestsPage() {
                                 setEditValue(ev => ({ ...ev, usedSpares: updated }));
                               }}
                               placeholder="الكمية"
-                              max={spares.find(sp => sp._id === row.id)?.quantity || ""}
+                              max={row.id !== "custom" ? (spares.find(sp => sp._id === row.id)?.quantity || "") : ""}
                             />
                             <input
                               type="number"
@@ -310,6 +326,13 @@ export default function RequestsPage() {
                     </td>
                     <td><input value={editValue.total || ""} onChange={e => onEditChange("total", e.target.value)} style={{ width: 60 }} /></td>
                     <td>
+                      <select value={editValue.paymentStatus || "لم يتم"} onChange={e => onEditChange("paymentStatus", e.target.value as any)} style={{ fontSize: 15 }}>
+                        <option value="لم يتم">لم يتم</option>
+                        <option value="نقدي">نقدي</option>
+                        <option value="تحويل">تحويل</option>
+                      </select>
+                    </td>
+                    <td>
                       <select value={editValue.status || "جديد"} onChange={e => onEditChange("status", e.target.value)} className={styles["status-select"]}>
                         {statuses.map(st => <option key={st}>{st}</option>)}
                       </select>
@@ -333,7 +356,7 @@ export default function RequestsPage() {
                     <td data-label="تكلفة الصيانة">{r.repairCost || "-"}</td>
                     <td data-label="قطعة الغيار">{
                       Array.isArray((r as any).usedSpares) && (r as any).usedSpares.length
-                        ? (r as any).usedSpares.map((x: any) => `${x.name}${x.qty > 1 ? `×${x.qty}` : ''}`).join(', ')
+                        ? (r as any).usedSpares.map((x: any) => `${x.id === "custom" ? x.name : x.name}${x.qty > 1 ? `×${x.qty}` : ''}`).join(', ')
                         : r.sparePartName || "-"
                     }</td>
                     <td data-label="سعر القطعة">{
@@ -342,6 +365,11 @@ export default function RequestsPage() {
                         : r.sparePartPrice || "-"
                     }</td>
                     <td data-label="الإجمالي"><span className={styles.total}>{r.total || "-"}</span></td>
+                    <td data-label="الدفع">
+                      {r.paymentStatus === "نقدي" && <span title="نقدي" style={{fontSize:22}}>💵</span>}
+                      {r.paymentStatus === "تحويل" && <span title="تحويل" style={{fontSize:22}}>💳</span>}
+                      {(!r.paymentStatus || r.paymentStatus === "لم يتم") && <span title="لم يتم الدفع" style={{fontSize:22}}>⏳</span>}
+                    </td>
                     <td data-label="الحالة">
                       <select value={r.status} onChange={e => updateStatus(i, e.target.value)} className={styles["status-select"]}>
                         {statuses.map(st => <option key={st}>{st}</option>)}

@@ -217,14 +217,24 @@ export default function AddRequest() {
                 {spares.filter(sp => sp.category === row.category).map(sp => <option value={sp._id} key={sp._id} disabled={sp.quantity === 0}>
                   {sp.name} (سعر: {sp.price}ج - متوفر: {sp.quantity})
                 </option>)}
+                <option value="custom">اسم مخصص (غير مسجل في المخزون)</option>
               </select>
+              {row.id === "custom" && (
+                <input
+                  type="text"
+                  style={{ ...inputStyle, width: 120, fontSize: 15 }}
+                  value={row.name}
+                  onChange={e => updateSpareRow(idx, 'name', e.target.value)}
+                  placeholder="اسم القطعة (خاص)"
+                />
+              )}
               <input
                 type="number" min={1}
                 style={{ ...inputStyle, width: 65, fontSize: 15 }}
                 value={row.qty}
                 onChange={e => updateSpareRow(idx, 'qty', e.target.value)}
                 placeholder="الكمية"
-                max={spares.find(sp => sp._id === row.id)?.quantity || ''}
+                max={row.id !== "custom" ? (spares.find(sp => sp._id === row.id)?.quantity || '') : ''}
               />
               <input
                 type="number"
