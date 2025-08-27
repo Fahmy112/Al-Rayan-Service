@@ -29,7 +29,8 @@ export default function AddRequest() {
     'ماء تبريد',
     'بوجيهات',
     'فلتر بنزين',
-    'حشو فلتر زيت'
+    'حشو فلتر زيت',
+    ' موبينة'
   ];
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [customerName, setCustomerName] = useState("");
