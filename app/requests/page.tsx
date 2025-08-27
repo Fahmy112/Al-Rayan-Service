@@ -258,6 +258,8 @@ export default function RequestsPage() {
                               const updated = [...editValue.usedSpares!];
                               if (found) {
                                 updated[idx] = { ...updated[idx], id: found._id, name: found.name, price: found.price };
+                              } else if (e.target.value === "custom") {
+                                updated[idx] = { ...updated[idx], id: "custom", name: row.name || "", price: 0 };
                               } else {
                                 updated[idx] = { ...updated[idx], id: e.target.value, name: "", price: 0 };
                               }
