@@ -23,6 +23,7 @@ export async function POST(req: NextRequest) {
     problem: body.problem,
     notes: body.notes || '',
     repairCost: body.repairCost || '',
+    purchasesCost: body.purchasesCost || '',
     usedSpares: Array.isArray(body.usedSpares) ? body.usedSpares : [],
     total: body.total || '',
     status: 'جديد',
