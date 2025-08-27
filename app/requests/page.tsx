@@ -282,6 +282,8 @@ export default function RequestsPage() {
                                   setEditValue(ev => ({ ...ev, usedSpares: updated }));
                                 }}
                                 placeholder="اسم القطعة (خاص)"
+                                readOnly={false}
+                                disabled={false}
                               />
                             )}
                             <input
