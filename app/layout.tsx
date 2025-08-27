@@ -1,3 +1,4 @@
+"use client";
 import Link from "next/link";
 import "./globals.css";
 import styles from "./sidebar.module.css";
