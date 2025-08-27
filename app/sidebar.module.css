@@ -71,8 +71,26 @@
   background: #1b2030cc;
 }
 @media (max-width:850px) {
-  .sidebar { width: 55px;min-width:55px; }
+  .sidebar {
+    width: 0;
+    min-width: 0;
+    overflow: hidden;
+    transition: width .2s;
+    position: fixed;
+    top: 0;
+    right: 0;
+    height: 100vh;
+    z-index: 99;
+    box-shadow: 0 0 0 100vw #0005;
+  }
+  .sidebar.open {
+    width: 220px;
+    min-width: 220px;
+    overflow: visible;
+  }
   .sidebar-nav { font-size: 23px; padding: 8px 3px 0 3px; }
   .sidebar-link .icon { margin-left:0; }
   .sidebar-link span { display:none; }
+  .sidebar.open .sidebar-link span,
+  .show-link-name { display:inline !important; }
 }
