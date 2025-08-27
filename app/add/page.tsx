@@ -247,6 +247,9 @@ export default function AddRequest() {
               <span style={{ color: '#888', fontWeight: 'bold', fontSize: 16 }}>
                 {row.price ? (row.price * row.qty) + ' ج' : ''}
               </span>
+              <span style={{ color: '#286090', fontWeight: 'bold', fontSize: 15, marginRight: 8 }}>
+                {row.id === "custom" && row.name ? `(${row.name})` : ''}
+              </span>
               <button type="button" style={{ background: '#e34a4a', color: '#fff', border: 'none', borderRadius: 7, padding: '7px 18px', fontWeight: 700, marginRight: 0, marginTop: 5, cursor: 'pointer', fontSize: 15 }} onClick={() => removeSpareRow(idx)}>حذف</button>
             </div>
           ))}
