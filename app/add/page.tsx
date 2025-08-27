@@ -90,9 +90,13 @@ export default function AddRequest() {
         const found = spares.find(sp => sp._id === val);
         if (found) {
           copy[idx] = { ...copy[idx], id: found._id, name: found.name, price: found.price };
+        } else if (val === "custom") {
+          copy[idx] = { ...copy[idx], id: "custom", name: "", price: 0 };
         } else {
           copy[idx] = { ...copy[idx], id: val, name: "", price: 0 };
         }
+      } else if (field === "name") {
+        copy[idx].name = val;
       } else if (field === "qty") {
         copy[idx].qty = Math.max(1, parseInt(val) || 1);
       } else if (field === "price") {
