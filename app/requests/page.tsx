@@ -281,7 +281,7 @@ export default function RequestsPage() {
                                   updated[idx].name = e.target.value;
                                   setEditValue(ev => ({ ...ev, usedSpares: updated }));
                                 }}
-                                placeholder="اسم القطعة (خاص)
+                                placeholder="اسم القطعة (خاص)"
                                 readOnly={false}
                                 disabled={false}
                               />
