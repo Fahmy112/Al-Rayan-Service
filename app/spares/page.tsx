@@ -19,17 +19,19 @@ export default function SparesPage() {
   const [quantity, setQuantity] = useState("");
   const [category, setCategory] = useState("");
   const categories = [
-    'زيت الماتور',
-    'زيت الفتيس',
-    'فلتر الهواء',
-    'قلب طلمبة البنزين',
-    'فلتر زيت',
-    'فلتر تكييف',
-    'فلتر زيت فتيس',
-    'ماء تبريد',
-    'بوجيهات',
-    'فلتر بنزين',
-    'حشو فلتر زيت'
+  'زيت الماتور',
+  'زيت الفتيس',
+  'فلتر الهواء',
+  'قلب طلمبة البنزين',
+  'فلتر زيت',
+  'فلتر تكييف',
+  'فلتر زيت فتيس',
+  'ماء تبريد',
+  'بوجيهات',
+  'فلتر بنزين',
+  'حشو فلتر زيت',
+  'موبينة',
+  'مواسير'
   ];
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState<string | undefined>(undefined);

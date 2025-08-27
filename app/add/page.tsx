@@ -19,18 +19,19 @@ interface UsedSpare {
 
 export default function AddRequest() {
   const categories = [
-    'زيت الماتور',
-    'زيت الفتيس',
-    'فلتر الهواء',
-    'قلب طلمبة البنزين',
-    'فلتر زيت',
-    'فلتر تكييف',
-    'فلتر زيت فتيس',
-    'ماء تبريد',
-    'بوجيهات',
-    'فلتر بنزين',
-    'حشو فلتر زيت',
-    ' موبينة'
+  'زيت الماتور',
+  'زيت الفتيس',
+  'فلتر الهواء',
+  'قلب طلمبة البنزين',
+  'فلتر زيت',
+  'فلتر تكييف',
+  'فلتر زيت فتيس',
+  'ماء تبريد',
+  'بوجيهات',
+  'فلتر بنزين',
+  'حشو فلتر زيت',
+  'موبينة',
+  'مواسير'
   ];
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [customerName, setCustomerName] = useState("");
