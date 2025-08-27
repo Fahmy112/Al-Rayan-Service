@@ -23,6 +23,7 @@ type Request = {
   problem: string;
   notes?: string;
   repairCost?: string;
+  purchasesCost?: string;
   sparePartName?: string;
   sparePartPrice?: string;
   total?: string;
@@ -237,6 +238,7 @@ export default function RequestsPage() {
                     <td><input value={editValue.problem || ""} onChange={e => onEditChange("problem", e.target.value)} style={{ width: 80 }} /></td>
                     <td><input value={editValue.notes || ""} onChange={e => onEditChange("notes", e.target.value)} style={{ width: 70 }} /></td>
                     <td><input value={editValue.repairCost || ""} onChange={e => onEditChange("repairCost", e.target.value)} style={{ width: 50 }} /></td>
+                    <td><input value={editValue.purchasesCost || ""} onChange={e => onEditChange("purchasesCost", e.target.value)} style={{ width: 50 }} placeholder="سعر المشتريات" /></td>
                     <td colSpan={2}>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                         {Array.isArray(editValue.usedSpares) && editValue.usedSpares.map((row: any, idx: number) => (
@@ -324,7 +326,11 @@ export default function RequestsPage() {
                         }} style={{ background: '#286090', color: '#fff', padding: '10px 0', fontWeight: 'bold', borderRadius: 7, marginTop: 5, border: 'none', fontFamily: 'inherit', fontSize: 16, cursor: 'pointer', width: '100%' }}>+ إضافة قطعة جديدة</button>
                         <div style={{ fontWeight: 600, margin: '14px 0 0', fontSize: 16 }}>
                           الإجمالي:&nbsp;
-                          <span style={{ fontWeight: 'bold', color: '#286090', background: '#f0f4ff', borderRadius: 6, padding: '4px 16px' }}>{Array.isArray(editValue.usedSpares) ? editValue.usedSpares.reduce((sum: number, row: any) => sum + (row.price * row.qty), 0) : 0}</span> جنيه
+                          <span style={{ fontWeight: 'bold', color: '#286090', background: '#f0f4ff', borderRadius: 6, padding: '4px 16px' }}>{
+                            (Array.isArray(editValue.usedSpares) ? editValue.usedSpares.reduce((sum: number, row: any) => sum + (row.price * row.qty), 0) : 0)
+                            + (parseFloat(editValue.repairCost || "0"))
+                            + (parseFloat(editValue.purchasesCost || "0"))
+                          }</span> جنيه
                         </div>
                       </div>
                     </td>
@@ -358,6 +364,7 @@ export default function RequestsPage() {
                     <td data-label="المشكلة">{r.problem}</td>
                     <td data-label="الملاحظات">{r.notes || "-"}</td>
                     <td data-label="تكلفة الصيانة">{r.repairCost || "-"}</td>
+                    <td data-label="سعر المشتريات">{r.purchasesCost || "-"}</td>
                     <td data-label="قطعة الغيار">{
                       Array.isArray((r as any).usedSpares) && (r as any).usedSpares.length
                         ? (r as any).usedSpares.map((x: any) => `${x.id === "custom" ? x.name : x.name}${x.qty > 1 ? `×${x.qty}` : ''}`).join(', ')
@@ -368,7 +375,11 @@ export default function RequestsPage() {
                         ? (r as any).usedSpares.reduce((sum: number, x: any) => sum + (parseFloat(x.price || 0) * parseFloat(x.qty || 1)), 0)
                         : r.sparePartPrice || "-"
                     }</td>
-                    <td data-label="الإجمالي"><span className={styles.total}>{r.total || "-"}</span></td>
+                    <td data-label="الإجمالي"><span className={styles.total}>{
+                      (Array.isArray(r.usedSpares) ? r.usedSpares.reduce((sum: number, row: any) => sum + (row.price * row.qty), 0) : 0)
+                      + (parseFloat(r.repairCost || "0"))
+                      + (parseFloat(r.purchasesCost || "0"))
+                    }</span></td>
                     <td data-label="الدفع">
                       {r.paymentStatus === "نقدي" && <span title="نقدي" style={{fontSize:22}}>💵</span>}
                       {r.paymentStatus === "تحويل" && <span title="تحويل" style={{fontSize:22}}>💳</span>}

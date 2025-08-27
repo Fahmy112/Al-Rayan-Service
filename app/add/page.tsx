@@ -53,6 +53,7 @@ export default function AddRequest() {
   const [notes, setNotes] = useState("");
   const [repairCost, setRepairCost] = useState("");
   const [usedSpares, setUsedSpares] = useState<UsedSpare[]>([]);
+  const [purchasesCost, setPurchasesCost] = useState("");
   const [spares, setSpares] = useState<Spare[]>([]);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -115,7 +116,8 @@ export default function AddRequest() {
       return price * row.qty;
     }).reduce((a, b) => a + b, 0);
     const main = parseFloat(repairCost) || 0;
-    return (parts + main).toString();
+    const purchases = parseFloat(purchasesCost) || 0;
+    return (parts + main + purchases).toString();
   }
   const total = calcTotal();
 
@@ -141,14 +143,15 @@ export default function AddRequest() {
         customerName, phone, carType, carModel, carNumber, kilometers, problem,
         notes: notes || undefined,
         repairCost: repairCost || undefined,
+        purchasesCost: purchasesCost || undefined,
         usedSpares: usedSpares.map(x => ({ id: x.id, name: x.name, price: x.price, qty: x.qty })),
         total
       })
     });
     setLoading(false);
     setSuccess(true);
-    setCustomerName(""); setPhone(""); setCarType(""); setCarModel(""); setCarNumber(""); setKilometers(""); setProblem("");
-    setNotes(""); setRepairCost(""); setUsedSpares([]);
+  setCustomerName(""); setPhone(""); setCarType(""); setCarModel(""); setCarNumber(""); setKilometers(""); setProblem("");
+  setNotes(""); setRepairCost(""); setPurchasesCost(""); setUsedSpares([]);
     setTimeout(() => { setSuccess(false); router.push("/"); }, 1200);
   }
 
@@ -261,6 +264,9 @@ export default function AddRequest() {
         </div>
         <label style={lbl}>تكلفة الصيانة:
           <input type="number" min={0} value={repairCost} onChange={e => setRepairCost(e.target.value)} style={{ ...inputStyle, width: '100%', fontSize: 15 }} placeholder="اختياري" />
+        </label>
+        <label style={lbl}>سعر المشتريات:
+          <input type="number" min={0} value={purchasesCost} onChange={e => setPurchasesCost(e.target.value)} style={{ ...inputStyle, width: '100%', fontSize: 15 }} placeholder="اختياري" />
         </label>
         <div style={{ fontWeight: 600, margin: '14px 0 0', fontSize: 16 }}>
           الإجمالي:&nbsp;
