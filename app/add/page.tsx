@@ -31,7 +31,7 @@ export default function AddRequest() {
   'فلتر بنزين',
   'حشو فلتر زيت',
   'موبينة',
-  'مواسير'
+  'مواسير و اخري'
   ];
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [customerName, setCustomerName] = useState("");

@@ -31,7 +31,7 @@ export default function SparesPage() {
   'فلتر بنزين',
   'حشو فلتر زيت',
   'موبينة',
-  'مواسير'
+  'مواسير و اخري'
   ];
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState<string | undefined>(undefined);
