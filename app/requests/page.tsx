@@ -7,6 +7,7 @@ interface Spare {
   name: string;
   price: number;
   quantity: number;
+  category?: string;
 }
 
 const statuses = ["جديد", "تحت الإصلاح", "تم التسليم"];
@@ -234,20 +235,78 @@ export default function RequestsPage() {
                     <td><input value={editValue.problem || ""} onChange={e => onEditChange("problem", e.target.value)} style={{ width: 80 }} /></td>
                     <td><input value={editValue.notes || ""} onChange={e => onEditChange("notes", e.target.value)} style={{ width: 70 }} /></td>
                     <td><input value={editValue.repairCost || ""} onChange={e => onEditChange("repairCost", e.target.value)} style={{ width: 50 }} /></td>
-                    <td>
-                      {/* عمود قطع الغيار غير قابل للتعديل (عرض فقط) */}
-                      {
-                        Array.isArray(editValue.usedSpares) && editValue.usedSpares.length
-                          ? (editValue.usedSpares as any[]).map((x: any) => `${x.name}${x.qty > 1 ? `×${x.qty}` : ''}`).join(', ')
-                          : editValue.sparePartName || "-"
-                      }
-                    </td>
-                    <td>
-                      {
-                        Array.isArray(editValue.usedSpares) && editValue.usedSpares.length
-                          ? (editValue.usedSpares as any[]).reduce((sum: number, x: any) => sum + (parseFloat(x.price || 0) * parseFloat(x.qty || 1)), 0)
-                          : editValue.sparePartPrice || "-"
-                      }
+                    <td colSpan={2}>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                        {Array.isArray(editValue.usedSpares) && editValue.usedSpares.map((row: any, idx: number) => (
+                          <div key={idx} style={{ display: 'flex', gap: 7, marginBottom: 4, alignItems: 'center', flexWrap: 'wrap' }}>
+                            <select value={row.category || ""} onChange={e => {
+                              const updated = [...editValue.usedSpares!];
+                              updated[idx].category = e.target.value;
+                              updated[idx].id = "";
+                              updated[idx].name = "";
+                              updated[idx].price = 0;
+                              updated[idx].qty = 1;
+                              setEditValue(ev => ({ ...ev, usedSpares: updated }));
+                            }} style={{ minWidth: 120, fontSize: 15 }}>
+                              <option value="">اختر القسم...</option>
+                              {["زيت الماتور","زيت الفتيس","فلتر الهواء","قلب طلمبة البنزين","فلتر زيت","فلتر تكييف","فلتر زيت فتيس","ماء تبريد","بوجيهات","فلتر بنزين","حشو فلتر زيت","موبينة","مواسير و اخري"].map(cat => <option key={cat} value={cat}>{cat}</option>)}
+                            </select>
+                            <select value={row.id} onChange={e => {
+                              const found = spares.find(sp => sp._id === e.target.value);
+                              const updated = [...editValue.usedSpares!];
+                              if (found) {
+                                updated[idx] = { ...updated[idx], id: found._id, name: found.name, price: found.price };
+                              } else {
+                                updated[idx] = { ...updated[idx], id: e.target.value, name: "", price: 0 };
+                              }
+                              setEditValue(ev => ({ ...ev, usedSpares: updated }));
+                            }} style={{ minWidth: 120, fontSize: 15 }} disabled={!row.category}>
+                              <option value="">اختر القطعة...</option>
+                              {spares.filter(sp => sp.category === row.category).map(sp => <option value={sp._id} key={sp._id} disabled={sp.quantity === 0}>
+                                {sp.name} (سعر: {sp.price}ج - متوفر: {sp.quantity})
+                              </option>)}
+                            </select>
+                            <input
+                              type="number"
+                              min={1}
+                              style={{ width: 65, fontSize: 15 }}
+                              value={row.qty}
+                              onChange={e => {
+                                const updated = [...editValue.usedSpares!];
+                                updated[idx].qty = Math.max(1, parseInt(e.target.value) || 1);
+                                setEditValue(ev => ({ ...ev, usedSpares: updated }));
+                              }}
+                              placeholder="الكمية"
+                              max={spares.find(sp => sp._id === row.id)?.quantity || ""}
+                            />
+                            <input
+                              type="number"
+                              min={0}
+                              style={{ width: 80, fontSize: 15 }}
+                              value={row.price}
+                              onChange={e => {
+                                const updated = [...editValue.usedSpares!];
+                                updated[idx].price = parseFloat(e.target.value) || 0;
+                                setEditValue(ev => ({ ...ev, usedSpares: updated }));
+                              }}
+                              placeholder="سعر القطعة"
+                            />
+                            <span style={{ color: '#888', fontWeight: 'bold', fontSize: 16 }}>
+                              {row.price ? (row.price * row.qty) + ' ج' : ''}
+                            </span>
+                            <button type="button" style={{ background: '#e34a4a', color: '#fff', border: 'none', borderRadius: 7, padding: '7px 18px', fontWeight: 700, marginRight: 0, marginTop: 5, cursor: 'pointer', fontSize: 15 }} onClick={() => {
+                              setEditValue(ev => ({ ...ev, usedSpares: ev.usedSpares?.filter((_, i) => i !== idx) }));
+                            }}>حذف</button>
+                          </div>
+                        ))}
+                        <button type="button" onClick={() => {
+                          setEditValue(ev => ({ ...ev, usedSpares: [...(ev.usedSpares || []), { id: "", name: "", price: 0, qty: 1, category: "" }] }));
+                        }} style={{ background: '#286090', color: '#fff', padding: '10px 0', fontWeight: 'bold', borderRadius: 7, marginTop: 5, border: 'none', fontFamily: 'inherit', fontSize: 16, cursor: 'pointer', width: '100%' }}>+ إضافة قطعة جديدة</button>
+                        <div style={{ fontWeight: 600, margin: '14px 0 0', fontSize: 16 }}>
+                          الإجمالي:&nbsp;
+                          <span style={{ fontWeight: 'bold', color: '#286090', background: '#f0f4ff', borderRadius: 6, padding: '4px 16px' }}>{Array.isArray(editValue.usedSpares) ? editValue.usedSpares.reduce((sum: number, row: any) => sum + (row.price * row.qty), 0) : 0}</span> جنيه
+                        </div>
+                      </div>
                     </td>
                     <td><input value={editValue.total || ""} onChange={e => onEditChange("total", e.target.value)} style={{ width: 60 }} /></td>
                     <td>
