@@ -215,6 +215,7 @@ export default function RequestsPage() {
               <th>المشكلة</th>
               <th>الملاحظات</th>
               <th>الصيانة (جنيه)</th>
+              <th>سعر المشتريات</th>
               <th>قطعة الغيار</th>
               <th>سعر القطعة</th>
               <th>الإجمالي</th>
@@ -238,6 +239,7 @@ export default function RequestsPage() {
                     <td><input value={editValue.problem || ""} onChange={e => onEditChange("problem", e.target.value)} style={{ width: 80 }} /></td>
                     <td><input value={editValue.notes || ""} onChange={e => onEditChange("notes", e.target.value)} style={{ width: 70 }} /></td>
                     <td><input value={editValue.repairCost || ""} onChange={e => onEditChange("repairCost", e.target.value)} style={{ width: 50 }} /></td>
+                    <td><input value={editValue.purchasesCost || ""} onChange={e => onEditChange("purchasesCost", e.target.value)} style={{ width: 50 }} placeholder="سعر المشتريات" /></td>
                     <td><input value={editValue.purchasesCost || ""} onChange={e => onEditChange("purchasesCost", e.target.value)} style={{ width: 50 }} placeholder="سعر المشتريات" /></td>
                     <td colSpan={2}>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
@@ -364,6 +366,7 @@ export default function RequestsPage() {
                     <td data-label="المشكلة">{r.problem}</td>
                     <td data-label="الملاحظات">{r.notes || "-"}</td>
                     <td data-label="تكلفة الصيانة">{r.repairCost || "-"}</td>
+                    <td data-label="سعر المشتريات">{r.purchasesCost || "-"}</td>
                     <td data-label="سعر المشتريات">{r.purchasesCost || "-"}</td>
                     <td data-label="قطعة الغيار">{
                       Array.isArray((r as any).usedSpares) && (r as any).usedSpares.length
