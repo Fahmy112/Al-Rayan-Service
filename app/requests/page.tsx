@@ -367,7 +367,6 @@ export default function RequestsPage() {
                     <td data-label="الملاحظات">{r.notes || "-"}</td>
                     <td data-label="تكلفة الصيانة">{r.repairCost || "-"}</td>
                     <td data-label="سعر المشتريات">{r.purchasesCost || "-"}</td>
-                    <td data-label="سعر المشتريات">{r.purchasesCost || "-"}</td>
                     <td data-label="قطعة الغيار">{
                       Array.isArray((r as any).usedSpares) && (r as any).usedSpares.length
                         ? (r as any).usedSpares.map((x: any) => `${x.id === "custom" ? x.name : x.name}${x.qty > 1 ? `×${x.qty}` : ''}`).join(', ')
