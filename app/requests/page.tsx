@@ -274,7 +274,7 @@ export default function RequestsPage() {
                             {row.id === "custom" && (
                               <input
                                 type="text"
-                                style={{ width: 120, fontSize: 15 }}
+                                style={{ width: 120, fontSize: 15, zIndex: 9999, pointerEvents: "auto" }}
                                 value={row.name}
                                 onChange={e => {
                                   const updated = [...editValue.usedSpares!];
