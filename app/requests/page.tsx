@@ -150,7 +150,9 @@ export default function RequestsPage() {
       if (res.ok) {
         setEditSuccess("تم حفظ التعديلات بنجاح!");
         setEdit(null);
-        fetchRequests();
+        setShowEditModal(false);
+        // تحديث الطلب المعدل في القائمة مباشرة
+        setRequests(reqs => reqs.map(r => r._id === edit.id ? { ...r, ...editValue } : r));
       } else {
         setEditSuccess("حدث خطأ أثناء الحفظ!");
       }
