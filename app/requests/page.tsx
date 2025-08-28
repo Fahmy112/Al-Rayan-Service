@@ -36,6 +36,7 @@ type Request = {
 type EditState = null | { id: string; values: Partial<Request> };
 
 export default function RequestsPage() {
+  const [showEditModal, setShowEditModal] = useState(false);
   const [requests, setRequests] = useState<Request[]>([]);
   const [loading, setLoading] = useState(true);
   const [query, setQuery] = useState("");
