@@ -252,6 +252,11 @@ export default function RequestsPage() {
         <div style={{display:'flex',flexWrap:'wrap',gap:'18px',justifyContent:'center'}}>
           {filtered.map((r, i) => (
             <div key={r._id} className={styles['request-card']} style={r.paymentStatus === "لم يتم" ? { border: '2px solid #e34a4a', background: '#fff3f2' } : {}}>
+              {r.paymentStatus === "لم يتم" && (
+                <div className={styles['request-row']} style={{borderBottom:'1px solid #e0e6f2',paddingBottom:6,marginBottom:6,color:'#e34a4a',fontWeight:'bold'}}>
+                  المبلغ المتبقي: {r.remainingAmount || "-"} جنيه
+                </div>
+              )}
               <div className={styles['request-title']} style={{fontSize:22,fontWeight:'bold',color:'#286090',marginBottom:8}}>{r.customerName}</div>
               <div className={styles['request-row']} style={{borderBottom:'1px solid #e0e6f2',paddingBottom:6,marginBottom:6}}>📞 {r.phone}</div>
               <div className={styles['request-row']} style={{borderBottom:'1px solid #e0e6f2',paddingBottom:6,marginBottom:6}}>🚗 {r.carType || "-"} | {r.carModel || "-"} | {r.carNumber || "-"}</div>
@@ -323,11 +328,6 @@ export default function RequestsPage() {
                 <label>مشتريات رخا:<input value={editValue.purchasesRkha || ""} onChange={e => onEditChange("purchasesRkha", e.target.value)} placeholder="سعر مشتريات رخا بالجنيه" /></label>
                 <label>مشتريات الفادي:<input value={editValue.purchasesFady || ""} onChange={e => onEditChange("purchasesFady", e.target.value)} placeholder="سعر مشتريات الفادي بالجنيه" /></label>
                 <label>المبلغ المتبقي:<input value={editValue.remainingAmount || ""} onChange={e => onEditChange("remainingAmount", e.target.value)} placeholder="المبلغ المتبقي بالجنيه" /></label>
-              {r.paymentStatus === "لم يتم" && (
-                <div className={styles['request-row']} style={{borderBottom:'1px solid #e0e6f2',paddingBottom:6,marginBottom:6,color:'#e34a4a',fontWeight:'bold'}}>
-                  المبلغ المتبقي: {r.remainingAmount || "-"} جنيه
-                </div>
-              )}
               <div style={{margin:'10px 0',padding:'10px',background:'#f8f9fd',borderRadius:8}}>
                 <div style={{fontWeight:'bold',marginBottom:7}}>قطع الغيار:</div>
                 {Array.isArray(editValue.usedSpares) && editValue.usedSpares.map((row, idx) => (
