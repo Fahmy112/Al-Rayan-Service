@@ -24,6 +24,8 @@ export async function POST(req: NextRequest) {
     notes: body.notes || '',
     repairCost: body.repairCost || '',
     purchasesCost: body.purchasesCost || '',
+    purchasesRkha: body.purchasesRkha || '',
+    purchasesFady: body.purchasesFady || '',
     usedSpares: Array.isArray(body.usedSpares) ? body.usedSpares : [],
     total: body.total || '',
     status: 'جديد',
