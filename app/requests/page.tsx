@@ -44,6 +44,7 @@ export default function RequestsPage() {
   const [query, setQuery] = useState("");
   const [dateFilter, setDateFilter] = useState<string>("");
   const [monthFilter, setMonthFilter] = useState<string>("");
+  const [paymentFilter, setPaymentFilter] = useState<string>("");
   const [edit, setEdit] = useState<EditState>(null);
   const [editValue, setEditValue] = useState<Partial<Request>>({});
   const [editLoading, setEditLoading] = useState(false);
@@ -80,7 +81,7 @@ export default function RequestsPage() {
 
   function filterRequests() {
     let filtered = [...requests];
-    if (query.trim()) {
+  if (query.trim()) {
       const q = query.trim().toLowerCase();
       filtered = filtered.filter(r =>
         r.customerName?.toLowerCase().includes(q) ||
@@ -103,7 +104,10 @@ export default function RequestsPage() {
           d.getDate() === selectedTs.getDate();
       });
     }
-    if (monthFilter) {
+  if (monthFilter) {
+    if (paymentFilter) {
+      filtered = filtered.filter(r => r.paymentStatus === paymentFilter);
+    }
       const [yy, mm] = monthFilter.split("-").map(Number);
       filtered = filtered.filter(r => {
         const d = new Date(r.createdAt);
@@ -233,45 +237,54 @@ export default function RequestsPage() {
           <label style={{ fontWeight: 'bold', marginLeft: 8 }}>الشهر:</label>
           <input type="month" value={monthFilter} onChange={e => setMonthFilter(e.target.value)} />
         </div>
+        <div>
+          <label style={{ fontWeight: 'bold', marginLeft: 8 }}>طريقة الدفع:</label>
+          <select value={paymentFilter} onChange={e => setPaymentFilter(e.target.value)} style={{padding:'4px 10px',borderRadius:6,border:'1px solid #bbc6d3',fontSize:15}}>
+            <option value="">الكل</option>
+            <option value="نقدي">نقدي</option>
+            <option value="تحويل">تحويل</option>
+            <option value="لم يتم">لم يتم</option>
+          </select>
+        </div>
       </div>
       {loading ? <div>...يتم التحميل</div> : (
         <div style={{display:'flex',flexWrap:'wrap',gap:'18px',justifyContent:'center'}}>
           {filtered.map((r, i) => (
-            <div key={r._id} className={styles['request-card']}>
-              <div className={styles['request-title']}>{r.customerName}</div>
-              <div className={styles['request-row']}>📞 {r.phone}</div>
-              <div className={styles['request-row']}>🚗 {r.carType || "-"} | {r.carModel || "-"} | {r.carNumber || "-"}</div>
-              <div className={styles['request-row']}>الكيلومتر: {r.kilometers || "-"}</div>
-              <div className={styles['request-row']}>المشكلة: {r.problem}</div>
-              <div className={styles['request-row']}>ملاحظات: {r.notes || "-"}</div>
-              <div className={styles['request-row']}>الصيانة: {r.repairCost || "-"} جنيه</div>
-              <div className={styles['request-row']}>
+            <div key={r._id} className={styles['request-card']} style={r.paymentStatus === "لم يتم" ? { border: '2px solid #e34a4a', background: '#fff3f2' } : {}}>
+              <div className={styles['request-title']} style={{fontSize:22,fontWeight:'bold',color:'#286090',marginBottom:8}}>{r.customerName}</div>
+              <div className={styles['request-row']} style={{borderBottom:'1px solid #e0e6f2',paddingBottom:6,marginBottom:6}}>📞 {r.phone}</div>
+              <div className={styles['request-row']} style={{borderBottom:'1px solid #e0e6f2',paddingBottom:6,marginBottom:6}}>🚗 {r.carType || "-"} | {r.carModel || "-"} | {r.carNumber || "-"}</div>
+              <div className={styles['request-row']} style={{borderBottom:'1px solid #e0e6f2',paddingBottom:6,marginBottom:6}}>الكيلومتر: {r.kilometers || "-"}</div>
+              <div className={styles['request-row']} style={{borderBottom:'1px solid #e0e6f2',paddingBottom:6,marginBottom:6}}>المشكلة: {r.problem}</div>
+              <div className={styles['request-row']} style={{borderBottom:'1px solid #e0e6f2',paddingBottom:6,marginBottom:6}}>ملاحظات: {r.notes || "-"}</div>
+              <div className={styles['request-row']} style={{borderBottom:'1px solid #e0e6f2',paddingBottom:6,marginBottom:6}}>الصيانة: {r.repairCost || "-"} جنيه</div>
+              <div className={styles['request-row']} style={{borderBottom:'1px solid #e0e6f2',paddingBottom:6,marginBottom:6}}>
                 سعر المشتريات:
                 رخا: {r.purchasesRkha !== undefined && r.purchasesRkha !== "" ? r.purchasesRkha : (r.purchasesCost || 0)}ج
                 | الفادي: {r.purchasesFady !== undefined && r.purchasesFady !== "" ? r.purchasesFady : 0}ج
               </div>
-              <div className={styles['request-row']}>
+              <div className={styles['request-row']} style={{borderBottom:'1px solid #e0e6f2',paddingBottom:6,marginBottom:6}}>
                 قطع الغيار:
                 {Array.isArray(r.usedSpares) && r.usedSpares.length > 0
                   ? r.usedSpares.map((x: any) => `${x.id === "custom" ? x.name : x.name}${x.qty > 1 ? `×${x.qty}` : ''}` ).join(', ')
                   : r.sparePartName || "-"}
-                </div>
-                <div className={styles['request-row']}>
-                  سعر القطع: {
-                    Array.isArray(r.usedSpares) && r.usedSpares.length > 0
-                      ? r.usedSpares.reduce((sum, x) => sum + ((Number(x.price) || 0) * (Number(x.qty) || 1)), 0)
-                      : 0
-                  } ج
               </div>
-              <div className={styles['request-row']}>الإجمالي: <span className={styles.total}>{r.total || "-"}</span></div>
-              <div className={styles['request-row']}>
+              <div className={styles['request-row']} style={{borderBottom:'1px solid #e0e6f2',paddingBottom:6,marginBottom:6}}>
+                سعر القطع: {
+                  Array.isArray(r.usedSpares) && r.usedSpares.length > 0
+                    ? r.usedSpares.reduce((sum, x) => sum + ((Number(x.price) || 0) * (Number(x.qty) || 1)), 0)
+                    : 0
+                } ج
+              </div>
+              <div className={styles['request-row']} style={{borderBottom:'1px solid #e0e6f2',paddingBottom:6,marginBottom:6}}>الإجمالي: <span className={styles.total}>{r.total || "-"}</span></div>
+              <div className={styles['request-row']} style={{borderBottom:'1px solid #e0e6f2',paddingBottom:6,marginBottom:6}}>
                 الدفع: 
                 {r.paymentStatus === "نقدي" && <span title="نقدي" style={{marginLeft:4}}>💵</span>}
                 {r.paymentStatus === "تحويل" && <span title="تحويل" style={{marginLeft:4}}>💳</span>}
                 {r.paymentStatus === "لم يتم" && <span title="لم يتم" style={{marginLeft:4}}>⏳</span>}
                 <span style={{marginRight:4}}>{r.paymentStatus || "-"}</span>
               </div>
-              <div className={styles['request-row']}>الحالة:
+              <div className={styles['request-row']} style={{borderBottom:'1px solid #e0e6f2',paddingBottom:6,marginBottom:6}}>الحالة:
                 <select value={r.status} onChange={e => updateStatus(i, e.target.value)} className={styles["status-select"]}>
                   {statuses.map(st => <option key={st}>{st}</option>)}
                 </select>
