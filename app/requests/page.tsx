@@ -207,25 +207,25 @@ export default function RequestsPage() {
       {loading ? <div>...يتم التحميل</div> : (
         <div style={{display:'flex',flexWrap:'wrap',gap:'18px',justifyContent:'center'}}>
           {filtered.map((r, i) => (
-            <div key={r._id} style={{background:'#f7fafd',borderRadius:12,boxShadow:'0 2px 8px #e9eefa33',padding:'18px 14px',minWidth:280,maxWidth:370,flex:'1 1 320px',position:'relative'}}>
-              <div style={{fontWeight:'bold',color:'#286090',fontSize:18,marginBottom:7}}>{r.customerName}</div>
-              <div style={{marginBottom:4}}>📞 {r.phone}</div>
-              <div style={{marginBottom:4}}>🚗 {r.carType || "-"} | {r.carModel || "-"} | {r.carNumber || "-"}</div>
-              <div style={{marginBottom:4}}>الكيلومتر: {r.kilometers || "-"}</div>
-              <div style={{marginBottom:4}}>المشكلة: {r.problem}</div>
-              <div style={{marginBottom:4}}>ملاحظات: {r.notes || "-"}</div>
-              <div style={{marginBottom:4}}>الصيانة: {r.repairCost || "-"} جنيه</div>
-              <div style={{marginBottom:4}}>سعر المشتريات: {r.purchasesCost || "-"} جنيه</div>
-              <div style={{marginBottom:4}}>قطع الغيار: {Array.isArray(r.usedSpares) && r.usedSpares.length > 0 ? r.usedSpares.map((x: any) => `${x.id === "custom" ? x.name : x.name}${x.qty > 1 ? `×${x.qty}` : ''}`).join(', ') : r.sparePartName || "-"}</div>
-              <div style={{marginBottom:4}}>سعر القطعة: {r.sparePartPrice || "-"}</div>
-              <div style={{marginBottom:4}}>الإجمالي: <span className={styles.total}>{r.total || "-"}</span></div>
-              <div style={{marginBottom:4}}>الدفع: {r.paymentStatus || "-"}</div>
-              <div style={{marginBottom:4}}>الحالة:
+            <div key={r._id} className={styles['request-card']}>
+              <div className={styles['request-title']}>{r.customerName}</div>
+              <div className={styles['request-row']}>📞 {r.phone}</div>
+              <div className={styles['request-row']}>🚗 {r.carType || "-"} | {r.carModel || "-"} | {r.carNumber || "-"}</div>
+              <div className={styles['request-row']}>الكيلومتر: {r.kilometers || "-"}</div>
+              <div className={styles['request-row']}>المشكلة: {r.problem}</div>
+              <div className={styles['request-row']}>ملاحظات: {r.notes || "-"}</div>
+              <div className={styles['request-row']}>الصيانة: {r.repairCost || "-"} جنيه</div>
+              <div className={styles['request-row']}>سعر المشتريات: {r.purchasesCost || "-"} جنيه</div>
+              <div className={styles['request-row']}>قطع الغيار: {Array.isArray(r.usedSpares) && r.usedSpares.length > 0 ? r.usedSpares.map((x: any) => `${x.id === "custom" ? x.name : x.name}${x.qty > 1 ? `×${x.qty}` : ''}`).join(', ') : r.sparePartName || "-"}</div>
+              <div className={styles['request-row']}>سعر القطعة: {r.sparePartPrice || "-"}</div>
+              <div className={styles['request-row']}>الإجمالي: <span className={styles.total}>{r.total || "-"}</span></div>
+              <div className={styles['request-row']}>الدفع: {r.paymentStatus || "-"}</div>
+              <div className={styles['request-row']}>الحالة:
                 <select value={r.status} onChange={e => updateStatus(i, e.target.value)} className={styles["status-select"]}>
                   {statuses.map(st => <option key={st}>{st}</option>)}
                 </select>
               </div>
-              <div style={{display:'flex',gap:8,marginTop:10}}>
+              <div className={styles['request-actions']}>
                 <button className={styles["action-btn"]} onClick={() => deleteRequest(i)}>حذف</button>
                 <button className={styles["note-btn"]} style={{ background: '#286090' }} onClick={() => startEdit(r)}>تعديل</button>
               </div>

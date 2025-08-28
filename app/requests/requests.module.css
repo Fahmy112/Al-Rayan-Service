@@ -1,3 +1,34 @@
+/* كارت الطلبات لجميع الشاشات */
+.request-card {
+  background: #f7fafd;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px #e9eefa33;
+  padding: 18px 14px;
+  min-width: 280px;
+  max-width: 370px;
+  flex: 1 1 320px;
+  position: relative;
+  margin-bottom: 18px;
+  transition: box-shadow .2s;
+}
+.request-card:hover {
+  box-shadow: 0 4px 16px #bbc6dd44;
+}
+.request-card .request-title {
+  font-weight: bold;
+  color: #286090;
+  font-size: 18px;
+  margin-bottom: 7px;
+}
+.request-card .request-row {
+  margin-bottom: 4px;
+  font-size: 15px;
+}
+.request-card .request-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
 /* تحسين واجهة الطلبات */
 .wrapper {
   direction: rtl;
