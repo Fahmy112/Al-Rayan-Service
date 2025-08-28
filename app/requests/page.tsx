@@ -270,17 +270,17 @@ export default function RequestsPage() {
             <button onClick={cancelEdit} style={{position:'absolute',top:10,right:10,fontSize:22,fontWeight:'bold',background:'none',border:'none',color:'#e34a4a',cursor:'pointer'}}>×</button>
             <h2 style={{color:'#286090',marginBottom:18}}>تعديل الطلب</h2>
             <div style={{display:'flex',flexDirection:'column',gap:10}}>
-              <label>اسم العميل:<input value={editValue.customerName || ""} onChange={e => onEditChange("customerName", e.target.value)} /></label>
-              <label>رقم الهاتف:<input value={editValue.phone || ""} onChange={e => onEditChange("phone", e.target.value)} /></label>
-              <label>نوع السيارة:<input value={editValue.carType || ""} onChange={e => onEditChange("carType", e.target.value)} /></label>
-              <label>موديل السيارة:<input value={editValue.carModel || ""} onChange={e => onEditChange("carModel", e.target.value)} /></label>
-              <label>نمرة السيارة:<input value={editValue.carNumber || ""} onChange={e => onEditChange("carNumber", e.target.value)} /></label>
-              <label>الكيلومتر:<input value={editValue.kilometers || ""} onChange={e => onEditChange("kilometers", e.target.value)} /></label>
-              <label>المشكلة:<input value={editValue.problem || ""} onChange={e => onEditChange("problem", e.target.value)} /></label>
-              <label>ملاحظات:<input value={editValue.notes || ""} onChange={e => onEditChange("notes", e.target.value)} /></label>
-              <label>تكلفة الصيانة:<input value={editValue.repairCost || ""} onChange={e => onEditChange("repairCost", e.target.value)} /></label>
-              <label>سعر المشتريات:<input value={editValue.purchasesCost || ""} onChange={e => onEditChange("purchasesCost", e.target.value)} /></label>
-              <label>الإجمالي:<input value={editValue.total || ""} onChange={e => onEditChange("total", e.target.value)} /></label>
+              <label>اسم العميل:<input value={editValue.customerName || ""} onChange={e => onEditChange("customerName", e.target.value)} placeholder="ادخل اسم العميل" /></label>
+              <label>رقم الهاتف:<input value={editValue.phone || ""} onChange={e => onEditChange("phone", e.target.value)} placeholder="ادخل رقم الهاتف" /></label>
+              <label>نوع السيارة:<input value={editValue.carType || ""} onChange={e => onEditChange("carType", e.target.value)} placeholder="ادخل نوع السيارة" /></label>
+              <label>موديل السيارة:<input value={editValue.carModel || ""} onChange={e => onEditChange("carModel", e.target.value)} placeholder="ادخل موديل السيارة" /></label>
+              <label>نمرة السيارة:<input value={editValue.carNumber || ""} onChange={e => onEditChange("carNumber", e.target.value)} placeholder="ادخل نمرة السيارة" /></label>
+              <label>الكيلومتر:<input value={editValue.kilometers || ""} onChange={e => onEditChange("kilometers", e.target.value)} placeholder="ادخل الكيلومتر" /></label>
+              <label>المشكلة:<input value={editValue.problem || ""} onChange={e => onEditChange("problem", e.target.value)} placeholder="وصف المشكلة" /></label>
+              <label>ملاحظات:<input value={editValue.notes || ""} onChange={e => onEditChange("notes", e.target.value)} placeholder="ملاحظات إضافية" /></label>
+              <label>تكلفة الصيانة:<input value={editValue.repairCost || ""} onChange={e => onEditChange("repairCost", e.target.value)} placeholder="تكلفة الصيانة بالجنيه" /></label>
+              <label>سعر المشتريات:<input value={editValue.purchasesCost || ""} onChange={e => onEditChange("purchasesCost", e.target.value)} placeholder="سعر المشتريات بالجنيه" /></label>
+              <label>الإجمالي:<input value={editValue.total || ""} onChange={e => onEditChange("total", e.target.value)} placeholder="الإجمالي بالجنيه" /></label>
               <label>الحالة:
                 <select value={editValue.status || "جديد"} onChange={e => onEditChange("status", e.target.value)}>
                   {statuses.map(st => <option key={st}>{st}</option>)}
