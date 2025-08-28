@@ -205,64 +205,36 @@ export default function RequestsPage() {
         </div>
       </div>
       {loading ? <div>...يتم التحميل</div> : (
-        <table className={styles.table}>
-          <thead>
-            <tr>
-              <th>اسم العميل</th>
-              <th>رقم الهاتف</th>
-              <th>نوع السيارة</th>
-              <th>موديل</th>
-              <th>نمرة السيارة</th>
-              <th>الكيلومتر</th>
-              <th>المشكلة</th>
-              <th>الملاحظات</th>
-              <th>الصيانة (جنيه)</th>
-              <th>سعر المشتريات</th>
-              <th>قطعة الغيار</th>
-              <th>سعر القطعة</th>
-              <th>الإجمالي</th>
-              <th>الدفع</th>
-              <th>الحالة</th>
-              <th>إجراءات</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filtered.map((r, i) => (
-              <tr key={r._id}>
-                <td data-label="اسم العميل">{r.customerName}</td>
-                <td data-label="رقم الهاتف">{r.phone}</td>
-                <td data-label="نوع السيارة">{r.carType || "-"}</td>
-                <td data-label="موديل السيارة">{r.carModel || "-"}</td>
-                <td data-label="نمرة السيارة">{r.carNumber || "-"}</td>
-                <td data-label="الكيلومتر">{r.kilometers || "-"}</td>
-                <td data-label="المشكلة">{r.problem}</td>
-                <td data-label="الملاحظات">{r.notes || "-"}</td>
-                <td data-label="الصيانة">{r.repairCost || "-"}</td>
-                <td data-label="سعر المشتريات">{r.purchasesCost || "-"}</td>
-                <td data-label="قطعة الغيار">{
-                  Array.isArray(r.usedSpares) && r.usedSpares.length > 0
-                    ? r.usedSpares.map((x: any) => `${x.id === "custom" ? x.name : x.name}${x.qty > 1 ? `×${x.qty}` : ''}`).join(', ')
-                    : r.sparePartName || "-"
-                }</td>
-                <td data-label="سعر القطعة">{r.sparePartPrice || "-"}</td>
-                <td data-label="الإجمالي"><span className={styles.total}>{r.total || "-"}</span></td>
-                <td data-label="الدفع">{r.paymentStatus || "-"}</td>
-                <td data-label="الحالة">
-                  <select value={r.status} onChange={e => updateStatus(i, e.target.value)} className={styles["status-select"]}>
-                    {statuses.map(st => <option key={st}>{st}</option>)}
-                  </select>
-                </td>
-                <td data-label="إجراءات">
-                  <button className={styles["action-btn"]} onClick={() => deleteRequest(i)}>حذف</button>
-                  <button className={styles["note-btn"]} style={{ background: '#286090' }} onClick={() => startEdit(r)}>تعديل</button>
-                </td>
-              </tr>
-            ))}
-            {filtered.length === 0 && !loading && (
-              <tr><td colSpan={16} style={{ textAlign: 'center', padding: 22 }}>لا يوجد نتائج مطابقة</td></tr>
-            )}
-          </tbody>
-        </table>
+        <div style={{display:'flex',flexWrap:'wrap',gap:'18px',justifyContent:'center'}}>
+          {filtered.map((r, i) => (
+            <div key={r._id} style={{background:'#f7fafd',borderRadius:12,boxShadow:'0 2px 8px #e9eefa33',padding:'18px 14px',minWidth:280,maxWidth:370,flex:'1 1 320px',position:'relative'}}>
+              <div style={{fontWeight:'bold',color:'#286090',fontSize:18,marginBottom:7}}>{r.customerName}</div>
+              <div style={{marginBottom:4}}>📞 {r.phone}</div>
+              <div style={{marginBottom:4}}>🚗 {r.carType || "-"} | {r.carModel || "-"} | {r.carNumber || "-"}</div>
+              <div style={{marginBottom:4}}>الكيلومتر: {r.kilometers || "-"}</div>
+              <div style={{marginBottom:4}}>المشكلة: {r.problem}</div>
+              <div style={{marginBottom:4}}>ملاحظات: {r.notes || "-"}</div>
+              <div style={{marginBottom:4}}>الصيانة: {r.repairCost || "-"} جنيه</div>
+              <div style={{marginBottom:4}}>سعر المشتريات: {r.purchasesCost || "-"} جنيه</div>
+              <div style={{marginBottom:4}}>قطع الغيار: {Array.isArray(r.usedSpares) && r.usedSpares.length > 0 ? r.usedSpares.map((x: any) => `${x.id === "custom" ? x.name : x.name}${x.qty > 1 ? `×${x.qty}` : ''}`).join(', ') : r.sparePartName || "-"}</div>
+              <div style={{marginBottom:4}}>سعر القطعة: {r.sparePartPrice || "-"}</div>
+              <div style={{marginBottom:4}}>الإجمالي: <span className={styles.total}>{r.total || "-"}</span></div>
+              <div style={{marginBottom:4}}>الدفع: {r.paymentStatus || "-"}</div>
+              <div style={{marginBottom:4}}>الحالة:
+                <select value={r.status} onChange={e => updateStatus(i, e.target.value)} className={styles["status-select"]}>
+                  {statuses.map(st => <option key={st}>{st}</option>)}
+                </select>
+              </div>
+              <div style={{display:'flex',gap:8,marginTop:10}}>
+                <button className={styles["action-btn"]} onClick={() => deleteRequest(i)}>حذف</button>
+                <button className={styles["note-btn"]} style={{ background: '#286090' }} onClick={() => startEdit(r)}>تعديل</button>
+              </div>
+            </div>
+          ))}
+          {filtered.length === 0 && !loading && (
+            <div style={{textAlign:'center',padding:22,width:'100%'}}>لا يوجد نتائج مطابقة</div>
+          )}
+        </div>
       )}
       {showEditModal && edit && (
         <div style={{position:'fixed',top:0,left:0,right:0,bottom:0,background:'#0008',zIndex:9999,display:'flex',alignItems:'center',justifyContent:'center'}}>
