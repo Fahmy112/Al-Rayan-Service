@@ -114,8 +114,15 @@ export default function RequestsPage() {
   }
 
   function startEdit(row: Request) {
-    setEdit({ id: row._id, values: row });
-    setEditValue({ ...row });
+    const editObj: Partial<Request> = { ...row };
+    if (row.purchasesRkha !== undefined && row.purchasesRkha !== "") {
+      editObj.purchasesRkha = row.purchasesRkha;
+    }
+    if (row.purchasesFady !== undefined && row.purchasesFady !== "") {
+      editObj.purchasesFady = row.purchasesFady;
+    }
+    setEdit({ id: row._id, values: editObj });
+    setEditValue(editObj);
     setShowEditModal(true);
   }
 
