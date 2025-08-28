@@ -232,7 +232,13 @@ export default function RequestsPage() {
               <div className={styles['request-row']}>قطع الغيار: {Array.isArray(r.usedSpares) && r.usedSpares.length > 0 ? r.usedSpares.map((x: any) => `${x.id === "custom" ? x.name : x.name}${x.qty > 1 ? `×${x.qty}` : ''}`).join(', ') : r.sparePartName || "-"}</div>
               <div className={styles['request-row']}>سعر القطعة: {r.sparePartPrice || "-"}</div>
               <div className={styles['request-row']}>الإجمالي: <span className={styles.total}>{r.total || "-"}</span></div>
-              <div className={styles['request-row']}>الدفع: {r.paymentStatus || "-"}</div>
+              <div className={styles['request-row']}>
+                الدفع: 
+                {r.paymentStatus === "نقدي" && <span title="نقدي" style={{marginLeft:4}}>💵</span>}
+                {r.paymentStatus === "تحويل" && <span title="تحويل" style={{marginLeft:4}}>💳</span>}
+                {r.paymentStatus === "لم يتم" && <span title="لم يتم" style={{marginLeft:4}}>⏳</span>}
+                <span style={{marginRight:4}}>{r.paymentStatus || "-"}</span>
+              </div>
               <div className={styles['request-row']}>الحالة:
                 <select value={r.status} onChange={e => updateStatus(i, e.target.value)} className={styles["status-select"]}>
                   {statuses.map(st => <option key={st}>{st}</option>)}
@@ -251,10 +257,10 @@ export default function RequestsPage() {
       )}
       {showEditModal && edit && (
         <div style={{position:'fixed',top:0,left:0,right:0,bottom:0,background:'#0008',zIndex:9999,display:'flex',alignItems:'center',justifyContent:'center'}}>
-          <div style={{background:'#fff',borderRadius:12,padding:24,minWidth:350,maxWidth:600,boxShadow:'0 2px 12px #bbc6dd44',position:'relative'}}>
-            <button onClick={cancelEdit} style={{position:'absolute',top:10,right:10,fontSize:22,fontWeight:'bold',background:'none',border:'none',color:'#e34a4a',cursor:'pointer'}}>×</button>
-            <h2 style={{color:'#286090',marginBottom:18}}>تعديل الطلب</h2>
-            <div style={{display:'flex',flexDirection:'column',gap:10}}>
+          <div style={{background:'#fff',borderRadius:12,padding:'12px 8px 8px 8px',minWidth:280,maxWidth:370,width:'100%',boxShadow:'0 2px 12px #bbc6dd44',position:'relative',maxHeight:'92vh',overflowY:'auto'}}>
+            <button onClick={cancelEdit} style={{position:'sticky',top:0,right:0,left:'unset',fontSize:22,fontWeight:'bold',background:'none',border:'none',color:'#e34a4a',cursor:'pointer',zIndex:10,marginLeft:'auto',display:'block'}}>×</button>
+            <h2 style={{color:'#286090',marginBottom:12,fontSize:18,textAlign:'center'}}>تعديل الطلب</h2>
+            <div style={{display:'flex',flexDirection:'column',gap:7}}>
               <label>اسم العميل:<input value={editValue.customerName || ""} onChange={e => onEditChange("customerName", e.target.value)} placeholder="ادخل اسم العميل" /></label>
               <label>رقم الهاتف:<input value={editValue.phone || ""} onChange={e => onEditChange("phone", e.target.value)} placeholder="ادخل رقم الهاتف" /></label>
               <label>نوع السيارة:<input value={editValue.carType || ""} onChange={e => onEditChange("carType", e.target.value)} placeholder="ادخل نوع السيارة" /></label>
@@ -338,7 +344,10 @@ export default function RequestsPage() {
                 </select>
               </label>
             </div>
-            <button onClick={handleEditSave} disabled={editLoading} style={{background:'#27853d',color:'#fff',fontWeight:'bold',padding:'10px 22px',borderRadius:8,marginTop:18,fontSize:17,border:'none',cursor:'pointer'}}>{editLoading ? "...يتم الحفظ" : "حفظ التعديلات"}</button>
+            <div style={{display:'flex',gap:8,marginTop:13,justifyContent:'center'}}>
+              <button onClick={cancelEdit} disabled={editLoading} style={{background:'#888',color:'#fff',fontWeight:'bold',padding:'7px 16px',borderRadius:8,fontSize:15,border:'none',cursor:'pointer'}}>إلغاء</button>
+              <button onClick={handleEditSave} disabled={editLoading} style={{background:'#27853d',color:'#fff',fontWeight:'bold',padding:'7px 16px',borderRadius:8,fontSize:15,border:'none',cursor:'pointer'}}>{editLoading ? "...يتم الحفظ" : "حفظ التعديلات"}</button>
+            </div>
           </div>
         </div>
       )}
