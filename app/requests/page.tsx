@@ -127,12 +127,18 @@ export default function RequestsPage() {
       const updated = { ...ev, [field]: value };
       // حساب الإجمالي تلقائياً
       let total = 0;
+      let hasValue = false;
       if (Array.isArray(updated.usedSpares)) {
-        total += updated.usedSpares.reduce((sum, row) => sum + ((Number(row.price) || 0) * (Number(row.qty) || 1)), 0);
+        const sparesTotal = updated.usedSpares.reduce((sum, row) => sum + ((Number(row.price) || 0) * (Number(row.qty) || 1)), 0);
+        total += sparesTotal;
+        if (sparesTotal > 0) hasValue = true;
       }
-      total += Number(updated.repairCost) || 0;
-      total += Number(updated.purchasesCost) || 0;
-      updated.total = total ? String(total) : '';
+      const repair = Number(updated.repairCost) || 0;
+      const purchases = Number(updated.purchasesCost) || 0;
+      total += repair;
+      total += purchases;
+      if (repair > 0 || purchases > 0) hasValue = true;
+      updated.total = hasValue ? String(total) : '';
       return updated;
     });
   }
