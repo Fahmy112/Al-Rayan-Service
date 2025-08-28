@@ -157,7 +157,11 @@ export default function AddRequest() {
     setSuccess(true);
   setCustomerName(""); setPhone(""); setCarType(""); setCarModel(""); setCarNumber(""); setKilometers(""); setProblem("");
   setNotes(""); setRepairCost(""); setPurchasesCost(""); setPurchasesRkha(""); setPurchasesFady(""); setUsedSpares([]);
-    setTimeout(() => { setSuccess(false); router.push("/"); }, 1200);
+    setTimeout(() => {
+      setSuccess(false);
+      // إعادة تحميل الصفحة الرئيسية لضمان جلب الطلبات الجديدة
+      window.location.href = "/";
+    }, 1200);
   }
 
   return (
@@ -269,9 +273,6 @@ export default function AddRequest() {
         </div>
         <label style={lbl}>تكلفة الصيانة:
           <input type="number" min={0} value={repairCost} onChange={e => setRepairCost(e.target.value)} style={{ ...inputStyle, width: '100%', fontSize: 15 }} placeholder="اختياري" />
-        </label>
-        <label style={lbl}>سعر المشتريات:
-          <input type="number" min={0} value={purchasesCost} onChange={e => setPurchasesCost(e.target.value)} style={{ ...inputStyle, width: '100%', fontSize: 15 }} placeholder="اختياري (قديمة)" />
         </label>
         <label style={lbl}>مشتريات رخا:
           <input type="number" min={0} value={purchasesRkha} onChange={e => setPurchasesRkha(e.target.value)} style={{ ...inputStyle, width: '100%', fontSize: 15 }} placeholder="سعر مشتريات رخا بالجنيه" />
