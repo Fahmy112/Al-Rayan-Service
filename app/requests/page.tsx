@@ -240,14 +240,21 @@ export default function RequestsPage() {
               <div className={styles['request-row']}>الصيانة: {r.repairCost || "-"} جنيه</div>
               <div className={styles['request-row']}>
                 سعر المشتريات:
-                رخا: {r.purchasesRkha !== undefined ? r.purchasesRkha || 0 : (r.purchasesCost || 0)}ج
-                | الفادي: {r.purchasesFady !== undefined ? r.purchasesFady || 0 : 0}ج
+                رخا: {r.purchasesRkha !== undefined && r.purchasesRkha !== "" ? r.purchasesRkha : (r.purchasesCost || 0)}ج
+                | الفادي: {r.purchasesFady !== undefined && r.purchasesFady !== "" ? r.purchasesFady : 0}ج
               </div>
               <div className={styles['request-row']}>
                 قطع الغيار:
                 {Array.isArray(r.usedSpares) && r.usedSpares.length > 0
                   ? r.usedSpares.map((x: any) => `${x.id === "custom" ? x.name : x.name}${x.qty > 1 ? `×${x.qty}` : ''}` ).join(', ')
                   : r.sparePartName || "-"}
+                </div>
+                <div className={styles['request-row']}>
+                  سعر القطع: {
+                    Array.isArray(r.usedSpares) && r.usedSpares.length > 0
+                      ? r.usedSpares.reduce((sum, x) => sum + ((Number(x.price) || 0) * (Number(x.qty) || 1)), 0)
+                      : 0
+                  } ج
               </div>
               <div className={styles['request-row']}>الإجمالي: <span className={styles.total}>{r.total || "-"}</span></div>
               <div className={styles['request-row']}>
