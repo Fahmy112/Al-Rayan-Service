@@ -123,7 +123,18 @@ export default function RequestsPage() {
   }
 
   function onEditChange(field: keyof Request, value: any) {
-    setEditValue(ev => ({ ...ev, [field]: value }));
+    setEditValue(ev => {
+      const updated = { ...ev, [field]: value };
+      // حساب الإجمالي تلقائياً
+      let total = 0;
+      if (Array.isArray(updated.usedSpares)) {
+        total += updated.usedSpares.reduce((sum, row) => sum + ((Number(row.price) || 0) * (Number(row.qty) || 1)), 0);
+      }
+      total += Number(updated.repairCost) || 0;
+      total += Number(updated.purchasesCost) || 0;
+      updated.total = total ? String(total) : '';
+      return updated;
+    });
   }
   
   async function handleEditSave() {
@@ -252,7 +263,66 @@ export default function RequestsPage() {
               <label>ملاحظات:<input value={editValue.notes || ""} onChange={e => onEditChange("notes", e.target.value)} placeholder="ملاحظات إضافية" /></label>
               <label>تكلفة الصيانة:<input value={editValue.repairCost || ""} onChange={e => onEditChange("repairCost", e.target.value)} placeholder="تكلفة الصيانة بالجنيه" /></label>
               <label>سعر المشتريات:<input value={editValue.purchasesCost || ""} onChange={e => onEditChange("purchasesCost", e.target.value)} placeholder="سعر المشتريات بالجنيه" /></label>
-              <label>الإجمالي:<input value={editValue.total || ""} onChange={e => onEditChange("total", e.target.value)} placeholder="الإجمالي بالجنيه" /></label>
+              <div style={{margin:'10px 0',padding:'10px',background:'#f8f9fd',borderRadius:8}}>
+                <div style={{fontWeight:'bold',marginBottom:7}}>قطع الغيار:</div>
+                {Array.isArray(editValue.usedSpares) && editValue.usedSpares.map((row, idx) => (
+                  <div key={idx} style={{display:'flex',gap:7,marginBottom:7,alignItems:'center',flexWrap:'wrap'}}>
+                    <select value={row.category || ""} onChange={e => {
+                      const updated = [...(editValue.usedSpares || [])];
+                      updated[idx].category = e.target.value;
+                      updated[idx].id = "";
+                      updated[idx].name = "";
+                      updated[idx].price = 0;
+                      updated[idx].qty = 1;
+                      setEditValue(ev => ({ ...ev, usedSpares: updated }));
+                    }} style={{minWidth:120,fontSize:15}}>
+                      <option value="">اختر القسم...</option>
+                      {["زيت الماتور","زيت الفتيس","فلتر الهواء","قلب طلمبة البنزين","فلتر زيت","فلتر تكييف","فلتر زيت فتيس","ماء تبريد","بوجيهات","فلتر بنزين","حشو فلتر زيت","موبينة","مواسير و اخري"].map(cat => <option key={cat} value={cat}>{cat}</option>)}
+                    </select>
+                    <select value={row.id || ""} onChange={e => {
+                      const found = spares.find(sp => sp._id === e.target.value);
+                      const updated = [...(editValue.usedSpares || [])];
+                      if (found) {
+                        updated[idx] = { ...updated[idx], id: found._id, name: found.name, price: found.price };
+                      } else if (e.target.value === "custom") {
+                        updated[idx] = { ...updated[idx], id: "custom", name: row.name || "", price: 0 };
+                      } else {
+                        updated[idx] = { ...updated[idx], id: e.target.value, name: "", price: 0 };
+                      }
+                      setEditValue(ev => ({ ...ev, usedSpares: updated }));
+                    }} style={{minWidth:120,fontSize:15}} disabled={!row.category}>
+                      <option value="">اختر القطعة...</option>
+                      {spares.filter(sp => sp.category === row.category).map(sp => <option value={sp._id} key={sp._id} disabled={sp.quantity === 0}>{sp.name} (سعر: {sp.price}ج - متوفر: {sp.quantity})</option>)}
+                      <option value="custom">اسم مخصص (غير مسجل في المخزون)</option>
+                    </select>
+                    {row.id === "custom" && (
+                      <input type="text" style={{width:120,fontSize:15}} value={row.name} onChange={e => {
+                        const updated = [...(editValue.usedSpares || [])];
+                        updated[idx].name = e.target.value;
+                        setEditValue(ev => ({ ...ev, usedSpares: updated }));
+                      }} placeholder="اسم القطعة (خاص)" />
+                    )}
+                    <input type="number" min={1} style={{width:65,fontSize:15}} value={row.qty} onChange={e => {
+                      const updated = [...(editValue.usedSpares || [])];
+                      updated[idx].qty = Number(e.target.value);
+                      setEditValue(ev => ({ ...ev, usedSpares: updated }));
+                    }} placeholder="الكمية" max={row.id !== "custom" ? (spares.find(sp => sp._id === row.id)?.quantity || '') : ''} />
+                    <input type="number" min={0} style={{width:80,fontSize:15}} value={row.price} onChange={e => {
+                      const updated = [...(editValue.usedSpares || [])];
+                      updated[idx].price = Number(e.target.value);
+                      setEditValue(ev => ({ ...ev, usedSpares: updated }));
+                    }} placeholder="سعر القطعة" />
+                    <span style={{color:'#888',fontWeight:'bold',fontSize:16}}>{row.price ? (row.price * row.qty) + ' ج' : ''}</span>
+                    <button type="button" style={{background:'#e34a4a',color:'#fff',border:'none',borderRadius:7,padding:'7px 18px',fontWeight:700,marginRight:0,marginTop:5,cursor:'pointer',fontSize:15}} onClick={() => {
+                      setEditValue(ev => ({ ...ev, usedSpares: (ev.usedSpares || []).filter((_, i) => i !== idx) }));
+                    }}>حذف</button>
+                  </div>
+                ))}
+                <button type="button" onClick={() => {
+                  setEditValue(ev => ({ ...ev, usedSpares: [...(ev.usedSpares || []), { id: "", name: "", price: 0, qty: 1, category: "" }] }));
+                }} style={{background:'#286090',color:'#fff',padding:'10px 0',fontWeight:'bold',borderRadius:7,marginTop:5,border:'none',fontFamily:'inherit',fontSize:16,cursor:'pointer',width:'100%'}}>+ إضافة قطعة جديدة</button>
+              </div>
+              <label>الإجمالي:<input value={editValue.total || ""} readOnly placeholder="الإجمالي بالجنيه" /></label>
               <label>الحالة:
                 <select value={editValue.status || "جديد"} onChange={e => onEditChange("status", e.target.value)}>
                   {statuses.map(st => <option key={st}>{st}</option>)}
