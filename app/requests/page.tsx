@@ -24,6 +24,8 @@ type Request = {
   notes?: string;
   repairCost?: string;
   purchasesCost?: string;
+  purchasesRkha?: string;
+  purchasesFady?: string;
   sparePartName?: string;
   sparePartPrice?: string;
   total?: string;
@@ -134,12 +136,14 @@ export default function RequestsPage() {
         if (sparesTotal > 0) hasValue = true;
       }
       const repair = Number(updated.repairCost) || 0;
-      const purchases = Number(updated.purchasesCost) || 0;
-      total += repair;
-      total += purchases;
-      if (repair > 0 || purchases > 0) hasValue = true;
-      updated.total = hasValue ? String(total) : '';
-      return updated;
+  const purchasesRkha = Number(updated.purchasesRkha) || 0;
+  const purchasesFady = Number(updated.purchasesFady) || 0;
+  total += repair;
+  total += purchasesRkha;
+  total += purchasesFady;
+  if (repair > 0 || purchasesRkha > 0 || purchasesFady > 0) hasValue = true;
+  updated.total = hasValue ? String(total) : '';
+  return updated;
     });
   }
   
@@ -249,6 +253,7 @@ export default function RequestsPage() {
                 <select value={r.status} onChange={e => updateStatus(i, e.target.value)} className={styles["status-select"]}>
                   {statuses.map(st => <option key={st}>{st}</option>)}
                 </select>
+                {r.paymentStatus === "لم يتم" && <span style={{color:'#e34a4a',fontWeight:'bold',marginRight:7}}>لم يتم الدفع</span>}
               </div>
               <div className={styles['request-actions']}>
                 <button className={styles["action-btn"]} onClick={() => deleteRequest(i)}>حذف</button>
@@ -276,7 +281,11 @@ export default function RequestsPage() {
               <label>المشكلة:<input value={editValue.problem || ""} onChange={e => onEditChange("problem", e.target.value)} placeholder="وصف المشكلة" /></label>
               <label>ملاحظات:<input value={editValue.notes || ""} onChange={e => onEditChange("notes", e.target.value)} placeholder="ملاحظات إضافية" /></label>
               <label>تكلفة الصيانة:<input value={editValue.repairCost || ""} onChange={e => onEditChange("repairCost", e.target.value)} placeholder="تكلفة الصيانة بالجنيه" /></label>
-              <label>سعر المشتريات:<input value={editValue.purchasesCost || ""} onChange={e => onEditChange("purchasesCost", e.target.value)} placeholder="سعر المشتريات بالجنيه" /></label>
+                <label>المشكلة:<textarea value={editValue.problem || ""} onChange={e => onEditChange("problem", e.target.value)} placeholder="وصف المشكلة" style={{minHeight:60,width:'100%',resize:'vertical',fontSize:15}} /></label>
+                <label>ملاحظات:<textarea value={editValue.notes || ""} onChange={e => onEditChange("notes", e.target.value)} placeholder="ملاحظات إضافية" style={{minHeight:60,width:'100%',resize:'vertical',fontSize:15}} /></label>
+                <label>تكلفة الصيانة:<input value={editValue.repairCost || ""} onChange={e => onEditChange("repairCost", e.target.value)} placeholder="تكلفة الصيانة بالجنيه" /></label>
+                <label>مشتريات رخا:<input value={editValue.purchasesRkha || ""} onChange={e => onEditChange("purchasesRkha", e.target.value)} placeholder="سعر مشتريات رخا بالجنيه" /></label>
+                <label>مشتريات الفادي:<input value={editValue.purchasesFady || ""} onChange={e => onEditChange("purchasesFady", e.target.value)} placeholder="سعر مشتريات الفادي بالجنيه" /></label>
               <div style={{margin:'10px 0',padding:'10px',background:'#f8f9fd',borderRadius:8}}>
                 <div style={{fontWeight:'bold',marginBottom:7}}>قطع الغيار:</div>
                 {Array.isArray(editValue.usedSpares) && editValue.usedSpares.map((row, idx) => (
