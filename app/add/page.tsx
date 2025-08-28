@@ -54,6 +54,8 @@ export default function AddRequest() {
   const [repairCost, setRepairCost] = useState("");
   const [usedSpares, setUsedSpares] = useState<UsedSpare[]>([]);
   const [purchasesCost, setPurchasesCost] = useState("");
+  const [purchasesRkha, setPurchasesRkha] = useState("");
+  const [purchasesFady, setPurchasesFady] = useState("");
   const [spares, setSpares] = useState<Spare[]>([]);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -115,9 +117,10 @@ export default function AddRequest() {
       const price = isNaN(Number(row.price)) ? 0 : Number(row.price);
       return price * row.qty;
     }).reduce((a, b) => a + b, 0);
-    const main = parseFloat(repairCost) || 0;
-    const purchases = parseFloat(purchasesCost) || 0;
-    return (parts + main + purchases).toString();
+  const main = parseFloat(repairCost) || 0;
+  const rkha = parseFloat(purchasesRkha) || 0;
+  const fady = parseFloat(purchasesFady) || 0;
+  return (parts + main + rkha + fady).toString();
   }
   const total = calcTotal();
 
@@ -144,6 +147,8 @@ export default function AddRequest() {
         notes: notes || undefined,
         repairCost: repairCost || undefined,
         purchasesCost: purchasesCost || undefined,
+        purchasesRkha: purchasesRkha || undefined,
+        purchasesFady: purchasesFady || undefined,
         usedSpares: usedSpares.map(x => ({ id: x.id, name: x.name, price: x.price, qty: x.qty })),
         total
       })
@@ -151,7 +156,7 @@ export default function AddRequest() {
     setLoading(false);
     setSuccess(true);
   setCustomerName(""); setPhone(""); setCarType(""); setCarModel(""); setCarNumber(""); setKilometers(""); setProblem("");
-  setNotes(""); setRepairCost(""); setPurchasesCost(""); setUsedSpares([]);
+  setNotes(""); setRepairCost(""); setPurchasesCost(""); setPurchasesRkha(""); setPurchasesFady(""); setUsedSpares([]);
     setTimeout(() => { setSuccess(false); router.push("/"); }, 1200);
   }
 
@@ -266,7 +271,13 @@ export default function AddRequest() {
           <input type="number" min={0} value={repairCost} onChange={e => setRepairCost(e.target.value)} style={{ ...inputStyle, width: '100%', fontSize: 15 }} placeholder="اختياري" />
         </label>
         <label style={lbl}>سعر المشتريات:
-          <input type="number" min={0} value={purchasesCost} onChange={e => setPurchasesCost(e.target.value)} style={{ ...inputStyle, width: '100%', fontSize: 15 }} placeholder="اختياري" />
+          <input type="number" min={0} value={purchasesCost} onChange={e => setPurchasesCost(e.target.value)} style={{ ...inputStyle, width: '100%', fontSize: 15 }} placeholder="اختياري (قديمة)" />
+        </label>
+        <label style={lbl}>مشتريات رخا:
+          <input type="number" min={0} value={purchasesRkha} onChange={e => setPurchasesRkha(e.target.value)} style={{ ...inputStyle, width: '100%', fontSize: 15 }} placeholder="سعر مشتريات رخا بالجنيه" />
+        </label>
+        <label style={lbl}>مشتريات الفادي:
+          <input type="number" min={0} value={purchasesFady} onChange={e => setPurchasesFady(e.target.value)} style={{ ...inputStyle, width: '100%', fontSize: 15 }} placeholder="سعر مشتريات الفادي بالجنيه" />
         </label>
         <div style={{ fontWeight: 600, margin: '14px 0 0', fontSize: 16 }}>
           الإجمالي:&nbsp;

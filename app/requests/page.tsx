@@ -333,12 +333,50 @@ export default function RequestsPage() {
                     <input type="number" min={1} style={{width:65,fontSize:15}} value={row.qty} onChange={e => {
                       const updated = [...(editValue.usedSpares || [])];
                       updated[idx].qty = Number(e.target.value);
-                      setEditValue(ev => ({ ...ev, usedSpares: updated }));
+                      setEditValue(ev => {
+                        const newVal = { ...ev, usedSpares: updated };
+                        // إعادة حساب الإجمالي
+                        let total = 0;
+                        let hasValue = false;
+                        if (Array.isArray(newVal.usedSpares)) {
+                          const sparesTotal = newVal.usedSpares.reduce((sum, r) => sum + ((Number(r.price) || 0) * (Number(r.qty) || 1)), 0);
+                          total += sparesTotal;
+                          if (sparesTotal > 0) hasValue = true;
+                        }
+                        const repair = Number(newVal.repairCost) || 0;
+                        const purchasesRkha = Number(newVal.purchasesRkha) || 0;
+                        const purchasesFady = Number(newVal.purchasesFady) || 0;
+                        total += repair;
+                        total += purchasesRkha;
+                        total += purchasesFady;
+                        if (repair > 0 || purchasesRkha > 0 || purchasesFady > 0) hasValue = true;
+                        newVal.total = hasValue ? String(total) : '';
+                        return newVal;
+                      });
                     }} placeholder="الكمية" max={row.id !== "custom" ? (spares.find(sp => sp._id === row.id)?.quantity || '') : ''} />
                     <input type="number" min={0} style={{width:80,fontSize:15}} value={row.price} onChange={e => {
                       const updated = [...(editValue.usedSpares || [])];
                       updated[idx].price = Number(e.target.value);
-                      setEditValue(ev => ({ ...ev, usedSpares: updated }));
+                      setEditValue(ev => {
+                        const newVal = { ...ev, usedSpares: updated };
+                        // إعادة حساب الإجمالي
+                        let total = 0;
+                        let hasValue = false;
+                        if (Array.isArray(newVal.usedSpares)) {
+                          const sparesTotal = newVal.usedSpares.reduce((sum, r) => sum + ((Number(r.price) || 0) * (Number(r.qty) || 1)), 0);
+                          total += sparesTotal;
+                          if (sparesTotal > 0) hasValue = true;
+                        }
+                        const repair = Number(newVal.repairCost) || 0;
+                        const purchasesRkha = Number(newVal.purchasesRkha) || 0;
+                        const purchasesFady = Number(newVal.purchasesFady) || 0;
+                        total += repair;
+                        total += purchasesRkha;
+                        total += purchasesFady;
+                        if (repair > 0 || purchasesRkha > 0 || purchasesFady > 0) hasValue = true;
+                        newVal.total = hasValue ? String(total) : '';
+                        return newVal;
+                      });
                     }} placeholder="سعر القطعة" />
                     <span style={{color:'#888',fontWeight:'bold',fontSize:16}}>{row.price ? (row.price * row.qty) + ' ج' : ''}</span>
                     <button type="button" style={{background:'#e34a4a',color:'#fff',border:'none',borderRadius:7,padding:'7px 18px',fontWeight:700,marginRight:0,marginTop:5,cursor:'pointer',fontSize:15}} onClick={() => {
