@@ -66,6 +66,7 @@ export default function DashboardSummary() {
                   <th>الهاتف</th>
                   <th>السيارة</th>
                   <th>الإجمالي</th>
+                  <th>المبلغ المتبقي</th>
                   <th>الحالة</th>
                 </tr>
               </thead>
@@ -76,6 +77,7 @@ export default function DashboardSummary() {
                     <td>{r.phone}</td>
                     <td>{r.carType} {r.carModel}</td>
                     <td>{r.total || '-'}</td>
+                    <td style={{color:'#e34a4a',fontWeight:'bold'}}>{r.remainingAmount || '-'}</td>
                     <td>{r.status}</td>
                   </tr>
                 ))}

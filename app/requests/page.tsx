@@ -257,11 +257,6 @@ export default function RequestsPage() {
                   المبلغ المتبقي: {r.remainingAmount || "-"} جنيه
                 </div>
               )}
-              {r.paymentStatus === "لم يتم" && (
-                <div className={styles['request-row']} style={{borderBottom:'1px solid #e0e6f2',paddingBottom:6,marginBottom:6,color:'#e34a4a',fontWeight:'bold'}}>
-                  المبلغ المتبقي: {r.remainingAmount || "-"} جنيه
-                </div>
-              )}
               <div className={styles['request-title']} style={{fontSize:22,fontWeight:'bold',color:'#286090',marginBottom:8}}>{r.customerName}</div>
               <div className={styles['request-row']} style={{borderBottom:'1px solid #e0e6f2',paddingBottom:6,marginBottom:6}}>📞 {r.phone}</div>
               <div className={styles['request-row']} style={{borderBottom:'1px solid #e0e6f2',paddingBottom:6,marginBottom:6}}>🚗 {r.carType || "-"} | {r.carModel || "-"} | {r.carNumber || "-"}</div>
