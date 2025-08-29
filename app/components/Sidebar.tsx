@@ -7,6 +7,7 @@ const navLinks = [
   { href: "/", icon: "🏠", name: "الرئيسية" },
   { href: "/add", icon: "➕", name: "إضافة طلب جديد" },
   { href: "/requests", icon: "📋", name: "متابعة الطلبات" },
+  { href: "/customers", icon: "👤", name: "قائمة العملاء" },
 ];
 const bottomLinks = [
   { href: "/spares", icon: "🛒", name: "إدارة قطع الغيار / المخزون" },

@@ -82,7 +82,7 @@ export default function RequestsPage() {
 
   function filterRequests() {
     let filtered = [...requests];
-  if (query.trim()) {
+    if (query.trim()) {
       const q = query.trim().toLowerCase();
       filtered = filtered.filter(r =>
         r.customerName?.toLowerCase().includes(q) ||
@@ -105,10 +105,10 @@ export default function RequestsPage() {
           d.getDate() === selectedTs.getDate();
       });
     }
-  if (monthFilter) {
     if (paymentFilter) {
       filtered = filtered.filter(r => r.paymentStatus === paymentFilter);
     }
+    if (monthFilter) {
       const [yy, mm] = monthFilter.split("-").map(Number);
       filtered = filtered.filter(r => {
         const d = new Date(r.createdAt);
