@@ -6,7 +6,9 @@ export default function DashboardSummary() {
   const [summary, setSummary] = useState({ new: 0, inprogress: 0, done: 0, unpaid: 0 });
   const [error, setError] = useState("");
   const [showUnpaid, setShowUnpaid] = useState(false);
+  const [showInprogress, setShowInprogress] = useState(false);
   const [unpaidRequests, setUnpaidRequests] = useState<any[]>([]);
+  const [inprogressRequests, setInprogressRequests] = useState<any[]>([]);
 
   async function fetchSummary() {
     try {
@@ -20,10 +22,11 @@ export default function DashboardSummary() {
         unpaid: requests.filter((r: any) => !r.paymentStatus || r.paymentStatus === "لم يتم").length,
       });
       setUnpaidRequests(requests.filter((r: any) => !r.paymentStatus || r.paymentStatus === "لم يتم"));
+      setInprogressRequests(requests.filter((r: any) => r.status === "تحت الإصلاح"));
       setError("");
     } catch (err) {
-  setError("API connection error");
-  setSummary({ new: 0, inprogress: 0, done: 0, unpaid: 0 });
+      setError("API connection error");
+      setSummary({ new: 0, inprogress: 0, done: 0, unpaid: 0 });
     }
   }
 
@@ -42,8 +45,9 @@ export default function DashboardSummary() {
           <div style={{fontWeight: 700}}>الطلبات الجديدة</div>
           <div style={{color: '#286090', fontSize: 32}}>{summary.new}</div>
         </div>
-        <div style={{background: '#eee', borderRadius: 8, padding: 18, width: 140, textAlign: 'center'}}>
-          <div style={{fontWeight: 700}}>تحت الإصلاح</div>
+        <div style={{background: '#eee', borderRadius: 8, padding: 18, width: 140, textAlign: 'center', cursor: 'pointer', border: showInprogress ? '2px solid #328bcf' : undefined}}
+          onClick={() => setShowInprogress(v => !v)}>
+          <div style={{fontWeight: 700, color: '#328bcf'}}>تحت الإصلاح</div>
           <div style={{color: '#286090', fontSize: 32}}>{summary.inprogress}</div>
         </div>
         <div style={{background: '#eee', borderRadius: 8, padding: 18, width: 140, textAlign: 'center'}}>
@@ -78,6 +82,38 @@ export default function DashboardSummary() {
                     <td>{r.carType} {r.carModel}</td>
                     <td>{r.total || '-'}</td>
                     <td style={{color:'#e34a4a',fontWeight:'bold'}}>{r.remainingAmount || '-'}</td>
+                    <td>{r.status}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </div>
+      )}
+
+      {showInprogress && (
+        <div style={{background:'#f0f4ff', border:'1px solid #328bcf', borderRadius:8, padding:16, marginTop:10}}>
+          <h3 style={{color:'#328bcf', marginBottom:10}}>الطلبات تحت الإصلاح</h3>
+          {inprogressRequests.length === 0 ? <div>لا يوجد طلبات تحت الإصلاح</div> : (
+            <table style={{width:'100%', fontSize:15}}>
+              <thead>
+                <tr>
+                  <th>اسم العميل</th>
+                  <th>الهاتف</th>
+                  <th>السيارة</th>
+                  <th>الإجمالي</th>
+                  <th>المبلغ المتبقي</th>
+                  <th>الحالة</th>
+                </tr>
+              </thead>
+              <tbody>
+                {inprogressRequests.map((r, i) => (
+                  <tr key={r._id} style={{background:i%2?'#fff':'#e6f0ff'}}>
+                    <td>{r.customerName}</td>
+                    <td>{r.phone}</td>
+                    <td>{r.carType} {r.carModel}</td>
+                    <td>{r.total || '-'}</td>
+                    <td style={{color:'#328bcf',fontWeight:'bold'}}>{r.remainingAmount || '-'}</td>
                     <td>{r.status}</td>
                   </tr>
                 ))}
