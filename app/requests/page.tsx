@@ -10,7 +10,7 @@ interface Spare {
   category?: string;
 }
 
-const statuses = ["جديد", "تحت الإصلاح", "تم "];
+const statuses = ["جديد", "تحت الإصلاح", "تم التصليح "];
 
 type Request = {
   _id: string;
