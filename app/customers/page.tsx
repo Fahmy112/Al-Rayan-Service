@@ -10,6 +10,7 @@ interface Customer {
 export default function CustomersPage() {
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState("");
 
   useEffect(() => {
     async function fetchCustomers() {
@@ -30,12 +31,24 @@ export default function CustomersPage() {
     fetchCustomers();
   }, []);
 
+  // فلترة العملاء حسب البحث
+  const filtered = search.trim()
+    ? customers.filter(c => c.customerName.toLowerCase().includes(search.trim().toLowerCase()))
+    : customers;
+
   return (
     <div className={styles.wrapper} style={{ maxWidth: 600, margin: "40px auto" }}>
       <h1 className={styles["page-title"]}>قائمة العملاء</h1>
+      <input
+        type="text"
+        placeholder="بحث باسم العميل..."
+        value={search}
+        onChange={e => setSearch(e.target.value)}
+        style={{ width: '100%', marginBottom: 16, padding: 8, borderRadius: 6, border: '1px solid #bbc6d3', fontSize: 15 }}
+      />
       {loading ? (
         <div>...يتم التحميل</div>
-      ) : customers.length === 0 ? (
+      ) : filtered.length === 0 ? (
         <div style={{ textAlign: "center", padding: 22 }}>لا يوجد عملاء</div>
       ) : (
         <table className={styles.table} style={{ background: "#fff" }}>
@@ -46,7 +59,7 @@ export default function CustomersPage() {
             </tr>
           </thead>
           <tbody>
-            {customers.map((c, i) => (
+            {filtered.map((c, i) => (
               <tr key={i}>
                 <td style={{ fontWeight: 600 }}>{c.customerName}</td>
                 <td>
