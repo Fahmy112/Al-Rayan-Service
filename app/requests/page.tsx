@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import InvoiceModal from "../components/InvoiceModal";
 import styles from "./requests.module.css";
 
 interface Spare {
@@ -52,6 +53,8 @@ export default function RequestsPage() {
   const [editSuccess, setEditSuccess] = useState<string>("");
   const [spares, setSpares] = useState<Spare[]>([]);
   const [spareWarning, setSpareWarning] = useState<string | undefined>(undefined);
+  const [showInvoice, setShowInvoice] = useState(false);
+  const [invoiceRequest, setInvoiceRequest] = useState<Request | null>(null);
   
   async function fetchRequests() {
     setLoading(true);
@@ -264,7 +267,45 @@ export default function RequestsPage() {
       {loading ? <div>...يتم التحميل</div> : (
         <div style={{display:'flex',flexWrap:'wrap',gap:'18px',justifyContent:'center'}}>
           {filtered.map((r, i) => (
-            <div key={r._id} className={styles['request-card']} style={r.paymentStatus === "لم يتم" ? { border: '2px solid #e34a4a', background: '#fff3f2' } : {}}>
+            <div key={r._id} className={styles['request-card']} style={r.paymentStatus === "لم يتم" ? { border: '2px solid #e34a4a', background: '#fff3f2', position:'relative' } : { position:'relative' }}>
+              {/* أيقونة الفاتورة */}
+              <div
+                title="عرض الفاتورة"
+                style={{
+                  position: 'absolute',
+                  top: 10,
+                  left: 10,
+                  background: '#f5f7fa',
+                  borderRadius: '50%',
+                  width: 38,
+                  height: 38,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  boxShadow: '0 1px 6px #bbc6dd33',
+                  cursor: 'pointer',
+                  border: '1.5px solid #286090',
+                  zIndex: 2
+                }}
+                onClick={() => {
+                  setInvoiceRequest(r);
+                  setShowInvoice(true);
+                }}
+              >
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <rect x="4" y="3" width="16" height="18" rx="3" fill="#fff" stroke="#286090" strokeWidth="2"/>
+                  <path d="M7 7H17" stroke="#286090" strokeWidth="1.5" strokeLinecap="round"/>
+                  <path d="M7 11H17" stroke="#286090" strokeWidth="1.5" strokeLinecap="round"/>
+                  <path d="M7 15H13" stroke="#286090" strokeWidth="1.5" strokeLinecap="round"/>
+                </svg>
+                <span style={{fontSize:10, color:'#286090', fontWeight:'bold', marginRight:2}}>الفاتورة</span>
+              </div>
+          {/* نافذة الفاتورة */}
+          <InvoiceModal
+            open={showInvoice}
+            onClose={() => setShowInvoice(false)}
+            request={invoiceRequest}
+          />
               {r.paymentStatus === "لم يتم" && (
                 <div className={styles['request-row']} style={{borderBottom:'1px solid #e0e6f2',paddingBottom:6,marginBottom:6,color:'#e34a4a',fontWeight:'bold'}}>
                   المبلغ المتبقي: {r.remainingAmount || "-"} جنيه

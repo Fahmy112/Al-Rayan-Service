@@ -1,0 +1,97 @@
+import React from "react";
+
+interface InvoiceModalProps {
+  open: boolean;
+  onClose: () => void;
+  request: {
+    customerName: string;
+    phone: string;
+    problem: string;
+    notes?: string;
+    total?: string;
+    paymentStatus?: string;
+    remainingAmount?: string;
+    kilometers?: string;
+  } | null;
+}
+
+const modalStyle: React.CSSProperties = {
+  position: "fixed",
+  top: 0,
+  left: 0,
+  right: 0,
+  bottom: 0,
+  background: "#0008",
+  zIndex: 10000,
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+};
+
+const cardStyle: React.CSSProperties = {
+  background: "#fff",
+  borderRadius: 16,
+  padding: "32px 24px 24px 24px",
+  minWidth: 320,
+  maxWidth: 400,
+  width: "100%",
+  boxShadow: "0 2px 16px #bbc6dd55",
+  position: "relative",
+  fontFamily: "Cairo, Tahoma, Arial, sans-serif",
+};
+
+const labelStyle: React.CSSProperties = {
+  color: "#286090",
+  fontWeight: "bold",
+  marginBottom: 6,
+  fontSize: 16,
+};
+
+const valueStyle: React.CSSProperties = {
+  color: "#222",
+  fontWeight: 500,
+  fontSize: 16,
+  marginBottom: 12,
+};
+
+const InvoiceModal: React.FC<InvoiceModalProps> = ({ open, onClose, request }) => {
+  if (!open || !request) return null;
+  return (
+    <div style={modalStyle}>
+      <div style={cardStyle}>
+        <button onClick={onClose} style={{position:'absolute',top:10,right:14,fontSize:22,fontWeight:'bold',background:'none',border:'none',color:'#e34a4a',cursor:'pointer'}}>×</button>
+        {/* اسم المركز */}
+        <div style={{textAlign:'center',color:'#27853d',fontWeight:'bold',fontSize:23,marginBottom:4,letterSpacing:1}}>مركز الرايان لخدمات السيارات</div>
+        {/* رسالة ترحيبية */}
+        <div style={{textAlign:'center',color:'#286090',fontWeight:'bold',fontSize:16,marginBottom:14}}>نرحب بكم ونتمنى لكم تجربة خدمة مميزة معنا</div>
+        <h2 style={{textAlign:'center',color:'#286090',marginBottom:18,fontWeight:'bold',fontSize:22}}>فاتورة العميل</h2>
+        <div style={labelStyle}>اسم العميل:</div>
+        <div style={valueStyle}>{request.customerName}</div>
+        <div style={labelStyle}>رقم التليفون:</div>
+        <div style={valueStyle}>{request.phone}</div>
+        <div style={labelStyle}>المشكلة:</div>
+        <div style={valueStyle}>{request.problem}</div>
+        <div style={labelStyle}>الملاحظات:</div>
+        <div style={valueStyle}>{request.notes || '-'}</div>
+        <div style={labelStyle}>الإجمالي:</div>
+        <div style={valueStyle}>{request.total || '-'}</div>
+        <div style={labelStyle}>طريقة الدفع:</div>
+        <div style={valueStyle}>{request.paymentStatus || '-'}</div>
+        <div style={labelStyle}>المبلغ المتبقي:</div>
+        <div style={valueStyle}>{request.remainingAmount || '-'}</div>
+        <div style={labelStyle}>الكيلومتر:</div>
+        <div style={valueStyle}>{request.kilometers || '-'}</div>
+        <button
+          style={{marginTop:18,background:'#25D366',color:'#fff',fontWeight:'bold',fontSize:17,padding:'10px 0',border:'none',borderRadius:8,width:'100%',cursor:'pointer'}}
+          onClick={() => {
+            const text = `مركز الر يان لخدمات السيارات\nنرحب بكم ونتمنى لكم تجربة خدمة مميزة معنا\n\nفاتورة العميل\n\nالاسم: ${request.customerName}\nرقم التليفون: ${request.phone}\nالمشكلة: ${request.problem}\nالملاحظات: ${request.notes || '-'}\nالإجمالي: ${request.total || '-'}\nطريقة الدفع: ${request.paymentStatus || '-'}\nالمبلغ المتبقي: ${request.remainingAmount || '-'}\nالكيلومتر: ${request.kilometers || '-'}`;
+            const url = `https://wa.me/?text=${encodeURIComponent(text)}`;
+            window.open(url, '_blank');
+          }}
+        >إرسال على واتساب</button>
+      </div>
+    </div>
+  );
+};
+
+export default InvoiceModal;
