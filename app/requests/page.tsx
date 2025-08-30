@@ -387,7 +387,31 @@ export default function RequestsPage() {
               </label>
               <label>
                 قيمة المشتريات الخارجية:
-                <input value={editValue.purchasesExternal || ""} onChange={e => onEditChange("purchasesExternal", e.target.value)} placeholder="قيمة المشتريات الخارجية بالجنيه" />
+                <input value={editValue.purchasesExternal || ""} onChange={e => {
+                  const val = e.target.value;
+                  setEditValue(ev => {
+                    const newVal = { ...ev, purchasesExternal: val };
+                    // إعادة حساب الإجمالي
+                    let total = 0;
+                    let hasValue = false;
+                    if (Array.isArray(newVal.usedSpares)) {
+                      const sparesTotal = newVal.usedSpares.reduce((sum, r) => sum + ((Number(r.price) || 0) * (Number(r.qty) || 1)), 0);
+                      total += sparesTotal;
+                      if (sparesTotal > 0) hasValue = true;
+                    }
+                    const repair = Number(newVal.repairCost) || 0;
+                    const purchasesRkha = Number(newVal.purchasesRkha) || 0;
+                    const purchasesFady = Number(newVal.purchasesFady) || 0;
+                    const purchasesExternal = Number(val) || 0;
+                    total += repair;
+                    total += purchasesRkha;
+                    total += purchasesFady;
+                    total += purchasesExternal;
+                    if (repair > 0 || purchasesRkha > 0 || purchasesFady > 0 || purchasesExternal > 0) hasValue = true;
+                    newVal.total = hasValue ? String(total) : '';
+                    return newVal;
+                  });
+                }} placeholder="قيمة المشتريات الخارجية بالجنيه" />
               </label>
               <label>اسم العميل:<input value={editValue.customerName || ""} onChange={e => onEditChange("customerName", e.target.value)} placeholder="ادخل اسم العميل" /></label>
               <label>رقم الهاتف:<input value={editValue.phone || ""} onChange={e => onEditChange("phone", e.target.value)} placeholder="ادخل رقم الهاتف" /></label>
