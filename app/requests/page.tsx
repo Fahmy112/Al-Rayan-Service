@@ -17,6 +17,7 @@ type Request = {
   _id: string;
   customerName: string;
   phone: string;
+  phone2?: string;
   carType?: string;
   carModel?: string;
   carNumber?: string;
@@ -312,7 +313,7 @@ export default function RequestsPage() {
                 </div>
               )}
               <div className={styles['request-title']} style={{fontSize:22,fontWeight:'bold',color:'#286090',marginBottom:8}}>{r.customerName}</div>
-              <div className={styles['request-row']} style={{borderBottom:'1px solid #e0e6f2',paddingBottom:6,marginBottom:6}}>📞 {r.phone}</div>
+              <div className={styles['request-row']} style={{borderBottom:'1px solid #e0e6f2',paddingBottom:6,marginBottom:6}}>📞 {r.phone}{r.phone2 ? ` | هاتف إضافي: ${r.phone2}` : ''}</div>
               <div className={styles['request-row']} style={{borderBottom:'1px solid #e0e6f2',paddingBottom:6,marginBottom:6}}>🚗 {r.carType || "-"} | {r.carModel || "-"} | {r.carNumber || "-"}</div>
               <div className={styles['request-row']} style={{borderBottom:'1px solid #e0e6f2',paddingBottom:6,marginBottom:6}}>الكيلومتر: {r.kilometers || "-"}</div>
               <div className={styles['request-row']} style={{borderBottom:'1px solid #e0e6f2',paddingBottom:6,marginBottom:6}}>المشكلة: {r.problem}</div>
@@ -377,6 +378,7 @@ export default function RequestsPage() {
             <div style={{display:'flex',flexDirection:'column',gap:7}}>
               <label>اسم العميل:<input value={editValue.customerName || ""} onChange={e => onEditChange("customerName", e.target.value)} placeholder="ادخل اسم العميل" /></label>
               <label>رقم الهاتف:<input value={editValue.phone || ""} onChange={e => onEditChange("phone", e.target.value)} placeholder="ادخل رقم الهاتف" /></label>
+              <label>هاتف إضافي:<input value={editValue.phone2 || ""} onChange={e => onEditChange("phone2", e.target.value)} placeholder="هاتف إضافي (اختياري)" /></label>
               <label>نوع السيارة:<input value={editValue.carType || ""} onChange={e => onEditChange("carType", e.target.value)} placeholder="ادخل نوع السيارة" /></label>
               <label>موديل السيارة:<input value={editValue.carModel || ""} onChange={e => onEditChange("carModel", e.target.value)} placeholder="ادخل موديل السيارة" /></label>
               <label>نمرة السيارة:<input value={editValue.carNumber || ""} onChange={e => onEditChange("carNumber", e.target.value)} placeholder="ادخل نمرة السيارة" /></label>

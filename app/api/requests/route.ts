@@ -16,7 +16,8 @@ export async function POST(req: NextRequest) {
   const ins = await db.collection('requests').insertOne({
     customerName: body.customerName,
     phone: body.phone,
-    carType: body.carType,
+  phone2: body.phone2 || '',
+  carType: body.carType,
     carModel: body.carModel,
     carNumber: body.carNumber,
     kilometers: body.kilometers,

@@ -45,6 +45,7 @@ export default function AddRequest() {
   };
   const lbl: React.CSSProperties = { fontWeight: 600, marginBottom: 2 };
   const [phone, setPhone] = useState("");
+  const [phone2, setPhone2] = useState("");
   const [carType, setCarType] = useState("");
   const [carModel, setCarModel] = useState("");
   const [carNumber, setCarNumber] = useState("");
@@ -143,7 +144,7 @@ export default function AddRequest() {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        customerName, phone, carType, carModel, carNumber, kilometers, problem,
+        customerName, phone, phone2, carType, carModel, carNumber, kilometers, problem,
         notes: notes || undefined,
         repairCost: repairCost || undefined,
         purchasesCost: purchasesCost || undefined,
@@ -155,7 +156,7 @@ export default function AddRequest() {
     });
     setLoading(false);
     setSuccess(true);
-  setCustomerName(""); setPhone(""); setCarType(""); setCarModel(""); setCarNumber(""); setKilometers(""); setProblem("");
+  setCustomerName(""); setPhone(""); setPhone2(""); setCarType(""); setCarModel(""); setCarNumber(""); setKilometers(""); setProblem("");
   setNotes(""); setRepairCost(""); setPurchasesCost(""); setPurchasesRkha(""); setPurchasesFady(""); setUsedSpares([]);
     setTimeout(() => {
       setSuccess(false);
@@ -201,6 +202,9 @@ export default function AddRequest() {
         </label>
         <label style={lbl}>رقم الهاتف:
           <input required value={phone} onChange={e => setPhone(e.target.value)} style={{ ...inputStyle, width: '100%', fontSize: 15 }} />
+        </label>
+        <label style={lbl}>هاتف إضافي:
+          <input value={phone2} onChange={e => setPhone2(e.target.value)} style={{ ...inputStyle, width: '100%', fontSize: 15 }} placeholder="اختياري" />
         </label>
         <label style={lbl}>نوع السيارة:
           <input required value={carType} onChange={e => setCarType(e.target.value)} style={{ ...inputStyle, width: '100%', fontSize: 15 }} />
