@@ -148,14 +148,14 @@ export default function RequestsPage() {
         if (sparesTotal > 0) hasValue = true;
       }
       const repair = Number(updated.repairCost) || 0;
-  const purchasesRkha = Number(updated.purchasesRkha) || 0;
-  const purchasesFady = Number(updated.purchasesFady) || 0;
-  total += repair;
-  total += purchasesRkha;
-  total += purchasesFady;
-  if (repair > 0 || purchasesRkha > 0 || purchasesFady > 0) hasValue = true;
-  updated.total = hasValue ? String(total) : '';
-  return updated;
+      const purchasesRkha = Number(updated.purchasesRkha) || 0;
+      const purchasesFady = Number(updated.purchasesFady) || 0;
+      total += repair;
+      total += purchasesRkha;
+      total += purchasesFady;
+      if (repair > 0 || purchasesRkha > 0 || purchasesFady > 0) hasValue = true;
+      updated.total = hasValue ? String(total) : '';
+      return updated;
     });
   }
   
@@ -213,6 +213,19 @@ export default function RequestsPage() {
       await fetch("/api/requests/" + req._id, { method: "DELETE" });
       fetchRequests();
     }
+  }
+
+  // Moved outside of the return statement
+  async function updatePaymentStatus(idx: number, newStatus: "نقدي" | "تحويل" | "لم يتم") {
+    const req = filtered[idx];
+    if (!req) return;
+    const updated = { ...req, paymentStatus: newStatus };
+    setRequests(reqs => reqs.map(r => r._id === req._id ? updated : r));
+    await fetch("/api/requests/" + req._id, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ paymentStatus: newStatus })
+    });
   }
 
   const filtered = filterRequests();
@@ -290,12 +303,20 @@ export default function RequestsPage() {
                 {r.paymentStatus === "لم يتم" && <span title="لم يتم" style={{marginLeft:4}}>⏳</span>}
                 <span style={{marginRight:4}}>{r.paymentStatus || "-"}</span>
               </div>
-              <div className={styles['request-row']} style={{borderBottom:'1px solid #e0e6f2',paddingBottom:6,marginBottom:6}}>الحالة:
+
+              <div className={styles['request-row']} style={{borderBottom:'1px solid #e0e6f2',paddingBottom:6,marginBottom:6}}>
                 <select value={r.status} onChange={e => updateStatus(i, e.target.value)} className={styles["status-select"]}>
                   {statuses.map(st => <option key={st}>{st}</option>)}
                 </select>
+                <span style={{marginRight:12}}>الدفع:</span>
+                <select value={r.paymentStatus || "لم يتم"} onChange={e => updatePaymentStatus(i, e.target.value as any)} className={styles["status-select"]}>
+                  <option value="لم يتم">لم يتم</option>
+                  <option value="نقدي">نقدي</option>
+                  <option value="تحويل">تحويل</option>
+                </select>
                 {r.paymentStatus === "لم يتم" && <span style={{color:'#e34a4a',fontWeight:'bold',marginRight:7}}>لم يتم الدفع</span>}
               </div>
+              
               <div className={styles['request-actions']}>
                 <button className={styles["action-btn"]} onClick={() => deleteRequest(i)}>حذف</button>
                 <button className={styles["note-btn"]} style={{ background: '#286090' }} onClick={() => startEdit(r)}>تعديل</button>
