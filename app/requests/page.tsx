@@ -381,7 +381,20 @@ export default function RequestsPage() {
             <button onClick={cancelEdit} style={{position:'sticky',top:0,right:0,left:'unset',fontSize:22,fontWeight:'bold',background:'none',border:'none',color:'#e34a4a',cursor:'pointer',zIndex:10,marginLeft:'auto',display:'block'}}>×</button>
             <h2 style={{color:'#286090',marginBottom:12,fontSize:18,textAlign:'center'}}>تعديل الطلب</h2>
             <div style={{display:'flex',flexDirection:'column',gap:7}}>
-              <label>
+              
+              <label>اسم العميل:<input value={editValue.customerName || ""} onChange={e => onEditChange("customerName", e.target.value)} placeholder="ادخل اسم العميل" /></label>
+              <label>رقم الهاتف:<input value={editValue.phone || ""} onChange={e => onEditChange("phone", e.target.value)} placeholder="ادخل رقم الهاتف" /></label>
+              <label>هاتف إضافي:<input value={editValue.phone2 || ""} onChange={e => onEditChange("phone2", e.target.value)} placeholder="هاتف إضافي (اختياري)" /></label>
+              <label>نوع السيارة:<input value={editValue.carType || ""} onChange={e => onEditChange("carType", e.target.value)} placeholder="ادخل نوع السيارة" /></label>
+              <label>موديل السيارة:<input value={editValue.carModel || ""} onChange={e => onEditChange("carModel", e.target.value)} placeholder="ادخل موديل السيارة" /></label>
+              <label>نمرة السيارة:<input value={editValue.carNumber || ""} onChange={e => onEditChange("carNumber", e.target.value)} placeholder="ادخل نمرة السيارة" /></label>
+              <label>الكيلومتر:<input value={editValue.kilometers || ""} onChange={e => onEditChange("kilometers", e.target.value)} placeholder="ادخل الكيلومتر" /></label>
+              <label>ملاحظات:<input value={editValue.notes || ""} onChange={e => onEditChange("notes", e.target.value)} placeholder="ملاحظات إضافية" /></label>
+                <label>المشكلة:<textarea value={editValue.problem || ""} onChange={e => onEditChange("problem", e.target.value)} placeholder="وصف المشكلة" style={{minHeight:60,width:'100%',resize:'vertical',fontSize:15}} /></label>
+                <label>ملاحظات:<textarea value={editValue.notes || ""} onChange={e => onEditChange("notes", e.target.value)} placeholder="ملاحظات إضافية" style={{minHeight:60,width:'100%',resize:'vertical',fontSize:15}} /></label>
+                <label>مشتريات رخا:<input value={editValue.purchasesRkha || ""} onChange={e => onEditChange("purchasesRkha", e.target.value)} placeholder="سعر مشتريات رخا بالجنيه" /></label>
+                <label>مشتريات الفادي:<input value={editValue.purchasesFady || ""} onChange={e => onEditChange("purchasesFady", e.target.value)} placeholder="سعر مشتريات الفادي بالجنيه" /></label>
+                <label>
                 اسم المشتريات الخارجية:
                 <input value={editValue.purchasesExternalLabel || "مشتريات خارجية"} onChange={e => onEditChange("purchasesExternalLabel", e.target.value)} placeholder="اسم المشتريات الخارجية" />
               </label>
@@ -413,19 +426,7 @@ export default function RequestsPage() {
                   });
                 }} placeholder="قيمة المشتريات الخارجية بالجنيه" />
               </label>
-              <label>اسم العميل:<input value={editValue.customerName || ""} onChange={e => onEditChange("customerName", e.target.value)} placeholder="ادخل اسم العميل" /></label>
-              <label>رقم الهاتف:<input value={editValue.phone || ""} onChange={e => onEditChange("phone", e.target.value)} placeholder="ادخل رقم الهاتف" /></label>
-              <label>هاتف إضافي:<input value={editValue.phone2 || ""} onChange={e => onEditChange("phone2", e.target.value)} placeholder="هاتف إضافي (اختياري)" /></label>
-              <label>نوع السيارة:<input value={editValue.carType || ""} onChange={e => onEditChange("carType", e.target.value)} placeholder="ادخل نوع السيارة" /></label>
-              <label>موديل السيارة:<input value={editValue.carModel || ""} onChange={e => onEditChange("carModel", e.target.value)} placeholder="ادخل موديل السيارة" /></label>
-              <label>نمرة السيارة:<input value={editValue.carNumber || ""} onChange={e => onEditChange("carNumber", e.target.value)} placeholder="ادخل نمرة السيارة" /></label>
-              <label>الكيلومتر:<input value={editValue.kilometers || ""} onChange={e => onEditChange("kilometers", e.target.value)} placeholder="ادخل الكيلومتر" /></label>
-              <label>ملاحظات:<input value={editValue.notes || ""} onChange={e => onEditChange("notes", e.target.value)} placeholder="ملاحظات إضافية" /></label>
-                <label>المشكلة:<textarea value={editValue.problem || ""} onChange={e => onEditChange("problem", e.target.value)} placeholder="وصف المشكلة" style={{minHeight:60,width:'100%',resize:'vertical',fontSize:15}} /></label>
-                <label>ملاحظات:<textarea value={editValue.notes || ""} onChange={e => onEditChange("notes", e.target.value)} placeholder="ملاحظات إضافية" style={{minHeight:60,width:'100%',resize:'vertical',fontSize:15}} /></label>
-                <label>مشتريات رخا:<input value={editValue.purchasesRkha || ""} onChange={e => onEditChange("purchasesRkha", e.target.value)} placeholder="سعر مشتريات رخا بالجنيه" /></label>
-                <label>مشتريات الفادي:<input value={editValue.purchasesFady || ""} onChange={e => onEditChange("purchasesFady", e.target.value)} placeholder="سعر مشتريات الفادي بالجنيه" /></label>
-                <label>المبلغ المتبقي:<input value={editValue.remainingAmount || ""} onChange={e => onEditChange("remainingAmount", e.target.value)} placeholder="المبلغ المتبقي بالجنيه" /></label>
+              <label>المبلغ المتبقي:<input value={editValue.remainingAmount || ""} onChange={e => onEditChange("remainingAmount", e.target.value)} placeholder="المبلغ المتبقي بالجنيه" /></label>
                 <label>تكلفة الصيانة:<input value={editValue.repairCost || ""} onChange={e => onEditChange("repairCost", e.target.value)} placeholder="تكلفة الصيانة بالجنيه" /></label>
               <div style={{ margin: '10px 0', padding: '10px', background: '#f8f9fd', borderRadius: 8 }}>
                 <div style={{fontWeight:'bold',marginBottom:7}}>قطع الغيار:</div>
