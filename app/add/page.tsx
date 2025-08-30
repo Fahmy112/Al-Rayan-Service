@@ -159,7 +159,8 @@ export default function AddRequest() {
     const main = parseFloat(repairCost) || 0;
     const rkha = parseFloat(purchasesRkha) || 0;
     const fady = parseFloat(purchasesFady) || 0;
-    return (parts + main + rkha + fady).toString();
+    const external = parseFloat(purchasesExternal) || 0;
+    return (parts + main + rkha + fady + external).toString();
   }
   const total = calcTotal();
 
@@ -188,6 +189,8 @@ export default function AddRequest() {
         purchasesCost: purchasesCost || undefined,
         purchasesRkha: purchasesRkha || undefined,
         purchasesFady: purchasesFady || undefined,
+        purchasesExternal: purchasesExternal || undefined,
+        purchasesExternalLabel: purchasesExternalLabel || undefined,
         usedSpares: usedSpares.map(x => ({ id: x.id, name: x.name, price: x.price, qty: x.qty })),
         total
       })

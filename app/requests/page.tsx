@@ -326,11 +326,7 @@ export default function RequestsPage() {
                 سعر المشتريات:
                 رخا: {r.purchasesRkha !== undefined && r.purchasesRkha !== "" ? r.purchasesRkha : (r.purchasesCost || 0)}ج
                 | الفادي: {r.purchasesFady !== undefined && r.purchasesFady !== "" ? r.purchasesFady : 0}ج
-                {r.purchasesExternalLabel && (
-                  <>
-                    | {r.purchasesExternalLabel}: {r.purchasesExternal || 0}ج
-                  </>
-                )}
+                | {r.purchasesExternalLabel || "مشتريات خارجية"}: {r.purchasesExternal || 0}ج
               </div>
               <div className={styles['request-row']} style={{borderBottom:'1px solid #e0e6f2',paddingBottom:6,marginBottom:6}}>
                 قطع الغيار:
@@ -401,13 +397,13 @@ export default function RequestsPage() {
               <label>نمرة السيارة:<input value={editValue.carNumber || ""} onChange={e => onEditChange("carNumber", e.target.value)} placeholder="ادخل نمرة السيارة" /></label>
               <label>الكيلومتر:<input value={editValue.kilometers || ""} onChange={e => onEditChange("kilometers", e.target.value)} placeholder="ادخل الكيلومتر" /></label>
               <label>ملاحظات:<input value={editValue.notes || ""} onChange={e => onEditChange("notes", e.target.value)} placeholder="ملاحظات إضافية" /></label>
-              <label>تكلفة الصيانة:<input value={editValue.repairCost || ""} onChange={e => onEditChange("repairCost", e.target.value)} placeholder="تكلفة الصيانة بالجنيه" /></label>
                 <label>المشكلة:<textarea value={editValue.problem || ""} onChange={e => onEditChange("problem", e.target.value)} placeholder="وصف المشكلة" style={{minHeight:60,width:'100%',resize:'vertical',fontSize:15}} /></label>
                 <label>ملاحظات:<textarea value={editValue.notes || ""} onChange={e => onEditChange("notes", e.target.value)} placeholder="ملاحظات إضافية" style={{minHeight:60,width:'100%',resize:'vertical',fontSize:15}} /></label>
                 <label>مشتريات رخا:<input value={editValue.purchasesRkha || ""} onChange={e => onEditChange("purchasesRkha", e.target.value)} placeholder="سعر مشتريات رخا بالجنيه" /></label>
                 <label>مشتريات الفادي:<input value={editValue.purchasesFady || ""} onChange={e => onEditChange("purchasesFady", e.target.value)} placeholder="سعر مشتريات الفادي بالجنيه" /></label>
                 <label>المبلغ المتبقي:<input value={editValue.remainingAmount || ""} onChange={e => onEditChange("remainingAmount", e.target.value)} placeholder="المبلغ المتبقي بالجنيه" /></label>
-              <div style={{margin:'10px 0',padding:'10px',background:'#f8f9fd',borderRadius:8}}>
+                <label>تكلفة الصيانة:<input value={editValue.repairCost || ""} onChange={e => onEditChange("repairCost", e.target.value)} placeholder="تكلفة الصيانة بالجنيه" /></label>
+              <div style={{ margin: '10px 0', padding: '10px', background: '#f8f9fd', borderRadius: 8 }}>
                 <div style={{fontWeight:'bold',marginBottom:7}}>قطع الغيار:</div>
                 {Array.isArray(editValue.usedSpares) && editValue.usedSpares.map((row, idx) => (
                   <div key={idx} style={{display:'flex',gap:7,marginBottom:7,alignItems:'center',flexWrap:'wrap'}}>
