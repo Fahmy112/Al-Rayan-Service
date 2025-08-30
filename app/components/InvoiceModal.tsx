@@ -86,8 +86,21 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({ open, onClose, request }) =
           style={{marginTop:8,background:'#25D366',color:'#fff',fontWeight:'bold',fontSize:13,padding:'7px 0',border:'none',borderRadius:7,width:'100%',cursor:'pointer',letterSpacing:0.5}}
           onClick={() => {
             const text = `مركز الرايان لخدمات السيارات\nنرحب بكم ونتمنى لكم تجربة خدمة مميزة معنا\n\nفاتورة العميل\n\nالاسم: ${request.customerName}\nرقم التليفون: ${request.phone}\nالمشكلة: ${request.problem}\nالملاحظات: ${request.notes || '-'}\nالإجمالي: ${request.total || '-'}\nطريقة الدفع: ${request.paymentStatus || '-'}\nالمبلغ المتبقي: ${request.remainingAmount || '-'}\nالكيلومتر: ${request.kilometers || '-'}`;
-            const url = `https://wa.me/?text=${encodeURIComponent(text)}`;
-            window.open(url, '_blank');
+            // استخراج رقم الهاتف بشكل دولي (بدون + أو 0 في البداية)
+            let phone = (request.phone || '').replace(/\D/g, '');
+            if (phone.startsWith('0')) phone = phone.substring(1);
+            if (phone.length >= 10 && phone.length <= 15) {
+              // مثال: مصر 20، السعودية 966، إلخ. عدل الكود حسب بلدك إذا أردت
+              if (!phone.startsWith('20') && !phone.startsWith('966')) {
+                phone = '20' + phone; // مصر افتراضيًا
+              }
+              const url = `https://wa.me/${phone}?text=${encodeURIComponent(text)}`;
+              window.open(url, '_blank');
+            } else {
+              // fallback: فقط نص بدون رقم
+              const url = `https://wa.me/?text=${encodeURIComponent(text)}`;
+              window.open(url, '_blank');
+            }
           }}
         >إرسال على واتساب</button>
       </div>
