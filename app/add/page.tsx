@@ -138,7 +138,7 @@ export default function AddRequest() {
       } else if (field === "name") {
         copy[idx].name = val;
       } else if (field === "qty") {
-        copy[idx].qty = Math.max(1, parseInt(val) || 1);
+        copy[idx].qty = Math.max(0, parseInt(val) || 0);
       } else if (field === "price") {
         copy[idx].price = parseFloat(val) || 0;
       }
@@ -320,10 +320,10 @@ export default function AddRequest() {
                 />
               )}
               <input
-                type="number" min={1}
+                type="number" min={0}
                 style={{ ...inputStyle, width: 65, fontSize: 15 }}
                 value={row.qty}
-                onChange={e => updateSpareRow(idx, 'qty', e.target.value)}
+                readOnly
                 placeholder="الكمية"
                 max={row.id !== "custom" ? (spares.find(sp => sp._id === row.id)?.quantity || '') : ''}
               />
