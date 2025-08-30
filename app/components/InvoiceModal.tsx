@@ -76,8 +76,8 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({ open, onClose, request }) =
         {/* زر تحميل الفاتورة كصورة */}
         <button onClick={handleDownloadImage} style={{position:'absolute',top:6,left:8,fontSize:13,background:'#286090',color:'#fff',border:'none',borderRadius:6,padding:'3px 10px',cursor:'pointer'}}>تحميل كصورة</button>
         {/* محتوى الفاتورة */}
-        <div ref={invoiceRef} style={{background:'#fff'}}>
-          <div style={{textAlign:'center',color:'#27853d',fontWeight:'bold',fontSize:15,marginBottom:2,letterSpacing:0.5}}>مركز الرايان لخدمات السيارات</div>
+  <div ref={invoiceRef} style={{background:'#fff', paddingRight: '18px', paddingLeft: '6px'}}>
+          <div style={{textAlign:'center',color:'#27853d',fontWeight:'bold',fontSize:15,marginBottom:2,letterSpacing:0.5}}>  AlRayan Integrated Auto Service  </div>
           <div style={{textAlign:'center',color:'#286090',fontWeight:'bold',fontSize:11,marginBottom:7}}>نرحب بكم ونتمنى لكم تجربة خدمة مميزة معنا</div>
           <div style={{textAlign:'center',color:'#286090',marginBottom:10,fontWeight:'bold',fontSize:14}}>فاتورة العميل</div>
           <div style={labelStyle}>اسم العميل:</div>
