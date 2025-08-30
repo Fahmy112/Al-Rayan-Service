@@ -93,6 +93,8 @@ export default function AddRequest() {
   const [purchasesCost, setPurchasesCost] = useState("");
   const [purchasesRkha, setPurchasesRkha] = useState("");
   const [purchasesFady, setPurchasesFady] = useState("");
+  const [purchasesExternal, setPurchasesExternal] = useState("");
+  const [purchasesExternalLabel, setPurchasesExternalLabel] = useState("مشتريات خارجية");
   const [spares, setSpares] = useState<Spare[]>([]);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -354,6 +356,10 @@ export default function AddRequest() {
         </label>
         <label style={lbl}>مشتريات الفادي:
           <input type="number" min={0} value={purchasesFady} onChange={e => setPurchasesFady(e.target.value)} style={{ ...inputStyle, width: '100%', fontSize: 15 }} placeholder="سعر مشتريات الفادي بالجنيه" />
+        </label>
+        <label style={lbl}>
+          <input type="text" value={purchasesExternalLabel} onChange={e => setPurchasesExternalLabel(e.target.value)} style={{ ...inputStyle, width: '100%', fontSize: 15, marginBottom: 4 }} placeholder="اسم المشتريات الخارجية (اختياري)" />
+          <input type="number" min={0} value={purchasesExternal} onChange={e => setPurchasesExternal(e.target.value)} style={{ ...inputStyle, width: '100%', fontSize: 15 }} placeholder="قيمة المشتريات الخارجية بالجنيه" />
         </label>
         <div style={{ fontWeight: 600, margin: '14px 0 0', fontSize: 16 }}>
           الإجمالي:&nbsp;

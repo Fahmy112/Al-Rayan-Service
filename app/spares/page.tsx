@@ -36,7 +36,7 @@ export default function SparesPage() {
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState<string | undefined>(undefined);
   const [edit, setEdit] = useState<EditState>(null);
-  const [editValue, setEditValue] = useState<{name:string, price:string, category:string}>({name:"", price:"", category:""});
+  const [editValue, setEditValue] = useState<{name:string, price:string, category:string, quantity?:string}>({name:"", price:"", category:""});
 
   async function fetchSpares() {
     setLoading(true);
@@ -86,8 +86,8 @@ export default function SparesPage() {
   }
 
   function startEdit(sp: Spare) {
-  setEdit({ id: sp._id, name: sp.name, price: sp.price });
-  setEditValue({ name: sp.name, price: sp.price+"", category: sp.category || "" });
+    setEdit({ id: sp._id, name: sp.name, price: sp.price });
+    setEditValue({ name: sp.name, price: sp.price+"", category: sp.category || "", quantity: sp.quantity+"" });
   }
 
   async function saveEdit() {
@@ -95,7 +95,8 @@ export default function SparesPage() {
     await handleUpdate(edit.id, {
       name: editValue.name,
       price: parseFloat(editValue.price),
-      category: editValue.category
+      category: editValue.category,
+      quantity: editValue.quantity !== undefined ? parseInt(editValue.quantity) : undefined
     });
     setEdit(null);
   }
@@ -160,15 +161,21 @@ export default function SparesPage() {
                     : <span>{sp.price}</span> }
                 </td>
                 <td>
-                  <input
-                    style={{width:55, border:'1px solid #bbc6d3',textAlign:'center', borderRadius:6, fontWeight:'bold',fontFamily:'inherit'}} value={sp.quantity}
-                    onChange={e=>{
-                      let num = parseInt(e.target.value)||0;
-                      num = num < 0 ? 0 : num;
-                      handleUpdate(sp._id, { quantity: num });
-                    }}
-                    type="number" min={0}
-                  />
+                  {edit?.id === sp._id ? (
+                    <input
+                      style={{width:55, border:'1px solid #bbc6d3',textAlign:'center', borderRadius:6, fontWeight:'bold',fontFamily:'inherit'}} 
+                      value={editValue.quantity}
+                      onChange={e=>setEditValue(v=>({...v,quantity:e.target.value}))}
+                      type="number" min={0}
+                    />
+                  ) : (
+                    <input
+                      style={{width:55, border:'1px solid #bbc6d3',textAlign:'center', borderRadius:6, fontWeight:'bold',fontFamily:'inherit'}} 
+                      value={sp.quantity}
+                      type="number" min={0}
+                      readOnly
+                    />
+                  )}
                   {sp.quantity <= 5 && <span style={{marginRight:5,color:'#e34a4a',fontWeight:'bold'}}>(منخفض!)</span>}
                 </td>
                 <td>
