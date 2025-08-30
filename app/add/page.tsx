@@ -1,5 +1,7 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
+import { useRouter } from "next/navigation";
+
 interface Customer {
   customerName: string;
   phone: string;
@@ -8,9 +10,12 @@ interface Customer {
   carModel?: string;
   carNumber?: string;
 }
+
+export default function AddRequest() {
   const [customerOptions, setCustomerOptions] = useState<Customer[]>([]);
   const [showOptions, setShowOptions] = useState(false);
   const nameInputRef = useRef<HTMLInputElement>(null);
+
   // جلب العملاء من الطلبات السابقة
   useEffect(() => {
     fetch("/api/requests").then(r => r.json()).then((data) => {
@@ -30,39 +35,39 @@ interface Customer {
       });
       setCustomerOptions(Object.values(unique));
     });
-  }, []);
-import { useRouter } from "next/navigation";
+  }, []); // <---  ⚠️  أضفنا قوس الإغلاق هنا ⚠️
 
-interface Spare {
-  _id: string;
-  name: string;
-  price: number;
-  quantity: number;
-  category?: string;
-}
-interface UsedSpare {
-  id: string;
-  name: string;
-  price: number;
-  qty: number;
-  category?: string;
-}
+  // ... باقي الكود ...
 
-export default function AddRequest() {
+  interface Spare {
+    _id: string;
+    name: string;
+    price: number;
+    quantity: number;
+    category?: string;
+  }
+  interface UsedSpare {
+    id: string;
+    name: string;
+    price: number;
+    qty: number;
+    category?: string;
+  }
+
   const categories = [
-  'زيت الماتور',
-  'زيت الفتيس',
-  'فلتر الهواء',
-  'قلب طلمبة البنزين',
-  'فلتر زيت',
-  'فلتر تكييف',
-  'فلتر زيت فتيس',
-  'ماء تبريد',
-  'بوجيهات',
-  'فلتر بنزين',
-  'حشو فلتر زيت',
-  'موبينة',
-  'مواسير و اخري'
+    'زيت الماتور',
+    'زيت الفتيس',
+    'فلتر الهواء',
+    'قلب طلمبة البنزين',
+    'فلتر زيت',
+    'فلتر تكييف',
+    'فلتر زيت فتيس',
+    'ماء تبريد',
+    'بوجيهات',
+    'فلتر بنزين',
+    'حشو فلتر زيت',
+    'موبينة',
+    'مواسير و اخري'
   ];
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [customerName, setCustomerName] = useState("");
@@ -149,10 +154,10 @@ export default function AddRequest() {
       const price = isNaN(Number(row.price)) ? 0 : Number(row.price);
       return price * row.qty;
     }).reduce((a, b) => a + b, 0);
-  const main = parseFloat(repairCost) || 0;
-  const rkha = parseFloat(purchasesRkha) || 0;
-  const fady = parseFloat(purchasesFady) || 0;
-  return (parts + main + rkha + fady).toString();
+    const main = parseFloat(repairCost) || 0;
+    const rkha = parseFloat(purchasesRkha) || 0;
+    const fady = parseFloat(purchasesFady) || 0;
+    return (parts + main + rkha + fady).toString();
   }
   const total = calcTotal();
 
@@ -187,8 +192,8 @@ export default function AddRequest() {
     });
     setLoading(false);
     setSuccess(true);
-  setCustomerName(""); setPhone(""); setPhone2(""); setCarType(""); setCarModel(""); setCarNumber(""); setKilometers(""); setProblem("");
-  setNotes(""); setRepairCost(""); setPurchasesCost(""); setPurchasesRkha(""); setPurchasesFady(""); setUsedSpares([]);
+    setCustomerName(""); setPhone(""); setPhone2(""); setCarType(""); setCarModel(""); setCarNumber(""); setKilometers(""); setProblem("");
+    setNotes(""); setRepairCost(""); setPurchasesCost(""); setPurchasesRkha(""); setPurchasesFady(""); setUsedSpares([]);
     setTimeout(() => {
       setSuccess(false);
       // إعادة تحميل الصفحة الرئيسية لضمان جلب الطلبات الجديدة
@@ -245,22 +250,22 @@ export default function AddRequest() {
             placeholder="ابحث أو اكتب اسم العميل"
           />
           {showOptions && customerName && customerOptions.filter(c => c.customerName.toLowerCase().includes(customerName.toLowerCase())).length > 0 && (
-            <div style={{position:'absolute',zIndex:1000,background:'#fff',border:'1px solid #bbc6d3',borderRadius:6,maxHeight:180,overflowY:'auto',width:nameInputRef.current?.offsetWidth||'100%',boxShadow:'0 2px 8px #bbc6dd33'}}>
+            <div style={{ position: 'absolute', zIndex: 1000, background: '#fff', border: '1px solid #bbc6d3', borderRadius: 6, maxHeight: 180, overflowY: 'auto', width: nameInputRef.current?.offsetWidth || '100%', boxShadow: '0 2px 8px #bbc6dd33' }}>
               {customerOptions.filter(c => c.customerName.toLowerCase().includes(customerName.toLowerCase())).map((c, i) => (
                 <div
                   key={c.customerName + c.phone + i}
-                  style={{padding:'7px 12px',cursor:'pointer',borderBottom:'1px solid #f0f4ff'}}
+                  style={{ padding: '7px 12px', cursor: 'pointer', borderBottom: '1px solid #f0f4ff' }}
                   onMouseDown={() => {
                     setCustomerName(c.customerName);
                     setPhone(c.phone);
-                    setCarType(c.carType||'');
-                    setCarModel(c.carModel||'');
+                    setCarType(c.carType || '');
+                    setCarModel(c.carModel || '');
                     setCarNumber(c.carNumber || '');
                     setShowOptions(false);
                   }}
                 >
-                  <span style={{fontWeight:600}}>{c.customerName}</span>
-                  <span style={{color:'#888',marginRight:8,fontSize:13}}>{c.phone}</span>
+                  <span style={{ fontWeight: 600 }}>{c.customerName}</span>
+                  <span style={{ color: '#888', marginRight: 8, fontSize: 13 }}>{c.phone}</span>
                 </div>
               ))}
             </div>
