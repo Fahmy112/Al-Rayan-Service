@@ -277,7 +277,25 @@ export default function AddRequest() {
           )}
         </label>
         <label style={lbl}>رقم الهاتف:
-          <input required value={phone} onChange={e => setPhone(e.target.value)} style={{ ...inputStyle, width: '100%', fontSize: 15 }} autoComplete="tel" />
+          <input
+            required
+            value={phone}
+            onChange={e => {
+              setPhone(e.target.value);
+              // بحث تلقائي عن العميل بناءً على رقم الهاتف
+              const c = customerOptions.find(c => c.phone === e.target.value);
+              if (c) {
+                setCustomerName(c.customerName);
+                setPhone(c.phone);
+                setPhone2(c.phone2 || '');
+                setCarType(c.carType || '');
+                setCarModel(c.carModel || '');
+                setCarNumber(c.carNumber || '');
+              }
+            }}
+            style={{ ...inputStyle, width: '100%', fontSize: 15 }}
+            autoComplete="tel"
+          />
         </label>
         <label style={lbl}>هاتف إضافي:
           <input value={phone2} onChange={e => setPhone2(e.target.value)} style={{ ...inputStyle, width: '100%', fontSize: 15 }} placeholder="اختياري" autoComplete="tel" />
@@ -289,7 +307,25 @@ export default function AddRequest() {
           <input required value={carModel} onChange={e => setCarModel(e.target.value)} style={{ ...inputStyle, width: '100%', fontSize: 15 }} autoComplete="off" />
         </label>
         <label style={lbl}>نمرة السيارة:
-          <input required value={carNumber} onChange={e => setCarNumber(e.target.value)} style={{ ...inputStyle, width: '100%', fontSize: 15 }} autoComplete="off" />
+          <input
+            required
+            value={carNumber}
+            onChange={e => {
+              setCarNumber(e.target.value);
+              // بحث تلقائي عن العميل بناءً على نمرة السيارة
+              const c = customerOptions.find(c => c.carNumber === e.target.value);
+              if (c) {
+                setCustomerName(c.customerName);
+                setPhone(c.phone);
+                setPhone2(c.phone2 || '');
+                setCarType(c.carType || '');
+                setCarModel(c.carModel || '');
+                setCarNumber(c.carNumber || '');
+              }
+            }}
+            style={{ ...inputStyle, width: '100%', fontSize: 15 }}
+            autoComplete="off"
+          />
         </label>
         <label style={lbl}>الكيلومتر الحالي:
           <input required type="number" min={0} value={kilometers} onChange={e => setKilometers(e.target.value)} style={{ ...inputStyle, width: '100%', fontSize: 15 }} />
