@@ -28,6 +28,8 @@ type Request = {
   purchasesCost?: string;
   purchasesRkha?: string;
   purchasesFady?: string;
+  purchasesExternal?: string;
+  purchasesExternalLabel?: string;
   sparePartName?: string;
   sparePartPrice?: string;
   total?: string;
@@ -154,10 +156,12 @@ export default function RequestsPage() {
       const repair = Number(updated.repairCost) || 0;
       const purchasesRkha = Number(updated.purchasesRkha) || 0;
       const purchasesFady = Number(updated.purchasesFady) || 0;
+      const purchasesExternal = Number(updated.purchasesExternal) || 0;
       total += repair;
       total += purchasesRkha;
       total += purchasesFady;
-      if (repair > 0 || purchasesRkha > 0 || purchasesFady > 0) hasValue = true;
+      total += purchasesExternal;
+      if (repair > 0 || purchasesRkha > 0 || purchasesFady > 0 || purchasesExternal > 0) hasValue = true;
       updated.total = hasValue ? String(total) : '';
       return updated;
     });
@@ -318,11 +322,15 @@ export default function RequestsPage() {
               <div className={styles['request-row']} style={{borderBottom:'1px solid #e0e6f2',paddingBottom:6,marginBottom:6}}>الكيلومتر: {r.kilometers || "-"}</div>
               <div className={styles['request-row']} style={{borderBottom:'1px solid #e0e6f2',paddingBottom:6,marginBottom:6}}>المشكلة: {r.problem}</div>
               <div className={styles['request-row']} style={{borderBottom:'1px solid #e0e6f2',paddingBottom:6,marginBottom:6}}>ملاحظات: {r.notes || "-"}</div>
-              <div className={styles['request-row']} style={{borderBottom:'1px solid #e0e6f2',paddingBottom:6,marginBottom:6}}>الصيانة: {r.repairCost || "-"} جنيه</div>
               <div className={styles['request-row']} style={{borderBottom:'1px solid #e0e6f2',paddingBottom:6,marginBottom:6}}>
                 سعر المشتريات:
                 رخا: {r.purchasesRkha !== undefined && r.purchasesRkha !== "" ? r.purchasesRkha : (r.purchasesCost || 0)}ج
                 | الفادي: {r.purchasesFady !== undefined && r.purchasesFady !== "" ? r.purchasesFady : 0}ج
+                {r.purchasesExternalLabel && (
+                  <>
+                    | {r.purchasesExternalLabel}: {r.purchasesExternal || 0}ج
+                  </>
+                )}
               </div>
               <div className={styles['request-row']} style={{borderBottom:'1px solid #e0e6f2',paddingBottom:6,marginBottom:6}}>
                 قطع الغيار:
@@ -337,6 +345,7 @@ export default function RequestsPage() {
                     : 0
                 } ج
               </div>
+              <div className={styles['request-row']} style={{borderBottom:'1px solid #e0e6f2',paddingBottom:6,marginBottom:6}}>الصيانة: {r.repairCost || "-"} جنيه</div>
               <div className={styles['request-row']} style={{borderBottom:'1px solid #e0e6f2',paddingBottom:6,marginBottom:6}}>الإجمالي: <span className={styles.total}>{r.total || "-"}</span></div>
               <div className={styles['request-row']} style={{borderBottom:'1px solid #e0e6f2',paddingBottom:6,marginBottom:6}}>
                 الدفع: 
@@ -376,6 +385,14 @@ export default function RequestsPage() {
             <button onClick={cancelEdit} style={{position:'sticky',top:0,right:0,left:'unset',fontSize:22,fontWeight:'bold',background:'none',border:'none',color:'#e34a4a',cursor:'pointer',zIndex:10,marginLeft:'auto',display:'block'}}>×</button>
             <h2 style={{color:'#286090',marginBottom:12,fontSize:18,textAlign:'center'}}>تعديل الطلب</h2>
             <div style={{display:'flex',flexDirection:'column',gap:7}}>
+              <label>
+                اسم المشتريات الخارجية:
+                <input value={editValue.purchasesExternalLabel || "مشتريات خارجية"} onChange={e => onEditChange("purchasesExternalLabel", e.target.value)} placeholder="اسم المشتريات الخارجية" />
+              </label>
+              <label>
+                قيمة المشتريات الخارجية:
+                <input value={editValue.purchasesExternal || ""} onChange={e => onEditChange("purchasesExternal", e.target.value)} placeholder="قيمة المشتريات الخارجية بالجنيه" />
+              </label>
               <label>اسم العميل:<input value={editValue.customerName || ""} onChange={e => onEditChange("customerName", e.target.value)} placeholder="ادخل اسم العميل" /></label>
               <label>رقم الهاتف:<input value={editValue.phone || ""} onChange={e => onEditChange("phone", e.target.value)} placeholder="ادخل رقم الهاتف" /></label>
               <label>هاتف إضافي:<input value={editValue.phone2 || ""} onChange={e => onEditChange("phone2", e.target.value)} placeholder="هاتف إضافي (اختياري)" /></label>

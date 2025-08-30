@@ -1,5 +1,36 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+interface Customer {
+  customerName: string;
+  phone: string;
+  phone2?: string;
+  carType?: string;
+  carModel?: string;
+  carNumber?: string;
+}
+  const [customerOptions, setCustomerOptions] = useState<Customer[]>([]);
+  const [showOptions, setShowOptions] = useState(false);
+  const nameInputRef = useRef<HTMLInputElement>(null);
+  // جلب العملاء من الطلبات السابقة
+  useEffect(() => {
+    fetch("/api/requests").then(r => r.json()).then((data) => {
+      const unique: Record<string, Customer> = {};
+      data.forEach((r: any) => {
+        if (r.customerName && r.phone) {
+          const key = r.customerName + "-" + r.phone;
+          unique[key] = {
+            customerName: r.customerName,
+            phone: r.phone,
+            phone2: r.phone2,
+            carType: r.carType,
+            carModel: r.carModel,
+            carNumber: r.carNumber
+          };
+        }
+      });
+      setCustomerOptions(Object.values(unique));
+    });
+  }, []);
 import { useRouter } from "next/navigation";
 
 interface Spare {
@@ -198,31 +229,66 @@ export default function AddRequest() {
       )}
       <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 10, fontSize: 15, width: '100%' }}>
         <label style={lbl}>اسم العميل:
-          <input required value={customerName} onChange={e => setCustomerName(e.target.value)} style={{ ...inputStyle, width: '100%', fontSize: 15 }} autoFocus />
+          <input
+            required
+            value={customerName}
+            ref={nameInputRef}
+            onChange={e => {
+              setCustomerName(e.target.value);
+              setShowOptions(true);
+            }}
+            onFocus={() => setShowOptions(true)}
+            onBlur={() => setTimeout(() => setShowOptions(false), 150)}
+            style={{ ...inputStyle, width: '100%', fontSize: 15 }}
+            autoFocus
+            autoComplete="off"
+            placeholder="ابحث أو اكتب اسم العميل"
+          />
+          {showOptions && customerName && customerOptions.filter(c => c.customerName.toLowerCase().includes(customerName.toLowerCase())).length > 0 && (
+            <div style={{position:'absolute',zIndex:1000,background:'#fff',border:'1px solid #bbc6d3',borderRadius:6,maxHeight:180,overflowY:'auto',width:nameInputRef.current?.offsetWidth||'100%',boxShadow:'0 2px 8px #bbc6dd33'}}>
+              {customerOptions.filter(c => c.customerName.toLowerCase().includes(customerName.toLowerCase())).map((c, i) => (
+                <div
+                  key={c.customerName + c.phone + i}
+                  style={{padding:'7px 12px',cursor:'pointer',borderBottom:'1px solid #f0f4ff'}}
+                  onMouseDown={() => {
+                    setCustomerName(c.customerName);
+                    setPhone(c.phone);
+                    setCarType(c.carType||'');
+                    setCarModel(c.carModel||'');
+                    setCarNumber(c.carNumber || '');
+                    setShowOptions(false);
+                  }}
+                >
+                  <span style={{fontWeight:600}}>{c.customerName}</span>
+                  <span style={{color:'#888',marginRight:8,fontSize:13}}>{c.phone}</span>
+                </div>
+              ))}
+            </div>
+          )}
         </label>
         <label style={lbl}>رقم الهاتف:
-          <input required value={phone} onChange={e => setPhone(e.target.value)} style={{ ...inputStyle, width: '100%', fontSize: 15 }} />
+          <input required value={phone} onChange={e => setPhone(e.target.value)} style={{ ...inputStyle, width: '100%', fontSize: 15 }} autoComplete="tel" />
         </label>
         <label style={lbl}>هاتف إضافي:
-          <input value={phone2} onChange={e => setPhone2(e.target.value)} style={{ ...inputStyle, width: '100%', fontSize: 15 }} placeholder="اختياري" />
+          <input value={phone2} onChange={e => setPhone2(e.target.value)} style={{ ...inputStyle, width: '100%', fontSize: 15 }} placeholder="اختياري" autoComplete="tel" />
         </label>
         <label style={lbl}>نوع السيارة:
-          <input required value={carType} onChange={e => setCarType(e.target.value)} style={{ ...inputStyle, width: '100%', fontSize: 15 }} />
+          <input required value={carType} onChange={e => setCarType(e.target.value)} style={{ ...inputStyle, width: '100%', fontSize: 15 }} autoComplete="off" />
         </label>
         <label style={lbl}>موديل السيارة:
-          <input required value={carModel} onChange={e => setCarModel(e.target.value)} style={{ ...inputStyle, width: '100%', fontSize: 15 }} />
+          <input required value={carModel} onChange={e => setCarModel(e.target.value)} style={{ ...inputStyle, width: '100%', fontSize: 15 }} autoComplete="off" />
         </label>
         <label style={lbl}>نمرة السيارة:
-          <input required value={carNumber} onChange={e => setCarNumber(e.target.value)} style={{ ...inputStyle, width: '100%', fontSize: 15 }} />
+          <input required value={carNumber} onChange={e => setCarNumber(e.target.value)} style={{ ...inputStyle, width: '100%', fontSize: 15 }} autoComplete="off" />
         </label>
         <label style={lbl}>الكيلومتر الحالي:
           <input required type="number" min={0} value={kilometers} onChange={e => setKilometers(e.target.value)} style={{ ...inputStyle, width: '100%', fontSize: 15 }} />
         </label>
         <label style={lbl}>المشكلة:
-          <textarea required value={problem} onChange={e => setProblem(e.target.value)} style={{ ...inputStyle, resize: 'vertical', width: '100%', fontSize: 15 }} rows={3} />
+          <textarea required value={problem} onChange={e => setProblem(e.target.value)} style={{ ...inputStyle, resize: 'vertical', width: '100%', fontSize: 15 }} rows={3} autoComplete="off" />
         </label>
         <label style={lbl}>الملاحظات:
-          <textarea value={notes} onChange={e => setNotes(e.target.value)} style={{ ...inputStyle, resize: 'vertical', width: '100%', fontSize: 15 }} rows={2} placeholder="اختياري" />
+          <textarea value={notes} onChange={e => setNotes(e.target.value)} style={{ ...inputStyle, resize: 'vertical', width: '100%', fontSize: 15 }} rows={2} placeholder="اختياري" autoComplete="off" />
         </label>
         <div style={{ margin: '10px 0', background: '#f4f8fd', borderRadius: 7, padding: 8, overflowX: 'auto' }}>
           <div style={{ fontWeight: 600, fontSize: 16, marginBottom: 5 }}>قطع الغيار المطلوبة:</div>
