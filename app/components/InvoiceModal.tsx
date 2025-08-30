@@ -83,7 +83,7 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({ open, onClose, request }) =
           <div style={labelStyle}>اسم العميل:</div>
           <div style={valueStyle}>{request.customerName}</div>
           <div style={labelStyle}>رقم التليفون:</div>
-          <div style={valueStyle}>{request.phone}</div>
+          <div style={valueStyle}>+20{request.phone?.replace(/^0+/, '').replace(/^20/, '')}</div>
           <div style={labelStyle}>المشكلة:</div>
           <div style={valueStyle}>{request.problem}</div>
           <div style={labelStyle}>الملاحظات:</div>
@@ -100,14 +100,13 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({ open, onClose, request }) =
         <button
           style={{marginTop:8,background:'#25D366',color:'#fff',fontWeight:'bold',fontSize:13,padding:'7px 0',border:'none',borderRadius:7,width:'100%',cursor:'pointer',letterSpacing:0.5}}
           onClick={() => {
-            const text = `مركز الرايان لخدمات السيارات\nنرحب بكم ونتمنى لكم تجربة خدمة مميزة معنا\n\nفاتورة العميل\n\nالاسم: ${request.customerName}\nرقم التليفون: ${request.phone}\nالمشكلة: ${request.problem}\nالملاحظات: ${request.notes || '-'}\nالإجمالي: ${request.total || '-'}\nطريقة الدفع: ${request.paymentStatus || '-'}\nالمبلغ المتبقي: ${request.remainingAmount || '-'}\nالكيلومتر: ${request.kilometers || '-'}`;
+            const phoneDisplay = '+20' + (request.phone || '').replace(/^0+/, '').replace(/^20/, '');
+            const text = `مركز الرايان لخدمات السيارات\nنرحب بكم ونتمنى لكم تجربة خدمة مميزة معنا\n\nفاتورة العميل\n\nالاسم: ${request.customerName}\nرقم التليفون: ${phoneDisplay}\nالمشكلة: ${request.problem}\nالملاحظات: ${request.notes || '-'}\nالإجمالي: ${request.total || '-'}\nطريقة الدفع: ${request.paymentStatus || '-'}\nالمبلغ المتبقي: ${request.remainingAmount || '-'}\nالكيلومتر: ${request.kilometers || '-'}`;
             let phone = (request.phone || '').replace(/\D/g, '');
             if (phone.startsWith('0')) phone = phone.substring(1);
+            if (!phone.startsWith('20')) phone = '20' + phone;
             let waUrl = '';
             if (phone.length >= 10 && phone.length <= 15) {
-              if (!phone.startsWith('20') && !phone.startsWith('966')) {
-                phone = '20' + phone;
-              }
               waUrl = `https://wa.me/${phone}?text=${encodeURIComponent(text)}`;
             } else {
               waUrl = `https://wa.me/?text=${encodeURIComponent(text)}`;
