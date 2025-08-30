@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useRef } from "react";
+import html2canvas from "html2canvas";
 
 interface InvoiceModalProps {
   open: boolean;
@@ -56,51 +57,72 @@ const valueStyle: React.CSSProperties = {
 };
 
 const InvoiceModal: React.FC<InvoiceModalProps> = ({ open, onClose, request }) => {
+  const invoiceRef = useRef<HTMLDivElement>(null);
   if (!open || !request) return null;
+  // دالة لتحميل الفاتورة كصورة
+  const handleDownloadImage = async () => {
+    if (invoiceRef.current) {
+      const canvas = await html2canvas(invoiceRef.current, { scale: 2 });
+      const link = document.createElement('a');
+      link.download = `فاتورة_${request.customerName}.png`;
+      link.href = canvas.toDataURL();
+      link.click();
+    }
+  };
   return (
     <div style={modalStyle}>
       <div style={cardStyle}>
-  <button onClick={onClose} style={{position:'absolute',top:6,right:8,fontSize:18,fontWeight:'bold',background:'none',border:'none',color:'#e34a4a',cursor:'pointer'}}>×</button>
-  {/* اسم المركز */}
-  <div style={{textAlign:'center',color:'#27853d',fontWeight:'bold',fontSize:15,marginBottom:2,letterSpacing:0.5}}>مركز الرايان لخدمات السيارات</div>
-  {/* رسالة ترحيبية */}
-  <div style={{textAlign:'center',color:'#286090',fontWeight:'bold',fontSize:11,marginBottom:7}}>نرحب بكم ونتمنى لكم تجربة خدمة مميزة معنا</div>
-  <div style={{textAlign:'center',color:'#286090',marginBottom:10,fontWeight:'bold',fontSize:14}}>فاتورة العميل</div>
-        <div style={labelStyle}>اسم العميل:</div>
-        <div style={valueStyle}>{request.customerName}</div>
-        <div style={labelStyle}>رقم التليفون:</div>
-        <div style={valueStyle}>{request.phone}</div>
-        <div style={labelStyle}>المشكلة:</div>
-        <div style={valueStyle}>{request.problem}</div>
-        <div style={labelStyle}>الملاحظات:</div>
-        <div style={valueStyle}>{request.notes || '-'}</div>
-        <div style={labelStyle}>الإجمالي:</div>
-        <div style={valueStyle}>{request.total || '-'}</div>
-        <div style={labelStyle}>طريقة الدفع:</div>
-        <div style={valueStyle}>{request.paymentStatus || '-'}</div>
-        <div style={labelStyle}>المبلغ المتبقي:</div>
-        <div style={valueStyle}>{request.remainingAmount || '-'}</div>
-        <div style={labelStyle}>الكيلومتر:</div>
-        <div style={valueStyle}>{request.kilometers || '-'}</div>
+        <button onClick={onClose} style={{position:'absolute',top:6,right:8,fontSize:18,fontWeight:'bold',background:'none',border:'none',color:'#e34a4a',cursor:'pointer'}}>×</button>
+        {/* زر تحميل الفاتورة كصورة */}
+        <button onClick={handleDownloadImage} style={{position:'absolute',top:6,left:8,fontSize:13,background:'#286090',color:'#fff',border:'none',borderRadius:6,padding:'3px 10px',cursor:'pointer'}}>تحميل كصورة</button>
+        {/* محتوى الفاتورة */}
+        <div ref={invoiceRef} style={{background:'#fff'}}>
+          <div style={{textAlign:'center',color:'#27853d',fontWeight:'bold',fontSize:15,marginBottom:2,letterSpacing:0.5}}>مركز الرايان لخدمات السيارات</div>
+          <div style={{textAlign:'center',color:'#286090',fontWeight:'bold',fontSize:11,marginBottom:7}}>نرحب بكم ونتمنى لكم تجربة خدمة مميزة معنا</div>
+          <div style={{textAlign:'center',color:'#286090',marginBottom:10,fontWeight:'bold',fontSize:14}}>فاتورة العميل</div>
+          <div style={labelStyle}>اسم العميل:</div>
+          <div style={valueStyle}>{request.customerName}</div>
+          <div style={labelStyle}>رقم التليفون:</div>
+          <div style={valueStyle}>{request.phone}</div>
+          <div style={labelStyle}>المشكلة:</div>
+          <div style={valueStyle}>{request.problem}</div>
+          <div style={labelStyle}>الملاحظات:</div>
+          <div style={valueStyle}>{request.notes || '-'}</div>
+          <div style={labelStyle}>الإجمالي:</div>
+          <div style={valueStyle}>{request.total || '-'}</div>
+          <div style={labelStyle}>طريقة الدفع:</div>
+          <div style={valueStyle}>{request.paymentStatus || '-'}</div>
+          <div style={labelStyle}>المبلغ المتبقي:</div>
+          <div style={valueStyle}>{request.remainingAmount || '-'}</div>
+          <div style={labelStyle}>الكيلومتر:</div>
+          <div style={valueStyle}>{request.kilometers || '-'}</div>
+        </div>
         <button
           style={{marginTop:8,background:'#25D366',color:'#fff',fontWeight:'bold',fontSize:13,padding:'7px 0',border:'none',borderRadius:7,width:'100%',cursor:'pointer',letterSpacing:0.5}}
           onClick={() => {
             const text = `مركز الرايان لخدمات السيارات\nنرحب بكم ونتمنى لكم تجربة خدمة مميزة معنا\n\nفاتورة العميل\n\nالاسم: ${request.customerName}\nرقم التليفون: ${request.phone}\nالمشكلة: ${request.problem}\nالملاحظات: ${request.notes || '-'}\nالإجمالي: ${request.total || '-'}\nطريقة الدفع: ${request.paymentStatus || '-'}\nالمبلغ المتبقي: ${request.remainingAmount || '-'}\nالكيلومتر: ${request.kilometers || '-'}`;
-            // استخراج رقم الهاتف بشكل دولي (بدون + أو 0 في البداية)
             let phone = (request.phone || '').replace(/\D/g, '');
             if (phone.startsWith('0')) phone = phone.substring(1);
+            let waUrl = '';
             if (phone.length >= 10 && phone.length <= 15) {
-              // مثال: مصر 20، السعودية 966، إلخ. عدل الكود حسب بلدك إذا أردت
               if (!phone.startsWith('20') && !phone.startsWith('966')) {
-                phone = '20' + phone; // مصر افتراضيًا
+                phone = '20' + phone;
               }
-              const url = `https://wa.me/${phone}?text=${encodeURIComponent(text)}`;
-              window.open(url, '_blank');
+              waUrl = `https://wa.me/${phone}?text=${encodeURIComponent(text)}`;
             } else {
-              // fallback: فقط نص بدون رقم
-              const url = `https://wa.me/?text=${encodeURIComponent(text)}`;
-              window.open(url, '_blank');
+              waUrl = `https://wa.me/?text=${encodeURIComponent(text)}`;
             }
+            // محاولة فتح تطبيق واتساب على ويندوز أولاً
+            let tried = false;
+            const appUrl = waUrl.replace('https://wa.me/', 'whatsapp://send?phone=').replace('?text=', '&text=');
+            const timeout = setTimeout(() => {
+              if (!tried) {
+                window.open(waUrl, '_blank');
+                tried = true;
+              }
+            }, 800);
+            window.location.href = appUrl;
+            // إذا لم ينجح التحويل خلال 800ms، يفتح المتصفح تلقائياً
           }}
         >إرسال على واتساب</button>
       </div>
