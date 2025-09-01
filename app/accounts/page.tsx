@@ -23,7 +23,8 @@ export default function AccountsPage() {
     rkha: 0,
     external: 0,
     profitRkha: 0,
-    profitExternal: 0
+    profitExternal: 0,
+    total: 0
   });
 
   useEffect(() => {
@@ -67,7 +68,8 @@ export default function AccountsPage() {
           return sum + (ext - netExt);
         }
         return sum;
-      }, 0)
+      }, 0),
+      total: filtered.reduce((sum, r) => sum + (Number(r.total) || 0), 0)
     });
   }, [requests, filter, date, week]);
 
@@ -86,30 +88,34 @@ export default function AccountsPage() {
           <input type="date" value={week} onChange={e => setWeek(e.target.value)} style={{padding:'7px 18px',borderRadius:8,border:'1.5px solid #bbc6d3',fontSize:16,background:'#f0f4ff'}} />
         )}
       </div>
-      <table style={{width:'100%',borderCollapse:'collapse',marginTop:10,background:'#f8fafd',borderRadius:10,overflow:'hidden',boxShadow:'0 1px 6px #bbc6dd22'}}>
-        <thead>
-          <tr style={{background:'#e3f0fa',color:'#286090',fontWeight:'bold',fontSize:18}}>
-            <th style={{padding:'14px 0',border:'1px solid #e0e6f2'}}>إجمالي المصنعيات</th>
-            <th style={{padding:'14px 0',border:'1px solid #e0e6f2'}}>إجمالي صافي مشتريات رخا</th>
-            <th style={{padding:'14px 0',border:'1px solid #e0e6f2'}}>إجمالي صافي المشتريات الخارجية</th>
-            <th style={{padding:'14px 0',border:'1px solid #e0e6f2'}}>مشتريات رخا</th>
-            <th style={{padding:'14px 0',border:'1px solid #e0e6f2'}}>مشتريات خارجية</th>
-            <th style={{padding:'14px 0',border:'1px solid #e0e6f2',background:'#e3f0fa'}}>إجمالي مكسب رخا</th>
-            <th style={{padding:'14px 0',border:'1px solid #e0e6f2',background:'#e3f0fa'}}>إجمالي مكسب مشتريات خارجية</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr style={{textAlign:'center',fontWeight:'bold',fontSize:20,color:'#27853d',background:'#fff'}}>
-            <td style={{padding:'14px 0',border:'1px solid #e0e6f2'}}>{totals.repair} ج</td>
-            <td style={{padding:'14px 0',border:'1px solid #e0e6f2'}}>{totals.netRkha} ج</td>
-            <td style={{padding:'14px 0',border:'1px solid #e0e6f2'}}>{totals.netExternal} ج</td>
-            <td style={{padding:'14px 0',border:'1px solid #e0e6f2'}}>{totals.rkha} ج</td>
-            <td style={{padding:'14px 0',border:'1px solid #e0e6f2'}}>{totals.external} ج</td>
-            <td style={{padding:'14px 0',border:'1px solid #e0e6f2',color:'#0a5',fontWeight:700}}>{totals.profitRkha} ج</td>
-            <td style={{padding:'14px 0',border:'1px solid #e0e6f2',color:'#0a5',fontWeight:700}}>{totals.profitExternal} ج</td>
-          </tr>
-        </tbody>
-      </table>
+      <div style={{overflowX:'auto'}}>
+        <table style={{width:'100%',borderCollapse:'separate',borderSpacing:0,marginTop:10,background:'#f8fafd',borderRadius:14,overflow:'hidden',boxShadow:'0 1px 6px #bbc6dd22',minWidth:900}}>
+          <thead>
+            <tr style={{background:'#e3f0fa',color:'#286090',fontWeight:'bold',fontSize:18}}>
+              <th style={{padding:'14px 0',border:'1px solid #e0e6f2',minWidth:110}}>إجمالي الطلبات</th>
+              <th style={{padding:'14px 0',border:'1px solid #e0e6f2'}}>إجمالي المصنعيات</th>
+              <th style={{padding:'14px 0',border:'1px solid #e0e6f2'}}>إجمالي صافي مشتريات رخا</th>
+              <th style={{padding:'14px 0',border:'1px solid #e0e6f2'}}>إجمالي صافي المشتريات الخارجية</th>
+              <th style={{padding:'14px 0',border:'1px solid #e0e6f2'}}>مشتريات رخا</th>
+              <th style={{padding:'14px 0',border:'1px solid #e0e6f2'}}>مشتريات خارجية</th>
+              <th style={{padding:'14px 0',border:'1px solid #e0e6f2',background:'#e3f0fa'}}>إجمالي مكسب رخا</th>
+              <th style={{padding:'14px 0',border:'1px solid #e0e6f2',background:'#e3f0fa'}}>إجمالي مكسب مشتريات خارجية</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style={{textAlign:'center',fontWeight:'bold',fontSize:20,color:'#27853d',background:'#fff'}}>
+              <td style={{padding:'14px 0',border:'1px solid #e0e6f2',background:'#f0f4ff',fontWeight:800}}>{totals.total} ج</td>
+              <td style={{padding:'14px 0',border:'1px solid #e0e6f2'}}>{totals.repair} ج</td>
+              <td style={{padding:'14px 0',border:'1px solid #e0e6f2'}}>{totals.netRkha} ج</td>
+              <td style={{padding:'14px 0',border:'1px solid #e0e6f2'}}>{totals.netExternal} ج</td>
+              <td style={{padding:'14px 0',border:'1px solid #e0e6f2'}}>{totals.rkha} ج</td>
+              <td style={{padding:'14px 0',border:'1px solid #e0e6f2'}}>{totals.external} ج</td>
+              <td style={{padding:'14px 0',border:'1px solid #e0e6f2',color:'#0a5',fontWeight:700,background:'#eafbe7'}}>{totals.profitRkha} ج</td>
+              <td style={{padding:'14px 0',border:'1px solid #e0e6f2',color:'#0a5',fontWeight:700,background:'#eafbe7'}}>{totals.profitExternal} ج</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }
