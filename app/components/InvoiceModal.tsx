@@ -109,8 +109,20 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({ open, onClose, request }) =
         >
           تحميل كصورة
         </button>
-        {/* محتوى الفاتورة */}
-        <div ref={invoiceRef} style={{ background: "#fff", paddingRight: "18px", paddingLeft: "18px", minWidth: 300, maxWidth: 400 }}>
+        {/* محتوى الفاتورة مع تمرير عند الحاجة */}
+        <div
+          ref={invoiceRef}
+          style={{
+            background: "#fff",
+            paddingRight: "18px",
+            paddingLeft: "18px",
+            minWidth: 300,
+            maxWidth: 400,
+            maxHeight: '65vh', // أقصى ارتفاع 65% من الشاشة
+            overflowY: 'auto', // شريط تمرير عمودي عند الحاجة
+            marginBottom: 8,
+          }}
+        >
           <div style={{ textAlign: "center", color: "#27853d", fontWeight: "bold", fontSize: 15, marginBottom: 2, letterSpacing: 0.5 }}>
             AlRayan Integrated Auto Service
           </div>
