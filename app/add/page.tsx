@@ -93,8 +93,8 @@ export default function AddRequest() {
   const [purchasesCost, setPurchasesCost] = useState("");
   const [purchasesRkha, setPurchasesRkha] = useState("");
   const [purchasesFady, setPurchasesFady] = useState("");
-  const [purchasesExternal, setPurchasesExternal] = useState("");
-  const [purchasesExternalLabel, setPurchasesExternalLabel] = useState("مشتريات خارجية");
+  // const [purchasesExternal, setPurchasesExternal] = useState("");
+  // const [purchasesExternalLabel, setPurchasesExternalLabel] = useState("مشتريات خارجية");
   const [spares, setSpares] = useState<Spare[]>([]);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -158,9 +158,9 @@ export default function AddRequest() {
     }).reduce((a, b) => a + b, 0);
     const main = parseFloat(repairCost) || 0;
     const rkha = parseFloat(purchasesRkha) || 0;
-    const fady = parseFloat(purchasesFady) || 0;
-    const external = parseFloat(purchasesExternal) || 0;
-    return (parts + main + rkha + fady + external).toString();
+  const fady = parseFloat(purchasesFady) || 0;
+  // const external = parseFloat(purchasesExternal) || 0;
+  return (parts + main + rkha + fady).toString();
   }
   const total = calcTotal();
 
@@ -189,8 +189,8 @@ export default function AddRequest() {
         purchasesCost: purchasesCost || undefined,
         purchasesRkha: purchasesRkha || undefined,
         purchasesFady: purchasesFady || undefined,
-        purchasesExternal: purchasesExternal || undefined,
-        purchasesExternalLabel: purchasesExternalLabel || undefined,
+  // purchasesExternal: purchasesExternal || undefined,
+  // purchasesExternalLabel: purchasesExternalLabel || undefined,
         usedSpares: usedSpares.map(x => ({ id: x.id, name: x.name, price: x.price, qty: x.qty })),
         total
       })
@@ -396,10 +396,7 @@ export default function AddRequest() {
         <label style={lbl}>مشتريات الفادي:
           <input type="number" min={0} value={purchasesFady} onChange={e => setPurchasesFady(e.target.value)} style={{ ...inputStyle, width: '100%', fontSize: 15 }} placeholder="سعر مشتريات الفادي بالجنيه" />
         </label>
-        <label style={lbl}>
-          <input type="text" value={purchasesExternalLabel} onChange={e => setPurchasesExternalLabel(e.target.value)} style={{ ...inputStyle, width: '100%', fontSize: 15, marginBottom: 4 }} placeholder="اسم المشتريات الخارجية (اختياري)" />
-          <input type="number" min={0} value={purchasesExternal} onChange={e => setPurchasesExternal(e.target.value)} style={{ ...inputStyle, width: '100%', fontSize: 15 }} placeholder="قيمة المشتريات الخارجية بالجنيه" />
-        </label>
+  {/* تم إلغاء المشتريات الخارجية بناءً على طلب العميل */}
         <div style={{ fontWeight: 600, margin: '14px 0 0', fontSize: 16 }}>
           الإجمالي:&nbsp;
           <span style={{ fontWeight: 'bold', color: '#286090', background: '#f0f4ff', borderRadius: 6, padding: '4px 16px' }}>{total || 0}</span> جنيه
