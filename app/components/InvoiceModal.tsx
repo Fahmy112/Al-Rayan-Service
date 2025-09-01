@@ -134,6 +134,9 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({ open, onClose, request }) =
             maxHeight: '65vh', // أقصى ارتفاع 65% من الشاشة
             overflowY: 'auto', // شريط تمرير عمودي عند الحاجة
             marginBottom: 8,
+            direction: 'rtl',
+            fontFamily: 'Cairo, Tahoma, Arial, sans-serif',
+            lineHeight: 1.8,
           }}
         >
           <div style={{ textAlign: "center", color: "#27853d", fontWeight: "bold", fontSize: 15, marginBottom: 2, letterSpacing: 0.5 }}>
