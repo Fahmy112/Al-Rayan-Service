@@ -52,8 +52,22 @@ export default function AccountsPage() {
       netExternal: filtered.reduce((sum, r) => sum + (Number(r.netPurchasesExternal) || 0), 0),
       rkha: filtered.reduce((sum, r) => sum + (Number(r.purchasesRkha) || 0), 0),
       external: filtered.reduce((sum, r) => sum + (Number(r.purchasesExternal) || 0), 0),
-      profitRkha: filtered.reduce((sum, r) => sum + ((Number(r.purchasesRkha) || 0) - (Number(r.netPurchasesRkha) || 0)), 0),
-      profitExternal: filtered.reduce((sum, r) => sum + ((Number(r.purchasesExternal) || 0) - (Number(r.netPurchasesExternal) || 0)), 0)
+      profitRkha: filtered.reduce((sum, r) => {
+        const rkha = Number(r.purchasesRkha);
+        const netRkha = Number(r.netPurchasesRkha);
+        if (!isNaN(rkha) && !isNaN(netRkha) && rkha && netRkha) {
+          return sum + (rkha - netRkha);
+        }
+        return sum;
+      }, 0),
+      profitExternal: filtered.reduce((sum, r) => {
+        const ext = Number(r.purchasesExternal);
+        const netExt = Number(r.netPurchasesExternal);
+        if (!isNaN(ext) && !isNaN(netExt) && ext && netExt) {
+          return sum + (ext - netExt);
+        }
+        return sum;
+      }, 0)
     });
   }, [requests, filter, date, week]);
 
