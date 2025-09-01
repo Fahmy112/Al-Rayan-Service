@@ -30,6 +30,8 @@ type Request = {
   purchasesFady?: string;
   purchasesExternal?: string;
   purchasesExternalLabel?: string;
+  netPurchasesRkha?: string;
+  netPurchasesExternal?: string;
   sparePartName?: string;
   sparePartPrice?: string;
   total?: string;
@@ -142,7 +144,7 @@ export default function RequestsPage() {
     setShowEditModal(false);
   }
 
-  function onEditChange(field: keyof Request, value: any) {
+  function onEditChange(field: keyof Request | "netPurchasesRkha" | "netPurchasesExternal", value: any) {
     setEditValue(ev => {
       const updated = { ...ev, [field]: value };
       // حساب الإجمالي تلقائياً
@@ -357,6 +359,14 @@ export default function RequestsPage() {
                 <span style={{marginRight:4}}>{r.paymentStatus || "-"}</span>
               </div>
 
+              {/* عناصر صافي المشتريات */}
+              <div className={styles['request-row']} style={{borderBottom:'1px solid #e0e6f2',paddingBottom:6,marginBottom:6, color:'#0a5', fontWeight:'bold'}}>
+                صافي مشتريات رخا: {r.netPurchasesRkha || 0} ج
+              </div>
+              <div className={styles['request-row']} style={{borderBottom:'1px solid #e0e6f2',paddingBottom:6,marginBottom:6, color:'#0a5', fontWeight:'bold'}}>
+                صافي المشتريات الخارجية: {r.netPurchasesExternal || 0} ج
+              </div>
+
               <div className={styles['request-row']} style={{borderBottom:'1px solid #e0e6f2',paddingBottom:6,marginBottom:6}}>
                 <select value={r.status} onChange={e => updateStatus(i, e.target.value)} className={styles["status-select"]}>
                   {statuses.map(st => <option key={st}>{st}</option>)}
@@ -540,6 +550,12 @@ export default function RequestsPage() {
                   </div>
                 )}
               </div>
+              <label>صافي مشتريات رخا:
+                <input type="number" value={editValue.netPurchasesRkha || ""} onChange={e => onEditChange("netPurchasesRkha", e.target.value)} placeholder="صافي مشتريات رخا بالجنيه" />
+              </label>
+              <label>صافي المشتريات الخارجية:
+                <input type="number" value={editValue.netPurchasesExternal || ""} onChange={e => onEditChange("netPurchasesExternal", e.target.value)} placeholder="صافي المشتريات الخارجية بالجنيه" />
+              </label>
               <label>الإجمالي:<input value={editValue.total || ""} readOnly placeholder="الإجمالي بالجنيه" /></label>
               <label>الحالة:
                 <select value={editValue.status || "جديد"} onChange={e => onEditChange("status", e.target.value)}>
