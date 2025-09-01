@@ -305,12 +305,12 @@ export default function RequestsPage() {
                 </svg>
                 <span style={{fontSize:10, color:'#286090', fontWeight:'bold', marginRight:2}}>الفاتورة</span>
               </div>
-          {/* نافذة الفاتورة */}
-          <InvoiceModal
-            open={showInvoice}
-            onClose={() => setShowInvoice(false)}
-            request={invoiceRequest}
-          />
+              {/* نافذة الفاتورة */}
+              <InvoiceModal
+                open={showInvoice}
+                onClose={() => setShowInvoice(false)}
+                request={invoiceRequest}
+              />
               {r.paymentStatus === "لم يتم" && (
                 <div className={styles['request-row']} style={{borderBottom:'1px solid #e0e6f2',paddingBottom:6,marginBottom:6,color:'#e34a4a',fontWeight:'bold'}}>
                   المبلغ المتبقي: {r.remainingAmount || "-"} جنيه
@@ -334,6 +334,12 @@ export default function RequestsPage() {
                   ? r.usedSpares.map((x: any) => `${x.id === "custom" ? x.name : x.name}${x.qty > 1 ? `×${x.qty}` : ''}` ).join(', ')
                   : r.sparePartName || "-"}
               </div>
+              {/* مشتريات خارجية منفصلة */}
+              {(r.purchasesExternal && Number(r.purchasesExternal) > 0) && (
+                <div className={styles['request-row']} style={{borderBottom:'1px solid #e0e6f2',paddingBottom:6,marginBottom:6, color:'#286090', fontWeight:'bold'}}>
+                  {r.purchasesExternalLabel || "مشتريات خارجية"}: {r.purchasesExternal} ج
+                </div>
+              )}
               <div className={styles['request-row']} style={{borderBottom:'1px solid #e0e6f2',paddingBottom:6,marginBottom:6}}>
                 سعر القطع: {
                   Array.isArray(r.usedSpares) && r.usedSpares.length > 0
@@ -389,12 +395,11 @@ export default function RequestsPage() {
               <label>موديل السيارة:<input value={editValue.carModel || ""} onChange={e => onEditChange("carModel", e.target.value)} placeholder="ادخل موديل السيارة" /></label>
               <label>نمرة السيارة:<input value={editValue.carNumber || ""} onChange={e => onEditChange("carNumber", e.target.value)} placeholder="ادخل نمرة السيارة" /></label>
               <label>الكيلومتر:<input value={editValue.kilometers || ""} onChange={e => onEditChange("kilometers", e.target.value)} placeholder="ادخل الكيلومتر" /></label>
-              <label>ملاحظات:<input value={editValue.notes || ""} onChange={e => onEditChange("notes", e.target.value)} placeholder="ملاحظات إضافية" /></label>
-                <label>المشكلة:<textarea value={editValue.problem || ""} onChange={e => onEditChange("problem", e.target.value)} placeholder="وصف المشكلة" style={{minHeight:60,width:'100%',resize:'vertical',fontSize:15}} /></label>
-                <label>ملاحظات:<textarea value={editValue.notes || ""} onChange={e => onEditChange("notes", e.target.value)} placeholder="ملاحظات إضافية" style={{minHeight:60,width:'100%',resize:'vertical',fontSize:15}} /></label>
-                <label>مشتريات رخا:<input value={editValue.purchasesRkha || ""} onChange={e => onEditChange("purchasesRkha", e.target.value)} placeholder="سعر مشتريات رخا بالجنيه" /></label>
-                <label>مشتريات الفادي:<input value={editValue.purchasesFady || ""} onChange={e => onEditChange("purchasesFady", e.target.value)} placeholder="سعر مشتريات الفادي بالجنيه" /></label>
-                <label>
+              <label>المشكلة:<textarea value={editValue.problem || ""} onChange={e => onEditChange("problem", e.target.value)} placeholder="وصف المشكلة" style={{minHeight:60,width:'100%',resize:'vertical',fontSize:15}} /></label>
+              <label>ملاحظات:<textarea value={editValue.notes || ""} onChange={e => onEditChange("notes", e.target.value)} placeholder="ملاحظات إضافية" style={{minHeight:60,width:'100%',resize:'vertical',fontSize:15}} /></label>
+              <label>مشتريات رخا:<input value={editValue.purchasesRkha || ""} onChange={e => onEditChange("purchasesRkha", e.target.value)} placeholder="سعر مشتريات رخا بالجنيه" /></label>
+              <label>مشتريات الفادي:<input value={editValue.purchasesFady || ""} onChange={e => onEditChange("purchasesFady", e.target.value)} placeholder="سعر مشتريات الفادي بالجنيه" /></label>
+              <label>
                 اسم المشتريات الخارجية:
                 <input value={editValue.purchasesExternalLabel || "مشتريات خارجية"} onChange={e => onEditChange("purchasesExternalLabel", e.target.value)} placeholder="اسم المشتريات الخارجية" />
               </label>
@@ -427,7 +432,7 @@ export default function RequestsPage() {
                 }} placeholder="قيمة المشتريات الخارجية بالجنيه" />
               </label>
               <label>المبلغ المتبقي:<input value={editValue.remainingAmount || ""} onChange={e => onEditChange("remainingAmount", e.target.value)} placeholder="المبلغ المتبقي بالجنيه" /></label>
-                <label>تكلفة الصيانة:<input value={editValue.repairCost || ""} onChange={e => onEditChange("repairCost", e.target.value)} placeholder="تكلفة الصيانة بالجنيه" /></label>
+              <label>تكلفة الصيانة:<input value={editValue.repairCost || ""} onChange={e => onEditChange("repairCost", e.target.value)} placeholder="تكلفة الصيانة بالجنيه" /></label>
               <div style={{ margin: '10px 0', padding: '10px', background: '#f8f9fd', borderRadius: 8 }}>
                 <div style={{fontWeight:'bold',marginBottom:7}}>قطع الغيار:</div>
                 {Array.isArray(editValue.usedSpares) && editValue.usedSpares.map((row, idx) => (
@@ -483,10 +488,12 @@ export default function RequestsPage() {
                         const repair = Number(newVal.repairCost) || 0;
                         const purchasesRkha = Number(newVal.purchasesRkha) || 0;
                         const purchasesFady = Number(newVal.purchasesFady) || 0;
+                        const purchasesExternal = Number(newVal.purchasesExternal) || 0;
                         total += repair;
                         total += purchasesRkha;
                         total += purchasesFady;
-                        if (repair > 0 || purchasesRkha > 0 || purchasesFady > 0) hasValue = true;
+                        total += purchasesExternal;
+                        if (repair > 0 || purchasesRkha > 0 || purchasesFady > 0 || purchasesExternal > 0) hasValue = true;
                         newVal.total = hasValue ? String(total) : '';
                         return newVal;
                       });
@@ -507,10 +514,12 @@ export default function RequestsPage() {
                         const repair = Number(newVal.repairCost) || 0;
                         const purchasesRkha = Number(newVal.purchasesRkha) || 0;
                         const purchasesFady = Number(newVal.purchasesFady) || 0;
+                        const purchasesExternal = Number(newVal.purchasesExternal) || 0;
                         total += repair;
                         total += purchasesRkha;
                         total += purchasesFady;
-                        if (repair > 0 || purchasesRkha > 0 || purchasesFady > 0) hasValue = true;
+                        total += purchasesExternal;
+                        if (repair > 0 || purchasesRkha > 0 || purchasesFady > 0 || purchasesExternal > 0) hasValue = true;
                         newVal.total = hasValue ? String(total) : '';
                         return newVal;
                       });
@@ -522,8 +531,14 @@ export default function RequestsPage() {
                   </div>
                 ))}
                 <button type="button" onClick={() => {
-                  setEditValue(ev => ({ ...ev, usedSpares: [...(ev.usedSpares || []), { id: "", name: "", price: 0, qty: 1, category: "" }] }));
+                  setEditValue(ev => ({ ...ev, usedSpares: [...(editValue.usedSpares || []), { id: "", name: "", price: 0, qty: 1, category: "" }] }));
                 }} style={{background:'#286090',color:'#fff',padding:'10px 0',fontWeight:'bold',borderRadius:7,marginTop:5,border:'none',fontFamily:'inherit',fontSize:16,cursor:'pointer',width:'100%'}}>+ إضافة قطعة جديدة</button>
+                {/* مشتريات خارجية منفصلة */}
+                {(editValue.purchasesExternal && Number(editValue.purchasesExternal) > 0) && (
+                  <div style={{marginTop:8, color:'#286090', fontWeight:'bold'}}>
+                    {editValue.purchasesExternalLabel || "مشتريات خارجية"}: {editValue.purchasesExternal} ج
+                  </div>
+                )}
               </div>
               <label>الإجمالي:<input value={editValue.total || ""} readOnly placeholder="الإجمالي بالجنيه" /></label>
               <label>الحالة:
