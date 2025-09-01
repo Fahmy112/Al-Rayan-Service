@@ -31,29 +31,32 @@ const modalStyle: React.CSSProperties = {
 
 const cardStyle: React.CSSProperties = {
   background: "#fff",
-  borderRadius: 12,
-  padding: "16px 10px 12px 10px",
-  minWidth: 220,
-  maxWidth: 270,
+  borderRadius: 16,
+  padding: "24px 18px 18px 18px",
+  minWidth: 320,
+  maxWidth: 420,
   width: "100%",
-  boxShadow: "0 2px 10px #bbc6dd33",
+  boxShadow: "0 4px 24px #bbc6dd44",
   position: "relative",
   fontFamily: "Cairo, Tahoma, Arial, sans-serif",
+  overflow: 'visible',
 };
 
 const labelStyle: React.CSSProperties = {
   color: "#286090",
-  fontWeight: 600,
+  fontWeight: 700,
   marginBottom: 2,
-  fontSize: 13,
-  marginTop: 2,
+  fontSize: 16,
+  marginTop: 4,
+  letterSpacing: 0.2,
 };
 
 const valueStyle: React.CSSProperties = {
   color: "#222",
-  fontWeight: 400,
-  fontSize: 13,
-  marginBottom: 6,
+  fontWeight: 500,
+  fontSize: 15,
+  marginBottom: 8,
+  wordBreak: 'break-word',
 };
 
 const InvoiceModal: React.FC<InvoiceModalProps> = ({ open, onClose, request }) => {
@@ -76,7 +79,7 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({ open, onClose, request }) =
         {/* زر تحميل الفاتورة كصورة */}
         <button onClick={handleDownloadImage} style={{position:'absolute',top:6,left:8,fontSize:13,background:'#286090',color:'#fff',border:'none',borderRadius:6,padding:'3px 10px',cursor:'pointer'}}>تحميل كصورة</button>
         {/* محتوى الفاتورة */}
-  <div ref={invoiceRef} style={{background:'#fff', paddingRight: '18px', paddingLeft: '6px'}}>
+  <div ref={invoiceRef} style={{background:'#fff', paddingRight: '18px', paddingLeft: '18px', minWidth:300, maxWidth:400}}>
           <div style={{textAlign:'center',color:'#27853d',fontWeight:'bold',fontSize:15,marginBottom:2,letterSpacing:0.5}}>  AlRayan Integrated Auto Service  </div>
           <div style={{textAlign:'center',color:'#286090',fontWeight:'bold',fontSize:11,marginBottom:7}}>نرحب بكم ونتمنى لكم تجربة خدمة مميزة معنا</div>
           <div style={{textAlign:'center',color:'#286090',marginBottom:10,fontWeight:'bold',fontSize:14}}>فاتورة العميل</div>

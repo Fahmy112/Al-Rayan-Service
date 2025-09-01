@@ -19,7 +19,11 @@ export default function AccountsPage() {
   const [totals, setTotals] = useState({
     repair: 0,
     netRkha: 0,
-    netExternal: 0
+    netExternal: 0,
+    rkha: 0,
+    external: 0,
+    profitRkha: 0,
+    profitExternal: 0
   });
 
   useEffect(() => {
@@ -45,7 +49,11 @@ export default function AccountsPage() {
     setTotals({
       repair: filtered.reduce((sum, r) => sum + (Number(r.repairCost) || 0), 0),
       netRkha: filtered.reduce((sum, r) => sum + (Number(r.netPurchasesRkha) || 0), 0),
-      netExternal: filtered.reduce((sum, r) => sum + (Number(r.netPurchasesExternal) || 0), 0)
+      netExternal: filtered.reduce((sum, r) => sum + (Number(r.netPurchasesExternal) || 0), 0),
+      rkha: filtered.reduce((sum, r) => sum + (Number(r.purchasesRkha) || 0), 0),
+      external: filtered.reduce((sum, r) => sum + (Number(r.purchasesExternal) || 0), 0),
+      profitRkha: filtered.reduce((sum, r) => sum + ((Number(r.purchasesRkha) || 0) - (Number(r.netPurchasesRkha) || 0)), 0),
+      profitExternal: filtered.reduce((sum, r) => sum + ((Number(r.purchasesExternal) || 0) - (Number(r.netPurchasesExternal) || 0)), 0)
     });
   }, [requests, filter, date, week]);
 
@@ -70,6 +78,10 @@ export default function AccountsPage() {
             <th style={{padding:'14px 0',border:'1px solid #e0e6f2'}}>إجمالي المصنعيات</th>
             <th style={{padding:'14px 0',border:'1px solid #e0e6f2'}}>إجمالي صافي مشتريات رخا</th>
             <th style={{padding:'14px 0',border:'1px solid #e0e6f2'}}>إجمالي صافي المشتريات الخارجية</th>
+            <th style={{padding:'14px 0',border:'1px solid #e0e6f2'}}>مشتريات رخا</th>
+            <th style={{padding:'14px 0',border:'1px solid #e0e6f2'}}>مشتريات خارجية</th>
+            <th style={{padding:'14px 0',border:'1px solid #e0e6f2',background:'#e3f0fa'}}>إجمالي مكسب رخا</th>
+            <th style={{padding:'14px 0',border:'1px solid #e0e6f2',background:'#e3f0fa'}}>إجمالي مكسب مشتريات خارجية</th>
           </tr>
         </thead>
         <tbody>
@@ -77,6 +89,10 @@ export default function AccountsPage() {
             <td style={{padding:'14px 0',border:'1px solid #e0e6f2'}}>{totals.repair} ج</td>
             <td style={{padding:'14px 0',border:'1px solid #e0e6f2'}}>{totals.netRkha} ج</td>
             <td style={{padding:'14px 0',border:'1px solid #e0e6f2'}}>{totals.netExternal} ج</td>
+            <td style={{padding:'14px 0',border:'1px solid #e0e6f2'}}>{totals.rkha} ج</td>
+            <td style={{padding:'14px 0',border:'1px solid #e0e6f2'}}>{totals.external} ج</td>
+            <td style={{padding:'14px 0',border:'1px solid #e0e6f2',color:'#0a5',fontWeight:700}}>{totals.profitRkha} ج</td>
+            <td style={{padding:'14px 0',border:'1px solid #e0e6f2',color:'#0a5',fontWeight:700}}>{totals.profitExternal} ج</td>
           </tr>
         </tbody>
       </table>
