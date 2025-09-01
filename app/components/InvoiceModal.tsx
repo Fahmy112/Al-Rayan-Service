@@ -136,7 +136,10 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({ open, onClose, request }) =
             marginBottom: 8,
             direction: 'rtl',
             fontFamily: 'Cairo, Tahoma, Arial, sans-serif',
-            lineHeight: 1.8,
+            lineHeight: 2.2,
+            fontSize: 16,
+            letterSpacing: 0.5,
+            whiteSpace: 'pre-line',
           }}
         >
           <div style={{ textAlign: "center", color: "#27853d", fontWeight: "bold", fontSize: 15, marginBottom: 2, letterSpacing: 0.5 }}>
