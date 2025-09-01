@@ -133,50 +133,26 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({ open, onClose, request }) =
           <div style={labelStyle}>الكيلومتر:</div>
           <div style={valueStyle}>{request.kilometers || "-"}</div>
           {/* تذييل الفاتورة: رقم الهاتف واللوكيشن (يظهر في الصورة) */}
-          <div style={{ marginTop: 18, borderTop: "1px dashed #bbc6dd", paddingTop: 10, textAlign: "center" }}>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 7, marginBottom: 4 }}>
-              {/* أيقونة هاتف */}
-              <span
-                style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  background: "#e0f7fa",
-                  borderRadius: "50%",
-                  width: 28,
-                  height: 28,
-                }}
-              >
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+          <div style={{ marginTop: 24, borderTop: "1px dashed #bbc6dd", paddingTop: 14, textAlign: "center" }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 6, marginBottom: 10 }}>
+              <span style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", background: "#e0f7fa", borderRadius: "50%", width: 22, height: 22 }}>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
                   <circle cx="12" cy="12" r="12" fill="#25D366" />
-                  <path
-                    d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.472-.148-.67.15-.198.297-.767.967-.94 1.164-.173.198-.347.223-.644.075-.297-.149-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.372-.025-.521-.075-.149-.669-1.611-.916-2.206-.242-.579-.487-.5-.669-.51-.173-.007-.372-.009-.571-.009-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.099 3.205 5.077 4.372.71.306 1.263.489 1.695.625.712.227 1.36.195 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.288.173-1.413-.074-.124-.272-.198-.57-.347z"
-                    fill="#fff"
-                  />
+                  <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.472-.148-.67.15-.198.297-.767.967-.94 1.164-.173.198-.347.223-.644.075-.297-.149-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.372-.025-.521-.075-.149-.669-1.611-.916-2.206-.242-.579-.487-.5-.669-.51-.173-.007-.372-.009-.571-.009-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.099 3.205 5.077 4.372.71.306 1.263.489 1.695.625.712.227 1.36.195 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.288.173-1.413-.074-.124-.272-.198-.57-.347z" fill="#fff" />
                 </svg>
               </span>
-              <span style={{ fontWeight: "bold", color: "#286090", fontSize: 15 }}>01070090636</span>
+              <span style={{ fontWeight: "bold", color: "#286090", fontSize: 14, letterSpacing: 0.2 }}>01070090636</span>
             </div>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 7 }}>
-              {/* أيقونة لوكيشن */}
-              <span
-                style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  background: "#fce4ec",
-                  borderRadius: "50%",
-                  width: 28,
-                  height: 28,
-                }}
-              >
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}>
+              <span style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", background: "#fce4ec", borderRadius: "50%", width: 22, height: 22 }}>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
                   <circle cx="12" cy="12" r="12" fill="#e91e63" />
                   <path d="M12 7a4 4 0 0 0-4 4c0 2.25 4 7 4 7s4-4.75 4-7a4 4 0 0 0-4-4zm0 5.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z" fill="#fff" />
                 </svg>
               </span>
-              <span style={{ fontWeight: "bold", color: "#e91e63", fontSize: 15 }}>الموقع: https://maps.app.goo.gl/pm3tvQvL8xLGVN8i6</span>
+              <span style={{ fontWeight: "bold", color: "#e91e63", fontSize: 14, letterSpacing: 0.2 }}>الموقع: <span style={{textDecoration:'underline',direction:'ltr'}}>اضغط هنا</span></span>
             </div>
+            <div style={{fontSize:10, color:'#888', marginTop:2}}>https://maps.app.goo.gl/pm3tvQvL8xLGVN8i6</div>
           </div>
         </div>
         <button
