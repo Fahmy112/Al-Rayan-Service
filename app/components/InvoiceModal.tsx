@@ -65,7 +65,20 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({ open, onClose, request }) =
   // دالة لتحميل الفاتورة كصورة
   const handleDownloadImage = async () => {
     if (invoiceRef.current) {
+      // احفظ القيم الأصلية
+      const originalMaxHeight = invoiceRef.current.style.maxHeight;
+      const originalOverflowY = invoiceRef.current.style.overflowY;
+      // أزل القيود مؤقتًا
+      invoiceRef.current.style.maxHeight = 'none';
+      invoiceRef.current.style.overflowY = 'visible';
+      // انتظر حتى يتم تطبيق الأنماط
+      await new Promise(res => setTimeout(res, 50));
+      // التقط الصورة
       const canvas = await html2canvas(invoiceRef.current, { scale: 2 });
+      // أرجع الأنماط كما كانت
+      invoiceRef.current.style.maxHeight = originalMaxHeight;
+      invoiceRef.current.style.overflowY = originalOverflowY;
+      // نزّل الصورة
       const link = document.createElement("a");
       link.download = `فاتورة_${request.customerName}.png`;
       link.href = canvas.toDataURL();
@@ -134,15 +147,15 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({ open, onClose, request }) =
           <div style={valueStyle}>+20{request.phone?.replace(/^0+/, "").replace(/^20/, "")}</div>
           <div style={labelStyle}>المشكلة:</div>
           <div style={valueStyle}>{request.problem}</div>
-          <div style={labelStyle}>الملاحظات:</div>
+          <div style={labelStyle}> الملاحظات: </div>
           <div style={valueStyle}>{request.notes || "-"}</div>
-          <div style={labelStyle}>الإجمالي:</div>
+          <div style={labelStyle}> الإجمالي:</div>
           <div style={valueStyle}>{request.total || "-"}</div>
-          <div style={labelStyle}>طريقة الدفع:</div>
+          <div style={labelStyle}> طريقة الدفع:</div>
           <div style={valueStyle}>{request.paymentStatus || "-"}</div>
-          <div style={labelStyle}>المبلغ المتبقي:</div>
+          <div style={labelStyle}> المبلغ المتبقي:</div>
           <div style={valueStyle}>{request.remainingAmount || "-"}</div>
-          <div style={labelStyle}>الكيلومتر:</div>
+          <div style={labelStyle}> الكيلومتر:</div>
           <div style={valueStyle}>{request.kilometers || "-"}</div>
           {/* تذييل الفاتورة: رقم الهاتف واللوكيشن (يظهر في الصورة) */}
           <div style={{ marginTop: 24, borderTop: "1px dashed #bbc6dd", paddingTop: 14, textAlign: "center" }}>
