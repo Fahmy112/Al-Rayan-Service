@@ -40,8 +40,6 @@ type Request = {
   usedSpares?: any[];
   paymentStatus?: "نقدي" | "تحويل" | "لم يتم";
   remainingAmount?: string;
-  paidAmount?: string; // إضافة حقل جديد للمبلغ المدفوع
-  netProfit?: string; // إضافة حقل جديد لصافي الربح
 };
 
 type EditState = null | { id: string; values: Partial<Request> };
@@ -129,7 +127,13 @@ export default function RequestsPage() {
   }
 
   function startEdit(row: Request) {
-    const editObj: Partial<Request> = { ...row, paidAmount: row.total && row.remainingAmount ? String(Number(row.total) - Number(row.remainingAmount)) : row.total || '' };
+    const editObj: Partial<Request> = { ...row };
+    if (row.purchasesRkha !== undefined && row.purchasesRkha !== "") {
+      editObj.purchasesRkha = row.purchasesRkha;
+    }
+    if (row.purchasesFady !== undefined && row.purchasesFady !== "") {
+      editObj.purchasesFady = row.purchasesFady;
+    }
     setEdit({ id: row._id, values: editObj });
     setEditValue(editObj);
     setShowEditModal(true);
@@ -143,32 +147,24 @@ export default function RequestsPage() {
   function onEditChange(field: keyof Request | "netPurchasesRkha" | "netPurchasesExternal", value: any) {
     setEditValue(ev => {
       const updated = { ...ev, [field]: value };
-      
       // حساب الإجمالي تلقائياً
       let total = 0;
-      let purchasesTotal = 0;
       let hasValue = false;
-      
       if (Array.isArray(updated.usedSpares)) {
         const sparesTotal = updated.usedSpares.reduce((sum, row) => sum + ((Number(row.price) || 0) * (Number(row.qty) || 1)), 0);
         total += sparesTotal;
-        purchasesTotal += sparesTotal;
         if (sparesTotal > 0) hasValue = true;
       }
       const repair = Number(updated.repairCost) || 0;
       const purchasesRkha = Number(updated.purchasesRkha) || 0;
       const purchasesFady = Number(updated.purchasesFady) || 0;
       const purchasesExternal = Number(updated.purchasesExternal) || 0;
-      
       total += repair;
-      purchasesTotal += purchasesRkha + purchasesFady + purchasesExternal;
-
+      total += purchasesRkha;
+      total += purchasesFady;
+      total += purchasesExternal;
       if (repair > 0 || purchasesRkha > 0 || purchasesFady > 0 || purchasesExternal > 0) hasValue = true;
-      
       updated.total = hasValue ? String(total) : '';
-      updated.remainingAmount = updated.paidAmount ? String(total - (Number(updated.paidAmount) || 0)) : '';
-      updated.netProfit = hasValue ? String(total - purchasesTotal) : '';
-      
       return updated;
     });
   }
@@ -229,6 +225,7 @@ export default function RequestsPage() {
     }
   }
 
+  // Moved outside of the return statement
   async function updatePaymentStatus(idx: number, newStatus: "نقدي" | "تحويل" | "لم يتم") {
     const req = filtered[idx];
     if (!req) return;
@@ -243,92 +240,18 @@ export default function RequestsPage() {
 
   const filtered = filterRequests();
 
-  // حساب الإجماليات للملخص المالي
-  const totalRevenue = filtered.reduce((sum, r) => sum + (Number(r.total) || 0), 0);
-  const totalPurchases = filtered.reduce((sum, r) => {
-    const sparesCost = Array.isArray(r.usedSpares) ? r.usedSpares.reduce((s, x) => s + ((Number(x.price) || 0) * (Number(x.qty) || 1)), 0) : 0;
-    return sum + (Number(r.purchasesRkha) || 0) + (Number(r.purchasesFady) || 0) + (Number(r.purchasesExternal) || 0) + sparesCost;
-  }, 0);
-  const totalRemainingAmount = filtered.reduce((sum, r) => sum + (Number(r.remainingAmount) || 0), 0);
-  const netProfit = totalRevenue - totalPurchases;
-
-  // دالة لتصدير البيانات إلى CSV
-  const exportToCSV = () => {
-    const headers = [
-      "اسم العميل", "رقم الهاتف", "نوع السيارة", "موديل السيارة", "نمرة السيارة",
-      "الكيلومتر", "المشكلة", "الملاحظات", "تكلفة الصيانة", "مشتريات رخا",
-      "مشتريات الفادي", "اسم المشتريات الخارجية", "قيمة المشتريات الخارجية",
-      "إجمالي القطع", "الإجمالي", "صافي الربح", "المبلغ المتبقي", "حالة الدفع",
-      "حالة الطلب", "تاريخ الإنشاء"
-    ];
-    
-    const rows = filtered.map(req => {
-      const sparesCost = Array.isArray(req.usedSpares) ? req.usedSpares.reduce((sum, x) => sum + ((Number(x.price) || 0) * (Number(x.qty) || 1)), 0) : 0;
-      const netProfit = (Number(req.total) || 0) - ((Number(req.purchasesRkha) || 0) + (Number(req.purchasesFady) || 0) + (Number(req.purchasesExternal) || 0) + sparesCost);
-
-      return [
-        req.customerName, req.phone, req.carType, req.carModel, req.carNumber,
-        req.kilometers, req.problem, req.notes, req.repairCost, req.purchasesRkha,
-        req.purchasesFady, req.purchasesExternalLabel, req.purchasesExternal,
-        sparesCost, req.total, netProfit, req.remainingAmount, req.paymentStatus,
-        req.status, new Date(req.createdAt).toLocaleDateString("ar-EG")
-      ].map(field => `"${(field || "").toString().replace(/"/g, '""')}"`).join(',');
-    }).join('\n');
-
-    const csvContent = "\ufeff" + headers.join(',') + "\n" + rows;
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement("a");
-    const url = URL.createObjectURL(blob);
-    link.setAttribute("href", url);
-    link.setAttribute("download", `تقرير_الحسابات_${new Date().toLocaleDateString()}.csv`);
-    link.style.visibility = 'hidden';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
-
   return (
     <div className={styles.wrapper}>
       <h1 className={styles["page-title"]}>متابعة الطلبات</h1>
       {spareWarning && <div style={{ color: '#e34a4a', margin: '12px 0 14px', background: '#fff3f2', border: '1px solid #ffb0b0', borderRadius: 6, padding: 10, textAlign: 'center', fontWeight: 'bold' }}>{spareWarning}</div>}
       {editSuccess && <div style={{ color: '#27853d', margin: '10px 0', background: '#eaffea', border: '1px solid #b0ffb0', borderRadius: 6, padding: 8, textAlign: 'center', fontWeight: 'bold' }}>{editSuccess}</div>}
-      
-      {/* لوحة التحكم المالية */}
-      <div style={{ background: '#f8f9fd', border: '1px solid #e0e6f2', borderRadius: 8, padding: '15px 20px', marginBottom: 20 }}>
-        <h2 style={{ color: '#286090', fontSize: 18, textAlign: 'center', marginBottom: 15, fontWeight: 'bold' }}>ملخص الأداء المالي (للطلبات المفلترة)</h2>
-        <div style={{ display: 'flex', justifyContent: 'space-around', alignItems: 'center', flexWrap: 'wrap', gap: 15 }}>
-          <div style={{ textAlign: 'center' }}>
-            <div style={{ fontSize: 14, color: '#888', marginBottom: 5 }}>إجمالي الإيرادات</div>
-            <div style={{ fontSize: 24, fontWeight: 'bold', color: '#27853d' }}>{totalRevenue.toLocaleString()} ج.م</div>
-          </div>
-          <div style={{ textAlign: 'center' }}>
-            <div style={{ fontSize: 14, color: '#888', marginBottom: 5 }}>إجمالي المشتريات</div>
-            <div style={{ fontSize: 24, fontWeight: 'bold', color: '#e34a4a' }}>{totalPurchases.toLocaleString()} ج.م</div>
-          </div>
-          <div style={{ textAlign: 'center' }}>
-            <div style={{ fontSize: 14, color: '#888', marginBottom: 5 }}>صافي الربح</div>
-            <div style={{ fontSize: 24, fontWeight: 'bold', color: '#286090' }}>{netProfit.toLocaleString()} ج.م</div>
-          </div>
-          <div style={{ textAlign: 'center' }}>
-            <div style={{ fontSize: 14, color: '#888', marginBottom: 5 }}>المبلغ المتبقي</div>
-            <div style={{ fontSize: 24, fontWeight: 'bold', color: '#e34a4a' }}>{totalRemainingAmount.toLocaleString()} ج.م</div>
-          </div>
-        </div>
-      </div>
-      
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', marginBottom: 10 }}>
-        <input
-          type="text"
-          placeholder="بحث: العميل، الهاتف، السيارة، النموذج، النمرة، المشكلة، الملاحظات..."
-          value={query}
-          onChange={e => setQuery(e.target.value)}
-          className={styles.searchbar}
-        />
-        <button onClick={exportToCSV} style={{ background: '#286090', color: '#fff', padding: '10px 18px', border: 'none', borderRadius: 6, cursor: 'pointer', fontSize: 15 }}>
-          تصدير إلى CSV
-        </button>
-      </div>
-
+      <input
+        type="text"
+        placeholder="بحث: العميل، الهاتف، السيارة، النموذج، النمرة، المشكلة، الملاحظات..."
+        value={query}
+        onChange={e => setQuery(e.target.value)}
+        className={styles.searchbar}
+      />
       <div style={{display:'flex', gap:12, marginTop:10, marginBottom:18}}>
         <div>
           <label style={{ fontWeight: 'bold', marginLeft: 8 }}>اليوم:</label>
@@ -390,40 +313,58 @@ export default function RequestsPage() {
                 onClose={() => setShowInvoice(false)}
                 request={invoiceRequest}
               />
-              <div className={styles['request-row']} style={{borderBottom:'1px solid #e0e6f2',paddingBottom:6,marginBottom:6,color:'#e34a4a',fontWeight:'bold'}}>
-                المبلغ المتبقي: {r.remainingAmount || "-"} جنيه
-              </div>
+              {r.paymentStatus === "لم يتم" && (
+                <div className={styles['request-row']} style={{borderBottom:'1px solid #e0e6f2',paddingBottom:6,marginBottom:6,color:'#e34a4a',fontWeight:'bold'}}>
+                  المبلغ المتبقي: {r.remainingAmount || "-"} جنيه
+                </div>
+              )}
               <div className={styles['request-title']} style={{fontSize:22,fontWeight:'bold',color:'#286090',marginBottom:8}}>{r.customerName}</div>
               <div className={styles['request-row']} style={{borderBottom:'1px solid #e0e6f2',paddingBottom:6,marginBottom:6}}>📞 {r.phone}{r.phone2 ? ` | هاتف إضافي: ${r.phone2}` : ''}</div>
               <div className={styles['request-row']} style={{borderBottom:'1px solid #e0e6f2',paddingBottom:6,marginBottom:6}}>🚗 {r.carType || "-"} | {r.carModel || "-"} | {r.carNumber || "-"}</div>
               <div className={styles['request-row']} style={{borderBottom:'1px solid #e0e6f2',paddingBottom:6,marginBottom:6}}>الكيلومتر: {r.kilometers || "-"}</div>
               <div className={styles['request-row']} style={{borderBottom:'1px solid #e0e6f2',paddingBottom:6,marginBottom:6}}>المشكلة: {r.problem}</div>
               <div className={styles['request-row']} style={{borderBottom:'1px solid #e0e6f2',paddingBottom:6,marginBottom:6}}>ملاحظات: {r.notes || "-"}</div>
-              
-              <div className={styles['request-row']} style={{borderBottom:'1px solid #e0e6f2',paddingBottom:6,marginBottom:6, fontWeight:'bold', fontSize: 16}}>
-                تفاصيل التكاليف:
-                <ul>
-                  <li>صيانة: {r.repairCost || "-"} ج</li>
-                  <li>قطع غيار: {Array.isArray(r.usedSpares) ? r.usedSpares.reduce((sum, x) => sum + ((Number(x.price) || 0) * (Number(x.qty) || 1)), 0) : 0} ج</li>
-                  <li>مشتريات رخا: {r.purchasesRkha || "-"} ج</li>
-                  <li>مشتريات الفادي: {r.purchasesFady || "-"} ج</li>
-                  <li>{r.purchasesExternalLabel || "مشتريات خارجية"}: {r.purchasesExternal || "-"} ج</li>
-                </ul>
-              </div>
-
               <div className={styles['request-row']} style={{borderBottom:'1px solid #e0e6f2',paddingBottom:6,marginBottom:6}}>
-                الإجمالي: <span className={styles.total}>{r.total || "-"}</span>
+                سعر المشتريات:
+                رخا: {r.purchasesRkha !== undefined && r.purchasesRkha !== "" ? r.purchasesRkha : (r.purchasesCost || 0)}ج
+                | الفادي: {r.purchasesFady !== undefined && r.purchasesFady !== "" ? r.purchasesFady : 0}ج
+                | {r.purchasesExternalLabel || "مشتريات خارجية"}: {r.purchasesExternal || 0}ج
               </div>
               <div className={styles['request-row']} style={{borderBottom:'1px solid #e0e6f2',paddingBottom:6,marginBottom:6}}>
-                صافي الربح: <span style={{ color: '#27853d', fontWeight: 'bold' }}>{r.netProfit || "-"} ج</span>
+                قطع الغيار:
+                {Array.isArray(r.usedSpares) && r.usedSpares.length > 0
+                  ? r.usedSpares.map((x: any) => `${x.id === "custom" ? x.name : x.name}${x.qty > 1 ? `×${x.qty}` : ''}` ).join(', ')
+                  : r.sparePartName || "-"}
               </div>
-              
+              {/* مشتريات خارجية منفصلة */}
+              {(r.purchasesExternal && Number(r.purchasesExternal) > 0) && (
+                <div className={styles['request-row']} style={{borderBottom:'1px solid #e0e6f2',paddingBottom:6,marginBottom:6, color:'#286090', fontWeight:'bold'}}>
+                  {r.purchasesExternalLabel || "مشتريات خارجية"}: {r.purchasesExternal} ج
+                </div>
+              )}
+              <div className={styles['request-row']} style={{borderBottom:'1px solid #e0e6f2',paddingBottom:6,marginBottom:6}}>
+                سعر القطع: {
+                  Array.isArray(r.usedSpares) && r.usedSpares.length > 0
+                    ? r.usedSpares.reduce((sum, x) => sum + ((Number(x.price) || 0) * (Number(x.qty) || 1)), 0)
+                    : 0
+                } ج
+              </div>
+              <div className={styles['request-row']} style={{borderBottom:'1px solid #e0e6f2',paddingBottom:6,marginBottom:6}}>الصيانة: {r.repairCost || "-"} جنيه</div>
+              <div className={styles['request-row']} style={{borderBottom:'1px solid #e0e6f2',paddingBottom:6,marginBottom:6}}>الإجمالي: <span className={styles.total}>{r.total || "-"}</span></div>
               <div className={styles['request-row']} style={{borderBottom:'1px solid #e0e6f2',paddingBottom:6,marginBottom:6}}>
                 الدفع: 
                 {r.paymentStatus === "نقدي" && <span title="نقدي" style={{marginLeft:4}}>💵</span>}
                 {r.paymentStatus === "تحويل" && <span title="تحويل" style={{marginLeft:4}}>💳</span>}
                 {r.paymentStatus === "لم يتم" && <span title="لم يتم" style={{marginLeft:4}}>⏳</span>}
                 <span style={{marginRight:4}}>{r.paymentStatus || "-"}</span>
+              </div>
+
+              {/* عناصر صافي المشتريات */}
+              <div className={styles['request-row']} style={{borderBottom:'1px solid #e0e6f2',paddingBottom:6,marginBottom:6, color:'#0a5', fontWeight:'bold'}}>
+                صافي مشتريات رخا: {r.netPurchasesRkha || 0} ج
+              </div>
+              <div className={styles['request-row']} style={{borderBottom:'1px solid #e0e6f2',paddingBottom:6,marginBottom:6, color:'#0a5', fontWeight:'bold'}}>
+                صافي المشتريات الخارجية: {r.netPurchasesExternal || 0} ج
               </div>
 
               <div className={styles['request-row']} style={{borderBottom:'1px solid #e0e6f2',paddingBottom:6,marginBottom:6}}>
@@ -478,13 +419,12 @@ export default function RequestsPage() {
                   const val = e.target.value;
                   setEditValue(ev => {
                     const newVal = { ...ev, purchasesExternal: val };
+                    // إعادة حساب الإجمالي
                     let total = 0;
-                    let purchasesTotal = 0;
                     let hasValue = false;
                     if (Array.isArray(newVal.usedSpares)) {
                       const sparesTotal = newVal.usedSpares.reduce((sum, r) => sum + ((Number(r.price) || 0) * (Number(r.qty) || 1)), 0);
                       total += sparesTotal;
-                      purchasesTotal += sparesTotal;
                       if (sparesTotal > 0) hasValue = true;
                     }
                     const repair = Number(newVal.repairCost) || 0;
@@ -492,15 +432,16 @@ export default function RequestsPage() {
                     const purchasesFady = Number(newVal.purchasesFady) || 0;
                     const purchasesExternal = Number(val) || 0;
                     total += repair;
-                    purchasesTotal += purchasesRkha + purchasesFady + purchasesExternal;
+                    total += purchasesRkha;
+                    total += purchasesFady;
+                    total += purchasesExternal;
                     if (repair > 0 || purchasesRkha > 0 || purchasesFady > 0 || purchasesExternal > 0) hasValue = true;
                     newVal.total = hasValue ? String(total) : '';
-                    newVal.remainingAmount = newVal.paidAmount ? String(total - (Number(newVal.paidAmount) || 0)) : '';
-                    newVal.netProfit = hasValue ? String(total - purchasesTotal) : '';
                     return newVal;
                   });
                 }} placeholder="قيمة المشتريات الخارجية بالجنيه" />
               </label>
+              <label>المبلغ المتبقي:<input value={editValue.remainingAmount || ""} onChange={e => onEditChange("remainingAmount", e.target.value)} placeholder="المبلغ المتبقي بالجنيه" /></label>
               <label>تكلفة الصيانة:<input value={editValue.repairCost || ""} onChange={e => onEditChange("repairCost", e.target.value)} placeholder="تكلفة الصيانة بالجنيه" /></label>
               <div style={{ margin: '10px 0', padding: '10px', background: '#f8f9fd', borderRadius: 8 }}>
                 <div style={{fontWeight:'bold',marginBottom:7}}>قطع الغيار:</div>
@@ -546,13 +487,12 @@ export default function RequestsPage() {
                       updated[idx].qty = Number(e.target.value);
                       setEditValue(ev => {
                         const newVal = { ...ev, usedSpares: updated };
+                        // إعادة حساب الإجمالي
                         let total = 0;
-                        let purchasesTotal = 0;
                         let hasValue = false;
                         if (Array.isArray(newVal.usedSpares)) {
                           const sparesTotal = newVal.usedSpares.reduce((sum, r) => sum + ((Number(r.price) || 0) * (Number(r.qty) || 1)), 0);
                           total += sparesTotal;
-                          purchasesTotal += sparesTotal;
                           if (sparesTotal > 0) hasValue = true;
                         }
                         const repair = Number(newVal.repairCost) || 0;
@@ -560,11 +500,11 @@ export default function RequestsPage() {
                         const purchasesFady = Number(newVal.purchasesFady) || 0;
                         const purchasesExternal = Number(newVal.purchasesExternal) || 0;
                         total += repair;
-                        purchasesTotal += purchasesRkha + purchasesFady + purchasesExternal;
+                        total += purchasesRkha;
+                        total += purchasesFady;
+                        total += purchasesExternal;
                         if (repair > 0 || purchasesRkha > 0 || purchasesFady > 0 || purchasesExternal > 0) hasValue = true;
                         newVal.total = hasValue ? String(total) : '';
-                        newVal.remainingAmount = newVal.paidAmount ? String(total - (Number(newVal.paidAmount) || 0)) : '';
-                        newVal.netProfit = hasValue ? String(total - purchasesTotal) : '';
                         return newVal;
                       });
                     }} placeholder="الكمية" max={row.id !== "custom" ? (spares.find(sp => sp._id === row.id)?.quantity || '') : ''} />
@@ -573,13 +513,12 @@ export default function RequestsPage() {
                       updated[idx].price = Number(e.target.value);
                       setEditValue(ev => {
                         const newVal = { ...ev, usedSpares: updated };
+                        // إعادة حساب الإجمالي
                         let total = 0;
-                        let purchasesTotal = 0;
                         let hasValue = false;
                         if (Array.isArray(newVal.usedSpares)) {
                           const sparesTotal = newVal.usedSpares.reduce((sum, r) => sum + ((Number(r.price) || 0) * (Number(r.qty) || 1)), 0);
                           total += sparesTotal;
-                          purchasesTotal += sparesTotal;
                           if (sparesTotal > 0) hasValue = true;
                         }
                         const repair = Number(newVal.repairCost) || 0;
@@ -587,11 +526,11 @@ export default function RequestsPage() {
                         const purchasesFady = Number(newVal.purchasesFady) || 0;
                         const purchasesExternal = Number(newVal.purchasesExternal) || 0;
                         total += repair;
-                        purchasesTotal += purchasesRkha + purchasesFady + purchasesExternal;
+                        total += purchasesRkha;
+                        total += purchasesFady;
+                        total += purchasesExternal;
                         if (repair > 0 || purchasesRkha > 0 || purchasesFady > 0 || purchasesExternal > 0) hasValue = true;
                         newVal.total = hasValue ? String(total) : '';
-                        newVal.remainingAmount = newVal.paidAmount ? String(total - (Number(newVal.paidAmount) || 0)) : '';
-                        newVal.netProfit = hasValue ? String(total - purchasesTotal) : '';
                         return newVal;
                       });
                     }} placeholder="سعر القطعة" />
@@ -618,9 +557,6 @@ export default function RequestsPage() {
                 <input type="number" value={editValue.netPurchasesExternal || ""} onChange={e => onEditChange("netPurchasesExternal", e.target.value)} placeholder="صافي المشتريات الخارجية بالجنيه" />
               </label>
               <label>الإجمالي:<input value={editValue.total || ""} readOnly placeholder="الإجمالي بالجنيه" /></label>
-              <label>المبلغ المدفوع:<input value={editValue.paidAmount || ""} onChange={e => onEditChange("paidAmount", e.target.value)} placeholder="المبلغ المدفوع بالجنيه" /></label>
-              <label>المبلغ المتبقي:<input value={editValue.remainingAmount || ""} readOnly placeholder="المبلغ المتبقي بالجنيه" /></label>
-              <label>صافي الربح:<input value={editValue.netProfit || ""} readOnly placeholder="صافي الربح بالجنيه" /></label>
               <label>الحالة:
                 <select value={editValue.status || "جديد"} onChange={e => onEditChange("status", e.target.value)}>
                   {statuses.map(st => <option key={st}>{st}</option>)}
