@@ -142,13 +142,17 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({ open, onClose, request }) =
             border: "1.5px solid #e0e6f2",
             borderRadius: 12,
             direction: "rtl",
-            fontFamily: "'Noto Sans Arabic', 'Simplified Arabic', Tahoma, Arial, sans-serif", // تغيير ترتيب الخطوط
+            // تم تغيير الخطوط لضمان التوافق مع html2canvas
+            fontFamily: "Tahoma, Arial, 'Noto Sans Arabic', 'Simplified Arabic', sans-serif",
             lineHeight: 1.9,
             fontSize: 15,
-            letterSpacing: "0.5px", // زيادة تباعد الحروف
-            wordSpacing: "2px", // زيادة تباعد الكلمات
+            // تم زيادة تباعد الحروف والكلمات
+            letterSpacing: "0.5px",
+            wordSpacing: "2px",
+            // أهم إضافة: تعطيل الترابط في الخطوط العربية
+            fontVariantLigatures: "none",
+            MozFontFeatureSettings: '"liga" 0', // لضمان التوافق مع Firefox
             textRendering: "optimizeLegibility",
-            fontVariantLigatures: 'none', // تعطيل تشكيل الحروف
             whiteSpace: "pre-line",
             color: "#222",
           }}
