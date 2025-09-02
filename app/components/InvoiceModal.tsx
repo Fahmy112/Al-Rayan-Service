@@ -174,7 +174,23 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({ open, onClose, request }) =
           </div>
           <div style={{marginBottom:12,paddingBottom:8,borderBottom:'1px solid #f0f0f0'}}>
             <div style={labelStyle}>المشكلة:</div>
-            <div style={{...valueStyle,background:'#f7fafd',borderRadius:7,padding:'7px 10px',marginBottom:0}}>{request.problem}</div>
+            <div style={{
+              ...valueStyle,
+              background:'#f7fafd',
+              borderRadius:7,
+              padding:'7px 10px',
+              marginBottom:0,
+              display:'flex',
+              flexDirection:'column',
+              gap:4
+            }}>
+              {String(request.problem || "-").split(/\r?\n|،|,|؛|\u060C/).filter(Boolean).map((line, idx) => (
+                <div key={idx} style={{display:'flex',alignItems:'center',gap:6}}>
+                  <span style={{color:'#27853d',fontSize:13,display:'inline-block'}}>•</span>
+                  <span style={{whiteSpace:'pre-line'}}>{line.trim()}</span>
+                </div>
+              ))}
+            </div>
           </div>
           <div style={{marginBottom:12,paddingBottom:8,borderBottom:'1px solid #f0f0f0'}}>
             <div style={labelStyle}>الملاحظات:</div>
