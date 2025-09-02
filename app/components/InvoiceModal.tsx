@@ -46,23 +46,23 @@ const cardStyle: React.CSSProperties = {
 const labelStyle: React.CSSProperties = {
   color: "#286090",
   fontWeight: 700,
-  marginBottom: 2,
+  marginBottom: 4, // زيادة المسافة بعد العنوان
   fontSize: 16,
-  marginTop: 4,
-  letterSpacing: 0.2,
+  marginTop: 8, // زيادة المسافة قبل العنوان
+  letterSpacing: 0.3, // زيادة طفيفة في تباعد الحروف
 };
 
 const valueStyle: React.CSSProperties = {
   color: "#222",
   fontWeight: 500,
   fontSize: 15,
-  marginBottom: 8,
+  marginBottom: 10, // زيادة المسافة بعد القيمة
   wordBreak: "break-word",
+  letterSpacing: 0.2, // إضافة تباعد أحرف للقيمة
 };
 
 const InvoiceModal: React.FC<InvoiceModalProps> = ({ open, onClose, request }) => {
   const invoiceRef = useRef<HTMLDivElement>(null);
-  // تم تعديل نوع useRef ليكون مصفوفة من العناصر (HTMLButtonElement) أو null
   const buttonsRef = useRef<(HTMLButtonElement | null)[]>([]);
 
   if (!open || !request) return null;
@@ -74,13 +74,16 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({ open, onClose, request }) =
         if (btn) btn.style.display = 'none';
       });
 
-      // انتظر قليلاً للتأكد من تطبيق التغييرات
-      await new Promise(resolve => setTimeout(resolve, 50));
+      // زيادة التأخير لضمان تحميل الخطوط وتطبيق الأنماط بالكامل
+      await new Promise(resolve => setTimeout(resolve, 300)); // يمكن زيادته إلى 500 أو 1000 إذا استمرت المشكلة
 
       const canvas = await html2canvas(invoiceRef.current, {
-        scale: 2,
+        scale: 2, // للحفاظ على دقة عالية
         useCORS: true,
         logging: false,
+        // يمكن تجربة إعدادات إضافية هنا إذا استمرت المشكلة
+        // allowTaint: true, // قد يكون مفيدًا لبعض المشاكل ولكن قد يؤثر على الأمان
+        // foreignObjectRendering: true, // قد يحسن رندر SVG وبعض العناصر المعقدة
       });
 
       // إعادة إظهار الأزرار
@@ -99,7 +102,6 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({ open, onClose, request }) =
     <div style={modalStyle}>
       <div style={cardStyle}>
         <button
-          // الطريقة الصحيحة لتعيين الـ ref في TypeScript
           ref={el => { buttonsRef.current[0] = el; }}
           onClick={onClose}
           style={{
@@ -117,7 +119,6 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({ open, onClose, request }) =
           ×
         </button>
         <button
-          // الطريقة الصحيحة لتعيين الـ ref في TypeScript
           ref={el => { buttonsRef.current[1] = el; }}
           onClick={handleDownloadImage}
           style={{
@@ -139,27 +140,29 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({ open, onClose, request }) =
           ref={invoiceRef}
           style={{
             background: "#fff",
-            padding: "14px 10px 12px 10px",
-            minWidth: 260,
-            maxWidth: 350,
+            padding: "18px 15px 15px 15px", // زيادة البادينج الداخلي
+            minWidth: 280, // زيادة طفيفة في الحد الأدنى للعرض
+            maxWidth: 380, // زيادة طفيفة في الحد الأقصى للعرض
             width: "100%",
             boxSizing: "border-box",
             border: "1.5px solid #e0e6f2",
             borderRadius: 12,
             direction: "rtl",
-            fontFamily: "Cairo, Arial, sans-serif",
-            lineHeight: 1.8,
+            fontFamily: "Cairo, 'Noto Sans Arabic', Arial, sans-serif", // إضافة خط عربي آمن كبديل
+            lineHeight: 1.9, // زيادة تباعد الأسطر أكثر
             fontSize: 15,
-            letterSpacing: 0.3,
+            letterSpacing: 0.35, // زيادة طفيفة في تباعد الحروف الكلي
+            wordSpacing: "0.05em", // إضافة تباعد بين الكلمات
+            textRendering: "optimizeLegibility", // تحسين عرض النص
             whiteSpace: "pre-line",
             color: "#222",
           }}
         >
-          <div style={{ textAlign: "center", color: "#27853d", fontWeight: "bold", fontSize: 15, marginBottom: 2, letterSpacing: 0.5 }}>
+          <div style={{ textAlign: "center", color: "#27853d", fontWeight: "bold", fontSize: 16, marginBottom: 4, letterSpacing: 0.6 }}>
             AlRayan Integrated Auto Service
           </div>
-          <div style={{ textAlign: "center", color: "#286090", fontWeight: "bold", fontSize: 11, marginBottom: 7 }}>نرحب بكم ونتمنى لكم تجربة خدمة مميزة معنا</div>
-          <div style={{ textAlign: "center", color: "#286090", marginBottom: 10, fontWeight: "bold", fontSize: 14 }}>فاتورة العميل</div>
+          <div style={{ textAlign: "center", color: "#286090", fontWeight: "bold", fontSize: 12, marginBottom: 10 }}>نرحب بكم ونتمنى لكم تجربة خدمة مميزة معنا</div>
+          <div style={{ textAlign: "center", color: "#286090", marginBottom: 15, fontWeight: "bold", fontSize: 15 }}>فاتورة العميل</div>
           
           <div style={labelStyle}>اسم العميل:</div>
           <div style={valueStyle}>{request.customerName}</div>
@@ -185,32 +188,31 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({ open, onClose, request }) =
           <div style={labelStyle}>الكيلومتر:</div>
           <div style={valueStyle}>{request.kilometers || "-"}</div>
           
-          <div style={{ marginTop: 24, borderTop: "1px dashed #bbc6dd", paddingTop: 14, textAlign: "center" }}>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 6, marginBottom: 10 }}>
-              <span style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", background: "#e0f7fa", borderRadius: "50%", width: 22, height: 22 }}>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+          <div style={{ marginTop: 28, borderTop: "1px dashed #bbc6dd", paddingTop: 18, textAlign: "center" }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, marginBottom: 12 }}>
+              <span style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", background: "#e0f7fa", borderRadius: "50%", width: 24, height: 24 }}>
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
                   <circle cx="12" cy="12" r="12" fill="#25D366" />
                   <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.472-.148-.67.15-.198.297-.767.967-.94 1.164-.173.198-.347.223-.644.075-.297-.149-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.372-.025-.521-.075-.149-.669-1.611-.916-2.206-.242-.579-.487-.5-.669-.51-.173-.007-.372-.009-.571-.009-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.099 3.205 5.077 4.372.71.306 1.263.489 1.695.625.712.227 1.36.195 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.288.173-1.413-.074-.124-.272-.198-.57-.347z" fill="#fff" />
                 </svg>
               </span>
-              <span style={{ fontWeight: "bold", color: "#286090", fontSize: 14, letterSpacing: 0.2 }}>01070090636</span>
+              <span style={{ fontWeight: "bold", color: "#286090", fontSize: 15, letterSpacing: 0.3 }}>01070090636</span>
             </div>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}>
-              <span style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", background: "#fce4ec", borderRadius: "50%", width: 22, height: 22 }}>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
+              <span style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", background: "#fce4ec", borderRadius: "50%", width: 24, height: 24 }}>
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
                   <circle cx="12" cy="12" r="12" fill="#e91e63" />
                   <path d="M12 7a4 4 0 0 0-4 4c0 2.25 4 7 4 7s4-4.75 4-7a4 4 0 0 0-4-4zm0 5.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z" fill="#fff" />
                 </svg>
               </span>
-              <span style={{ fontWeight: "bold", color: "#e91e63", fontSize: 14, letterSpacing: 0.2 }}>الموقع: <span style={{ textDecoration: 'underline', direction: 'ltr' }}>اضغط هنا</span></span>
+              <span style={{ fontWeight: "bold", color: "#e91e63", fontSize: 15, letterSpacing: 0.3 }}>الموقع: <span style={{ textDecoration: 'underline', direction: 'ltr' }}>اضغط هنا</span></span>
             </div>
-            <div style={{ fontSize: 10, color: '#888', marginTop: 2 }}>https://maps.app.goo.gl/pm3tvQvL8xLGVN8i6</div>
+            <div style={{ fontSize: 11, color: '#888', marginTop: 4 }}>https://maps.app.goo.gl/pm3tvQvL8xLGVN8i6</div>
           </div>
         </div>
         <button
-          // الطريقة الصحيحة لتعيين الـ ref في TypeScript
           ref={el => { buttonsRef.current[2] = el; }}
-          style={{ marginTop: 8, background: "#25D366", color: "#fff", fontWeight: "bold", fontSize: 13, padding: "7px 0", border: "none", borderRadius: 7, width: "100%", cursor: "pointer", letterSpacing: 0.5 }}
+          style={{ marginTop: 10, background: "#25D366", color: "#fff", fontWeight: "bold", fontSize: 14, padding: "8px 0", border: "none", borderRadius: 7, width: "100%", cursor: "pointer", letterSpacing: 0.6 }}
           onClick={() => {
             const phoneDisplay = "+20" + (request.phone || "").replace(/^0+/, "").replace(/^20/, "");
             const text = `مركز الرايان لخدمات السيارات\nنرحب بكم ونتمنى لكم تجربة خدمة مميزة معنا\n\nفاتورة العميل\n\nالاسم: ${request.customerName}\nرقم التليفون: ${phoneDisplay}\nالمشكلة: ${request.problem}\nالملاحظات: ${request.notes || "-"}\nالإجمالي: ${request.total || "-"}\nطريقة الدفع: ${request.paymentStatus || "-"}\nالمبلغ المتبقي: ${request.remainingAmount || "-"}\nالكيلومتر: ${request.kilometers || "-"}`;
