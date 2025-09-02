@@ -36,8 +36,8 @@ const cardStyle: React.CSSProperties = {
   minWidth: 320,
   maxWidth: 420,
   width: "100%",
-  maxHeight: "90vh", // الحد الأقصى للطول ليتسع ضمن الشاشة
-  overflowY: "auto", // إضافة التمرير الرأسي عند الحاجة
+  maxHeight: "90vh",
+  overflowY: "auto",
   boxShadow: "0 4px 24px #bbc6dd44",
   position: "relative",
   fontFamily: "Cairo, Tahoma, Arial, sans-serif",
@@ -62,25 +62,31 @@ const valueStyle: React.CSSProperties = {
 
 const InvoiceModal: React.FC<InvoiceModalProps> = ({ open, onClose, request }) => {
   const invoiceRef = useRef<HTMLDivElement>(null);
+  // تم تعديل نوع useRef ليكون مصفوفة من العناصر (HTMLButtonElement) أو null
+  const buttonsRef = useRef<(HTMLButtonElement | null)[]>([]);
+
   if (!open || !request) return null;
 
   const handleDownloadImage = async () => {
     if (invoiceRef.current) {
       // إخفاء الأزرار مؤقتًا قبل التقاط الصورة
-      const buttons = invoiceRef.current.parentElement?.querySelectorAll('button');
-      if (buttons) {
-        buttons.forEach(btn => btn.style.display = 'none');
-      }
+      buttonsRef.current.forEach(btn => {
+        if (btn) btn.style.display = 'none';
+      });
 
-      const canvas = await html2canvas(invoiceRef.current, { 
+      // انتظر قليلاً للتأكد من تطبيق التغييرات
+      await new Promise(resolve => setTimeout(resolve, 50));
+
+      const canvas = await html2canvas(invoiceRef.current, {
         scale: 2,
-        useCORS: true, // ضروري إذا كانت هناك صور من مصدر آخر
+        useCORS: true,
+        logging: false,
       });
 
       // إعادة إظهار الأزرار
-      if (buttons) {
-        buttons.forEach(btn => btn.style.display = 'block');
-      }
+      buttonsRef.current.forEach(btn => {
+        if (btn) btn.style.display = 'block';
+      });
 
       const link = document.createElement("a");
       link.download = `فاتورة_${request.customerName}.png`;
@@ -93,6 +99,8 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({ open, onClose, request }) =
     <div style={modalStyle}>
       <div style={cardStyle}>
         <button
+          // الطريقة الصحيحة لتعيين الـ ref في TypeScript
+          ref={el => { buttonsRef.current[0] = el; }}
           onClick={onClose}
           style={{
             position: "absolute",
@@ -109,6 +117,8 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({ open, onClose, request }) =
           ×
         </button>
         <button
+          // الطريقة الصحيحة لتعيين الـ ref في TypeScript
+          ref={el => { buttonsRef.current[1] = el; }}
           onClick={handleDownloadImage}
           style={{
             position: "absolute",
@@ -138,7 +148,7 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({ open, onClose, request }) =
             borderRadius: 12,
             direction: "rtl",
             fontFamily: "Cairo, Arial, sans-serif",
-            lineHeight: 1.6,
+            lineHeight: 1.8,
             fontSize: 15,
             letterSpacing: 0.3,
             whiteSpace: "pre-line",
@@ -150,22 +160,31 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({ open, onClose, request }) =
           </div>
           <div style={{ textAlign: "center", color: "#286090", fontWeight: "bold", fontSize: 11, marginBottom: 7 }}>نرحب بكم ونتمنى لكم تجربة خدمة مميزة معنا</div>
           <div style={{ textAlign: "center", color: "#286090", marginBottom: 10, fontWeight: "bold", fontSize: 14 }}>فاتورة العميل</div>
+          
           <div style={labelStyle}>اسم العميل:</div>
           <div style={valueStyle}>{request.customerName}</div>
+          
           <div style={labelStyle}>رقم التليفون:</div>
           <div style={valueStyle}>+20{request.phone?.replace(/^0+/, "").replace(/^20/, "")}</div>
+          
           <div style={labelStyle}>المشكلة:</div>
           <div style={valueStyle}>{request.problem}</div>
+          
           <div style={labelStyle}>الملاحظات:</div>
           <div style={valueStyle}>{request.notes || "-"}</div>
+          
           <div style={labelStyle}>الإجمالي:</div>
           <div style={valueStyle}>{request.total || "-"}</div>
+          
           <div style={labelStyle}>طريقة الدفع:</div>
           <div style={valueStyle}>{request.paymentStatus || "-"}</div>
+          
           <div style={labelStyle}>المبلغ المتبقي:</div>
           <div style={valueStyle}>{request.remainingAmount || "-"}</div>
+          
           <div style={labelStyle}>الكيلومتر:</div>
           <div style={valueStyle}>{request.kilometers || "-"}</div>
+          
           <div style={{ marginTop: 24, borderTop: "1px dashed #bbc6dd", paddingTop: 14, textAlign: "center" }}>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 6, marginBottom: 10 }}>
               <span style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", background: "#e0f7fa", borderRadius: "50%", width: 22, height: 22 }}>
@@ -189,6 +208,8 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({ open, onClose, request }) =
           </div>
         </div>
         <button
+          // الطريقة الصحيحة لتعيين الـ ref في TypeScript
+          ref={el => { buttonsRef.current[2] = el; }}
           style={{ marginTop: 8, background: "#25D366", color: "#fff", fontWeight: "bold", fontSize: 13, padding: "7px 0", border: "none", borderRadius: 7, width: "100%", cursor: "pointer", letterSpacing: 0.5 }}
           onClick={() => {
             const phoneDisplay = "+20" + (request.phone || "").replace(/^0+/, "").replace(/^20/, "");
