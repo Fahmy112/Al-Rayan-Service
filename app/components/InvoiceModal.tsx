@@ -127,19 +127,22 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({ open, onClose, request }) =
           ref={invoiceRef}
           style={{
             background: "#fff",
-            paddingRight: "18px",
-            paddingLeft: "18px",
-            minWidth: 300,
-            maxWidth: 400,
-            maxHeight: '65vh', // أقصى ارتفاع 65% من الشاشة
-            overflowY: 'auto', // شريط تمرير عمودي عند الحاجة
-            marginBottom: 8,
+            padding: '24px 18px 18px 18px',
+            minWidth: 320,
+            maxWidth: 420,
+            width: '100%',
+            boxSizing: 'border-box',
             direction: 'rtl',
             fontFamily: 'Cairo, Tahoma, Arial, sans-serif',
             lineHeight: 2.2,
-            fontSize: 16,
+            fontSize: 17,
             letterSpacing: 0.5,
             whiteSpace: 'pre-line',
+            color: '#222',
+          }}
+          // إضافة خط Google Fonts داخل العنصر ليتم تحميله مع html2canvas
+          dangerouslySetInnerHTML={{
+            __html: `<link href='https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap' rel='stylesheet' />` + invoiceRef.current?.innerHTML
           }}
         >
           <div style={{ textAlign: "center", color: "#27853d", fontWeight: "bold", fontSize: 15, marginBottom: 2, letterSpacing: 0.5 }}>
