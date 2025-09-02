@@ -163,29 +163,39 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({ open, onClose, request }) =
           <div style={{ textAlign: "center", color: "#286090", fontWeight: "bold", fontSize: 12, marginBottom: 10 }}>نرحب بكم ونتمنى لكم تجربة خدمة مميزة معنا</div>
           <div style={{ textAlign: "center", color: "#286090", marginBottom: 15, fontWeight: "bold", fontSize: 15 }}>فاتورة العميل</div>
           
-          <div style={labelStyle}>اسم العميل:</div>
-          <div style={valueStyle}>{request.customerName}</div>
-          
-          <div style={labelStyle}>رقم التليفون:</div>
-          <div style={valueStyle}>+20{request.phone?.replace(/^0+/, "").replace(/^20/, "")}</div>
-          
-          <div style={labelStyle}>المشكلة:</div>
-          <div style={valueStyle}>{request.problem}</div>
-          
-          <div style={labelStyle}>الملاحظات:</div>
-          <div style={valueStyle}>{request.notes || "-"}</div>
-          
-          <div style={labelStyle}>الإجمالي:</div>
-          <div style={valueStyle}>{request.total || "-"}</div>
-          
-          <div style={labelStyle}>طريقة الدفع:</div>
-          <div style={valueStyle}>{request.paymentStatus || "-"}</div>
-          
-          <div style={labelStyle}>المبلغ المتبقي:</div>
-          <div style={valueStyle}>{request.remainingAmount || "-"}</div>
-          
-          <div style={labelStyle}>الكيلومتر:</div>
-          <div style={valueStyle}>{request.kilometers || "-"}</div>
+          {/* عناصر الفاتورة مفصولة ومنسقة */}
+          <div style={{marginBottom:12,paddingBottom:8,borderBottom:'1px solid #f0f0f0'}}>
+            <div style={labelStyle}>اسم العميل:</div>
+            <div style={{...valueStyle,background:'#f7fafd',borderRadius:7,padding:'7px 10px',marginBottom:0}}>{request.customerName}</div>
+          </div>
+          <div style={{marginBottom:12,paddingBottom:8,borderBottom:'1px solid #f0f0f0'}}>
+            <div style={labelStyle}>رقم التليفون:</div>
+            <div style={{...valueStyle,background:'#f7fafd',borderRadius:7,padding:'7px 10px',marginBottom:0}}>+20{request.phone?.replace(/^0+/, "").replace(/^20/, "")}</div>
+          </div>
+          <div style={{marginBottom:12,paddingBottom:8,borderBottom:'1px solid #f0f0f0'}}>
+            <div style={labelStyle}>المشكلة:</div>
+            <div style={{...valueStyle,background:'#f7fafd',borderRadius:7,padding:'7px 10px',marginBottom:0}}>{request.problem}</div>
+          </div>
+          <div style={{marginBottom:12,paddingBottom:8,borderBottom:'1px solid #f0f0f0'}}>
+            <div style={labelStyle}>الملاحظات:</div>
+            <div style={{...valueStyle,background:'#f7fafd',borderRadius:7,padding:'7px 10px',marginBottom:0}}>{request.notes || "-"}</div>
+          </div>
+          <div style={{marginBottom:12,paddingBottom:8,borderBottom:'1px solid #f0f0f0'}}>
+            <div style={labelStyle}>الإجمالي:</div>
+            <div style={{...valueStyle,background:'#f7fafd',borderRadius:7,padding:'7px 10px',marginBottom:0}}>{request.total || "-"}</div>
+          </div>
+          <div style={{marginBottom:12,paddingBottom:8,borderBottom:'1px solid #f0f0f0'}}>
+            <div style={labelStyle}>طريقة الدفع:</div>
+            <div style={{...valueStyle,background:'#f7fafd',borderRadius:7,padding:'7px 10px',marginBottom:0}}>{request.paymentStatus || "-"}</div>
+          </div>
+          <div style={{marginBottom:12,paddingBottom:8,borderBottom:'1px solid #f0f0f0'}}>
+            <div style={labelStyle}>المبلغ المتبقي:</div>
+            <div style={{...valueStyle,background:'#f7fafd',borderRadius:7,padding:'7px 10px',marginBottom:0}}>{request.remainingAmount || "-"}</div>
+          </div>
+          <div style={{marginBottom:12,paddingBottom:8}}>
+            <div style={labelStyle}>الكيلومتر:</div>
+            <div style={{...valueStyle,background:'#f7fafd',borderRadius:7,padding:'7px 10px',marginBottom:0}}>{request.kilometers || "-"}</div>
+          </div>
           
           <div style={{ marginTop: 28, borderTop: "1px dashed #bbc6dd", paddingTop: 18, textAlign: "center" }}>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, marginBottom: 12 }}>
@@ -204,9 +214,9 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({ open, onClose, request }) =
                   <path d="M12 7a4 4 0 0 0-4 4c0 2.25 4 7 4 7s4-4.75 4-7a4 4 0 0 0-4-4zm0 5.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z" fill="#fff" />
                 </svg>
               </span>
-              <span style={{ fontWeight: "bold", color: "#e91e63", fontSize: 15, letterSpacing: 0.3 }}>الموقع: <span style={{ textDecoration: 'underline', direction: 'ltr' }}>اضغط هنا</span></span>
+              <span style={{ fontWeight: "bold", color: "#e91e63", fontSize: 15, letterSpacing: 0.3 }}>الموقع:</span>
             </div>
-            <div style={{ fontSize: 11, color: '#888', marginTop: 4 }}>https://maps.app.goo.gl/pm3tvQvL8xLGVN8i6</div>
+            <div style={{ fontSize: 11, color: '#888', marginTop: 4 }}>عمارة رقم ٧، 6 اكتوبر, Ain Shams Sharkeya, Ain Shams, Cairo Governorate 11511</div>
           </div>
         </div>
         <button
