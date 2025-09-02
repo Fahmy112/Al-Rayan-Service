@@ -1,5 +1,6 @@
 import React, { useRef } from "react";
 import html2canvas from "html2canvas";
+import ArabicTextSVG from "./ArabicTextSVG"; // Import the new component
 
 interface InvoiceModalProps {
   open: boolean;
@@ -59,19 +60,6 @@ const valueStyle: React.CSSProperties = {
   marginBottom: 10,
   wordBreak: "break-word",
   letterSpacing: 0.2,
-};
-
-// دالة مساعدة لإنشاء SVG من النص
-const createTextSVG = (text: string, style: React.CSSProperties) => {
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="25" style="direction:rtl; text-align:right;">
-    <foreignObject width="100%" height="100%">
-      <div xmlns="http://www.w3.org/1999/xhtml" style="direction:rtl; text-align:right; font-family:'Simplified Arabic', Tahoma, Arial, sans-serif; font-size:${style.fontSize}px; color:${style.color}; font-weight:${style.fontWeight}; letter-spacing:${style.letterSpacing};">
-        ${text}
-      </div>
-    </foreignObject>
-  </svg>`;
-  const encodedSvg = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
-  return <img src={encodedSvg} style={{ width: "100%", height: "auto" }} />;
 };
 
 const InvoiceModal: React.FC<InvoiceModalProps> = ({ open, onClose, request }) => {
@@ -174,10 +162,12 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({ open, onClose, request }) =
           <div style={valueStyle}>+20{request.phone?.replace(/^0+/, "").replace(/^20/, "")}</div>
           
           <div style={labelStyle}>المشكلة:</div>
-          {createTextSVG(request.problem, valueStyle)}
+          {/* استخدام المكون الجديد لتحويل النص إلى SVG */}
+          <ArabicTextSVG text={request.problem} fontSize={15} color="#222" fontWeight="500" />
           
           <div style={labelStyle}>الملاحظات:</div>
-          {createTextSVG(request.notes || "-", valueStyle)}
+          {/* استخدام المكون الجديد لتحويل النص إلى SVG */}
+          <ArabicTextSVG text={request.notes || "-"} fontSize={15} color="#222" fontWeight="500" />
           
           <div style={labelStyle}>الإجمالي:</div>
           <div style={valueStyle}>{request.total || "-"}</div>
@@ -217,7 +207,7 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({ open, onClose, request }) =
           ref={el => { buttonsRef.current[2] = el; }}
           style={{ marginTop: 10, background: "#25D366", color: "#fff", fontWeight: "bold", fontSize: 14, padding: "8px 0", border: "none", borderRadius: 7, width: "100%", cursor: "pointer", letterSpacing: 0.6 }}
           onClick={() => {
-            const phoneDisplay =  (request.phone || "").replace(/^0+/, "").replace(/^20/, "");
+            const phoneDisplay = "+20" + (request.phone || "").replace(/^0+/, "").replace(/^20/, "");
             const text = `مركز الرايان لخدمات السيارات\nنرحب بكم ونتمنى لكم تجربة خدمة مميزة معنا\n\nفاتورة العميل\n\nالاسم: ${request.customerName}\nرقم التليفون: ${phoneDisplay}\nالمشكلة: ${request.problem}\nالملاحظات: ${request.notes || "-"}\nالإجمالي: ${request.total || "-"}\nطريقة الدفع: ${request.paymentStatus || "-"}\nالمبلغ المتبقي: ${request.remainingAmount || "-"}\nالكيلومتر: ${request.kilometers || "-"}`;
             let phone = (request.phone || "").replace(/\D/g, "");
             if (phone.startsWith("0")) phone = phone.substring(1);
