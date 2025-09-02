@@ -36,10 +36,11 @@ const cardStyle: React.CSSProperties = {
   minWidth: 320,
   maxWidth: 420,
   width: "100%",
+  maxHeight: "90vh", // الحد الأقصى للطول ليتسع ضمن الشاشة
+  overflowY: "auto", // إضافة التمرير الرأسي عند الحاجة
   boxShadow: "0 4px 24px #bbc6dd44",
   position: "relative",
   fontFamily: "Cairo, Tahoma, Arial, sans-serif",
-  overflow: "visible",
 };
 
 const labelStyle: React.CSSProperties = {
@@ -62,29 +63,32 @@ const valueStyle: React.CSSProperties = {
 const InvoiceModal: React.FC<InvoiceModalProps> = ({ open, onClose, request }) => {
   const invoiceRef = useRef<HTMLDivElement>(null);
   if (!open || !request) return null;
-  // دالة لتحميل الفاتورة كصورة
+
   const handleDownloadImage = async () => {
     if (invoiceRef.current) {
-      // احفظ القيم الأصلية
-      const originalMaxHeight = invoiceRef.current.style.maxHeight;
-      const originalOverflowY = invoiceRef.current.style.overflowY;
-      // أزل القيود مؤقتًا
-      invoiceRef.current.style.maxHeight = 'none';
-      invoiceRef.current.style.overflowY = 'visible';
-      // انتظر حتى يتم تطبيق الأنماط
-      await new Promise(res => setTimeout(res, 50));
-      // التقط الصورة
-      const canvas = await html2canvas(invoiceRef.current, { scale: 2 });
-      // أرجع الأنماط كما كانت
-      invoiceRef.current.style.maxHeight = originalMaxHeight;
-      invoiceRef.current.style.overflowY = originalOverflowY;
-      // نزّل الصورة
+      // إخفاء الأزرار مؤقتًا قبل التقاط الصورة
+      const buttons = invoiceRef.current.parentElement?.querySelectorAll('button');
+      if (buttons) {
+        buttons.forEach(btn => btn.style.display = 'none');
+      }
+
+      const canvas = await html2canvas(invoiceRef.current, { 
+        scale: 2,
+        useCORS: true, // ضروري إذا كانت هناك صور من مصدر آخر
+      });
+
+      // إعادة إظهار الأزرار
+      if (buttons) {
+        buttons.forEach(btn => btn.style.display = 'block');
+      }
+
       const link = document.createElement("a");
       link.download = `فاتورة_${request.customerName}.png`;
-      link.href = canvas.toDataURL();
+      link.href = canvas.toDataURL("image/png");
       link.click();
     }
   };
+
   return (
     <div style={modalStyle}>
       <div style={cardStyle}>
@@ -104,7 +108,6 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({ open, onClose, request }) =
         >
           ×
         </button>
-        {/* زر تحميل الفاتورة كصورة */}
         <button
           onClick={handleDownloadImage}
           style={{
@@ -122,25 +125,24 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({ open, onClose, request }) =
         >
           تحميل كصورة
         </button>
-        {/* محتوى الفاتورة مع تمرير عند الحاجة */}
         <div
           ref={invoiceRef}
           style={{
             background: "#fff",
-            padding: '14px 10px 12px 10px',
+            padding: "14px 10px 12px 10px",
             minWidth: 260,
             maxWidth: 350,
-            width: '100%',
-            boxSizing: 'border-box',
-            border: '1.5px solid #e0e6f2',
+            width: "100%",
+            boxSizing: "border-box",
+            border: "1.5px solid #e0e6f2",
             borderRadius: 12,
-            direction: 'rtl',
-            fontFamily: 'Cairo, Arial, sans-serif',
-            lineHeight: 2,
+            direction: "rtl",
+            fontFamily: "Cairo, Arial, sans-serif",
+            lineHeight: 1.6,
             fontSize: 15,
             letterSpacing: 0.3,
-            whiteSpace: 'pre-line',
-            color: '#222',
+            whiteSpace: "pre-line",
+            color: "#222",
           }}
         >
           <div style={{ textAlign: "center", color: "#27853d", fontWeight: "bold", fontSize: 15, marginBottom: 2, letterSpacing: 0.5 }}>
@@ -154,17 +156,16 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({ open, onClose, request }) =
           <div style={valueStyle}>+20{request.phone?.replace(/^0+/, "").replace(/^20/, "")}</div>
           <div style={labelStyle}>المشكلة:</div>
           <div style={valueStyle}>{request.problem}</div>
-          <div style={labelStyle}> الملاحظات: </div>
+          <div style={labelStyle}>الملاحظات:</div>
           <div style={valueStyle}>{request.notes || "-"}</div>
-          <div style={labelStyle}> الإجمالي:</div>
+          <div style={labelStyle}>الإجمالي:</div>
           <div style={valueStyle}>{request.total || "-"}</div>
-          <div style={labelStyle}> طريقة الدفع:</div>
+          <div style={labelStyle}>طريقة الدفع:</div>
           <div style={valueStyle}>{request.paymentStatus || "-"}</div>
-          <div style={labelStyle}> المبلغ المتبقي:</div>
+          <div style={labelStyle}>المبلغ المتبقي:</div>
           <div style={valueStyle}>{request.remainingAmount || "-"}</div>
-          <div style={labelStyle}> الكيلومتر:</div>
+          <div style={labelStyle}>الكيلومتر:</div>
           <div style={valueStyle}>{request.kilometers || "-"}</div>
-          {/* تذييل الفاتورة: رقم الهاتف واللوكيشن (يظهر في الصورة) */}
           <div style={{ marginTop: 24, borderTop: "1px dashed #bbc6dd", paddingTop: 14, textAlign: "center" }}>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 6, marginBottom: 10 }}>
               <span style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", background: "#e0f7fa", borderRadius: "50%", width: 22, height: 22 }}>
@@ -182,9 +183,9 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({ open, onClose, request }) =
                   <path d="M12 7a4 4 0 0 0-4 4c0 2.25 4 7 4 7s4-4.75 4-7a4 4 0 0 0-4-4zm0 5.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z" fill="#fff" />
                 </svg>
               </span>
-              <span style={{ fontWeight: "bold", color: "#e91e63", fontSize: 14, letterSpacing: 0.2 }}>الموقع: <span style={{textDecoration:'underline',direction:'ltr'}}>اضغط هنا</span></span>
+              <span style={{ fontWeight: "bold", color: "#e91e63", fontSize: 14, letterSpacing: 0.2 }}>الموقع: <span style={{ textDecoration: 'underline', direction: 'ltr' }}>اضغط هنا</span></span>
             </div>
-            <div style={{fontSize:10, color:'#888', marginTop:2}}>https://maps.app.goo.gl/pm3tvQvL8xLGVN8i6</div>
+            <div style={{ fontSize: 10, color: '#888', marginTop: 2 }}>https://maps.app.goo.gl/pm3tvQvL8xLGVN8i6</div>
           </div>
         </div>
         <button
@@ -201,7 +202,6 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({ open, onClose, request }) =
             } else {
               waUrl = `https://wa.me/?text=${encodeURIComponent(text)}`;
             }
-            // محاولة فتح تطبيق واتساب على ويندوز أولاً
             let tried = false;
             const appUrl = waUrl.replace("https://wa.me/", "whatsapp://send?phone=").replace("?text=", "&text=");
             const timeout = setTimeout(() => {
@@ -211,7 +211,6 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({ open, onClose, request }) =
               }
             }, 800);
             window.location.href = appUrl;
-            // إذا لم ينجح التحويل خلال 800ms، يفتح المتصفح تلقائياً
           }}
         >
           إرسال على واتساب
