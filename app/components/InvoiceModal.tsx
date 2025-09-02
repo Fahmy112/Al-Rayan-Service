@@ -46,19 +46,19 @@ const cardStyle: React.CSSProperties = {
 const labelStyle: React.CSSProperties = {
   color: "#286090",
   fontWeight: 700,
-  marginBottom: 4, // زيادة المسافة بعد العنوان
+  marginBottom: 4,
   fontSize: 16,
-  marginTop: 8, // زيادة المسافة قبل العنوان
-  letterSpacing: 0.3, // زيادة طفيفة في تباعد الحروف
+  marginTop: 8,
+  letterSpacing: 0.3,
 };
 
 const valueStyle: React.CSSProperties = {
   color: "#222",
   fontWeight: 500,
   fontSize: 15,
-  marginBottom: 10, // زيادة المسافة بعد القيمة
+  marginBottom: 10,
   wordBreak: "break-word",
-  letterSpacing: 0.2, // إضافة تباعد أحرف للقيمة
+  letterSpacing: 0.2,
 };
 
 const InvoiceModal: React.FC<InvoiceModalProps> = ({ open, onClose, request }) => {
@@ -69,24 +69,18 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({ open, onClose, request }) =
 
   const handleDownloadImage = async () => {
     if (invoiceRef.current) {
-      // إخفاء الأزرار مؤقتًا قبل التقاط الصورة
       buttonsRef.current.forEach(btn => {
         if (btn) btn.style.display = 'none';
       });
 
-      // زيادة التأخير لضمان تحميل الخطوط وتطبيق الأنماط بالكامل
-      await new Promise(resolve => setTimeout(resolve, 300)); // يمكن زيادته إلى 500 أو 1000 إذا استمرت المشكلة
+      await new Promise(resolve => setTimeout(resolve, 300));
 
       const canvas = await html2canvas(invoiceRef.current, {
-        scale: 2, // للحفاظ على دقة عالية
+        scale: 2,
         useCORS: true,
         logging: false,
-        // يمكن تجربة إعدادات إضافية هنا إذا استمرت المشكلة
-        // allowTaint: true, // قد يكون مفيدًا لبعض المشاكل ولكن قد يؤثر على الأمان
-        // foreignObjectRendering: true, // قد يحسن رندر SVG وبعض العناصر المعقدة
       });
 
-      // إعادة إظهار الأزرار
       buttonsRef.current.forEach(btn => {
         if (btn) btn.style.display = 'block';
       });
@@ -140,20 +134,21 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({ open, onClose, request }) =
           ref={invoiceRef}
           style={{
             background: "#fff",
-            padding: "18px 15px 15px 15px", // زيادة البادينج الداخلي
-            minWidth: 280, // زيادة طفيفة في الحد الأدنى للعرض
-            maxWidth: 380, // زيادة طفيفة في الحد الأقصى للعرض
+            padding: "18px 15px 15px 15px",
+            minWidth: 280,
+            maxWidth: 380,
             width: "100%",
             boxSizing: "border-box",
             border: "1.5px solid #e0e6f2",
             borderRadius: 12,
             direction: "rtl",
-            fontFamily: "Cairo, 'Noto Sans Arabic', Arial, sans-serif", // إضافة خط عربي آمن كبديل
-            lineHeight: 1.9, // زيادة تباعد الأسطر أكثر
+            fontFamily: "'Noto Sans Arabic', 'Simplified Arabic', Tahoma, Arial, sans-serif", // تغيير ترتيب الخطوط
+            lineHeight: 1.9,
             fontSize: 15,
-            letterSpacing: 0.35, // زيادة طفيفة في تباعد الحروف الكلي
-            wordSpacing: "0.05em", // إضافة تباعد بين الكلمات
-            textRendering: "optimizeLegibility", // تحسين عرض النص
+            letterSpacing: "0.5px", // زيادة تباعد الحروف
+            wordSpacing: "2px", // زيادة تباعد الكلمات
+            textRendering: "optimizeLegibility",
+            fontVariantLigatures: 'none', // تعطيل تشكيل الحروف
             whiteSpace: "pre-line",
             color: "#222",
           }}
