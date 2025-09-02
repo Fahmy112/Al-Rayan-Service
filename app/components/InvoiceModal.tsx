@@ -1,6 +1,6 @@
 import React, { useRef } from "react";
-import html2canvas from "html2canvas";
-import ArabicTextSVG from "./ArabicTextSVG"; // Import the new component
+// استيراد المكتبة الجديدة
+import domtoimage from "dom-to-image";
 
 interface InvoiceModalProps {
   open: boolean;
@@ -70,26 +70,34 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({ open, onClose, request }) =
 
   const handleDownloadImage = async () => {
     if (invoiceRef.current) {
+      // إخفاء الأزرار مؤقتًا قبل التقاط الصورة
       buttonsRef.current.forEach(btn => {
         if (btn) btn.style.display = 'none';
       });
 
-      await new Promise(resolve => setTimeout(resolve, 300));
+      try {
+        // استخدام domtoimage.toPng بدلاً من html2canvas
+        const dataUrl = await domtoimage.toPng(invoiceRef.current, {
+          quality: 0.95,
+          style: {
+            "font-family": "Cairo, 'Noto Sans Arabic', 'Simplified Arabic', Tahoma, Arial, sans-serif",
+            "letter-spacing": "normal",
+            "word-spacing": "normal"
+          }
+        });
 
-      const canvas = await html2canvas(invoiceRef.current, {
-        scale: 2,
-        useCORS: true,
-        logging: false,
-      });
-
-      buttonsRef.current.forEach(btn => {
-        if (btn) btn.style.display = 'block';
-      });
-
-      const link = document.createElement("a");
-      link.download = `فاتورة_${request.customerName}.png`;
-      link.href = canvas.toDataURL("image/png");
-      link.click();
+        const link = document.createElement("a");
+        link.download = `فاتورة_${request.customerName}.png`;
+        link.href = dataUrl;
+        link.click();
+      } catch (error) {
+        console.error("oops, something went wrong!", error);
+      } finally {
+        // إعادة إظهار الأزرار
+        buttonsRef.current.forEach(btn => {
+          if (btn) btn.style.display = 'block';
+        });
+      }
     }
   };
 
@@ -143,7 +151,7 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({ open, onClose, request }) =
             border: "1.5px solid #e0e6f2",
             borderRadius: 12,
             direction: "rtl",
-            fontFamily: "Tahoma, Arial, sans-serif",
+            fontFamily: "Cairo, 'Noto Sans Arabic', 'Simplified Arabic', Tahoma, Arial, sans-serif",
             lineHeight: 1.9,
             fontSize: 15,
             color: "#222",
@@ -162,12 +170,10 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({ open, onClose, request }) =
           <div style={valueStyle}>+20{request.phone?.replace(/^0+/, "").replace(/^20/, "")}</div>
           
           <div style={labelStyle}>المشكلة:</div>
-          {/* استخدام المكون الجديد لتحويل النص إلى SVG */}
-          <ArabicTextSVG text={request.problem} fontSize={15} color="#222" fontWeight="500" />
+          <div style={valueStyle}>{request.problem}</div>
           
           <div style={labelStyle}>الملاحظات:</div>
-          {/* استخدام المكون الجديد لتحويل النص إلى SVG */}
-          <ArabicTextSVG text={request.notes || "-"} fontSize={15} color="#222" fontWeight="500" />
+          <div style={valueStyle}>{request.notes || "-"}</div>
           
           <div style={labelStyle}>الإجمالي:</div>
           <div style={valueStyle}>{request.total || "-"}</div>
