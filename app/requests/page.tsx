@@ -174,6 +174,52 @@ export default function RequestsPage() {
     setEditLoading(true);
     setEditSuccess("");
     try {
+      // 1. جلب الطلب القديم
+      const oldRequest = requests.find(r => r._id === edit.id);
+      const oldSpares = Array.isArray(oldRequest?.usedSpares) ? oldRequest.usedSpares : [];
+      const newSpares = Array.isArray(editValue.usedSpares) ? editValue.usedSpares : [];
+      // 2. بناء قاموس للبحث السريع
+      const oldMap = Object.fromEntries(oldSpares.map((s:any) => [s.id, s]));
+      const newMap = Object.fromEntries(newSpares.map((s:any) => [s.id, s]));
+      // 3. تحديث الكميات في المخزون
+      // أ) قطع كانت موجودة وتم تعديل كميتها
+      for (const s of newSpares) {
+        if (!s.id || s.id === "custom") continue;
+        const oldQty = oldMap[s.id]?.qty || 0;
+        const diff = (s.qty || 0) - oldQty;
+        if (diff !== 0) {
+          await fetch("/api/spares", {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ id: s.id, quantity: -diff }) // سالب الفرق: إذا زاد يخصم، إذا نقص يزيد
+          });
+        }
+      }
+      // ب) قطع كانت موجودة وحُذفت
+      for (const s of oldSpares) {
+        if (!s.id || s.id === "custom") continue;
+        if (!newMap[s.id]) {
+          // أضف الكمية المحذوفة للمخزون
+          await fetch("/api/spares", {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ id: s.id, quantity: s.qty })
+          });
+        }
+      }
+      // ج) قطع جديدة أضيفت
+      for (const s of newSpares) {
+        if (!s.id || s.id === "custom") continue;
+        if (!oldMap[s.id]) {
+          // خصم الكمية الجديدة من المخزون
+          await fetch("/api/spares", {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ id: s.id, quantity: -s.qty })
+          });
+        }
+      }
+      // 4. حفظ التعديلات في الطلب
       const res = await fetch("/api/requests/" + edit.id, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
@@ -183,7 +229,6 @@ export default function RequestsPage() {
         setEditSuccess("تم حفظ التعديلات بنجاح!");
         setEdit(null);
         setShowEditModal(false);
-        // تحديث الطلب المعدل في القائمة مباشرة
         setRequests(reqs => reqs.map(r => r._id === edit.id ? { ...r, ...editValue } : r));
       } else {
         setEditSuccess("حدث خطأ أثناء الحفظ!");
