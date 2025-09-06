@@ -175,7 +175,7 @@ export default function AddRequest() {
         await fetch("/api/spares", {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ id: spare._id, quantity: spare.quantity - row.qty })
+          body: JSON.stringify({ id: spare._id, quantity: -row.qty })
         });
       }
     }
