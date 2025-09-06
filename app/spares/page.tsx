@@ -92,11 +92,17 @@ export default function SparesPage() {
 
   async function saveEdit() {
     if (!edit) return;
+    const oldSpare = spares.find(s => s._id === edit.id);
+    let quantityDiff: number | undefined = undefined;
+    if (editValue.quantity !== undefined && oldSpare) {
+      const newQty = parseInt(editValue.quantity);
+      quantityDiff = newQty - oldSpare.quantity;
+    }
     await handleUpdate(edit.id, {
       name: editValue.name,
       price: parseFloat(editValue.price),
       category: editValue.category,
-      quantity: editValue.quantity !== undefined ? parseInt(editValue.quantity) : undefined
+      quantity: quantityDiff !== undefined ? quantityDiff : undefined
     });
     setEdit(null);
   }
