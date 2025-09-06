@@ -30,13 +30,21 @@ export async function POST(req: NextRequest) {
 
 // PATCH: تحديث كمية أو بيانات قطعة
 export async function PATCH(req: NextRequest) {
-  const { id, ...updateFields } = await req.json();
+  const { id, quantity, ...updateFields } = await req.json();
   const client = await clientPromise;
   const db = client.db();
-  await db.collection('spares').updateOne(
-    { _id: new ObjectId(id) },
-    { $set: updateFields }
-  );
+  // إذا تم إرسال quantity، يتم خصمها باستخدام $inc
+  if (typeof quantity === 'number') {
+    await db.collection('spares').updateOne(
+      { _id: new ObjectId(id) },
+      { $inc: { quantity: quantity }, $set: updateFields }
+    );
+  } else {
+    await db.collection('spares').updateOne(
+      { _id: new ObjectId(id) },
+      { $set: updateFields }
+    );
+  }
   return NextResponse.json({ success: true });
 }
 
